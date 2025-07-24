@@ -11,6 +11,8 @@ Para el caso particular de suma de fracciones
 
 El grado de una suma de fracciones es el máximo entre todos los productos de los numeradores por el mínimo común múltiplo de los denominadores
 
+Cuando se cambia por variables ya no son fracciones, el grado es el máximo grado de los operandos de la suma
+
 """
 def addsum(a):
     if len(a) == 0:
@@ -38,19 +40,16 @@ maxDeg = data["degree"]
 num_expresiones = len(expresiones)
 max_intermedias = 3
 
-degrees = [] # Cada expresión qué grado tiene -> máximo entre numerador y denominador???
-combinaciones = set()
-cjto_variables = set()
-
-solver = Solver()
+solver = Optimize()
 
 # Para cada expresión, me la quedo tal cual o la expando. Si me la quedo significa que va a ser un "VI" final
 expando = []
-cuantas_keep = []
 
 for exp in range(num_expresiones):
     expando.append(Bool("exp_" + str(exp)))
-    cuantas_keep.append(If(Not(expando[exp]), 1, 0))
+
+    # Minimiza el número de variables "originales"
+    solver.add_soft(expando[exp], 1, "keeps")
     
 # Para cada expresión que ha sido expandida, booleano que indica si se junta o no con la expresión i-ésima
 juntar = []
@@ -74,58 +73,88 @@ for exp in range(num_expresiones):
             # Si se cumple esto, se pueden unir. Sino, obligatoriamente el booleano debe ir a false
             solver.add(Implies(Not(And(expando[exp], expando[e])), Not(juntar[exp][e])))
             solver.add(Implies(Not(And(expando[exp], expando[e])), Not(juntar[e][exp])))
-            solver.add(Implies(juntar[exp][e], Not(juntar[e][exp]))) # Porque sabes que estás en el caso exp < e
+            # solver.add(Implies(juntar[exp][e], Not(juntar[e][exp]))) # Porque sabes que estás en el caso exp < e
 
             # Para que las relaciones entén en la primera fracción que forma la unión de fracciones y no contar el grado 2 veces
             for anterior in range(0, e):
                 solver.add(Implies(And(juntar[exp][e], juntar[exp][anterior]), Not(juntar[anterior][e])))
-                # La implicación de no juntar anterior con exp se cumple trivial porque e > anterior
+                # La implicación de no juntar anterior con exp se cumple trivial porque e > anterior, entrará en el elif
 
 # Comprobar que las expresiones que se forman no superan el grado
 for exp in range(num_expresiones):
-    # grado_exp = []
     grado_num = [If(expando[exp], expresiones[exp]["values"][0]["degree"], 0)]
     grado_den = [If(expando[exp], expresiones[exp]["values"][1]["degree"], 0)]
 
     for e in range(num_expresiones):
-        expr1 = addsum(grado_num) + expresiones[e]["values"][1]["degree"]
-        expr2 = addsum(grado_den) + expresiones[e]["values"][0]["degree"]
+        # if exp == e:
+        #     continue
 
-        grado_num.append(If(juntar[exp][e], If(expr1 > expr2, expr1, expr2), 0))
+        # Trabajo con el último elemento del array que tiene el grado acumulado
+        prev_grado_num = grado_num[-1]
+        prev_grado_den = grado_den[-1]
 
-        # grado_num.append(If(juntar[exp][e], max(addsum(grado_num) + expresiones[e]["values"][1]["degree"], addsum(grado_den) + expresiones[e]["values"][0]["degree"]), 0))
-        grado_den.append(If(juntar[exp][e], addsum(grado_den) + expresiones[e]["values"][1]["degree"], 0))
+        # max(numerador actual * denominador de e, numerador de e * denominador actual)
+        expr1 = prev_grado_num + expresiones[e]["values"][1]["degree"]
+        expr2 = prev_grado_den + expresiones[e]["values"][0]["degree"]
 
-    expr1 = addsum(grado_num) # + expresiones[exp]["values"][0]["degree"]
-    expr2 = addsum(grado_den) # + expresiones[exp]["values"][1]["degree"]
+        nuevo_grado_num = If(juntar[exp][e], If(expr1 > expr2, expr1, expr2), prev_grado_num)
+        nuevo_grado_den = If(juntar[exp][e], prev_grado_den + expresiones[e]["values"][1]["degree"], prev_grado_den)
 
-    # grado_final.append(If(expando[exp], If(expr1 > expr2, expr1, expr2), 1))
-    solver.add(Implies(expando[exp], If(expr1 > expr2, expr1, expr2) <= maxDeg))
-    
-    # grado_final.append(If(expando[exp], addsum(grado_exp) + 1, 1))
-    
+        grado_num.append(nuevo_grado_num)
+        grado_den.append(nuevo_grado_den)
+
+    final_num = grado_num[-1]
+    final_den = grado_den[-1]
+    grado_total = If(expando[exp], If(final_num > final_den, final_num, final_den), 0)
+
+    solver.add(grado_total <= maxDeg)
+        
 # La expresión final no supera el grado máximo
 grado_final = []
 for exp in range(num_expresiones):
     depende = []
     for e in range(num_expresiones):
-        depende.append(If(juntar[exp][e], 1, 0))
+        depende.append(If(juntar[exp][e], 1, 0)) # Para no contar más de una vez las fracciones que forman una nueva VI tras expandirse
 
-    exp1 = expresiones[exp]["values"][0]["degree"]
-    exp2 = expresiones[exp]["values"][1]["degree"]
-    grado_final.append(If(And(expando[exp], addsum(depende) > 0), 1, 0))
-    grado_final.append(If(And(expando[exp], addsum(depende) == 0), 0, 0))
-    grado_final.append(If(Not(expando[exp]), If(exp1 > exp2, exp1, exp2), 0))
+    # exp1 = expresiones[exp]["values"][0]["degree"]
+    # exp2 = expresiones[exp]["values"][1]["degree"]
 
-solver.add(addsum(grado_final) <= maxDeg)
+    if exp == 0:
+        grado_act = 1  # o el valor base que tenga sentido
+    else:
+        grado_act = grado_final[-1]
 
-solver.add(addsum(cuantas_keep) <= 0)
+    mayor = If(grado_act > 1, grado_act, 1)
+    grado_final.append(If(Or(Not(expando[exp]), addsum(depende) > 0), mayor, grado_act))
+    # grado_final.append(If(And(expando[exp], addsum(depende) == 0), 0, 0))
+    # grado_final.append(If(Not(expando[exp]), 1, 0)) # If(exp1 > exp2, exp1, exp2), 0))
+
+solver.add(grado_final[-1] <= maxDeg)
+
+# Si se expande una expresión, obligatoriamente se tiene que unificar con otra
+for exp in range(num_expresiones):
+    suma_fila = []
+    suma_col = []
+    for e in range(num_expresiones):
+        suma_fila.append(If(juntar[exp][e], 1, 0))
+        suma_col.append(If(juntar[e][exp], 1, 0))
+
+    solver.add(Implies(expando[exp], Or(addsum(suma_fila) > 0, addsum(suma_col) > 0)))
+    
+    # Cada fracción unicamente está unificada 1 vez
+    solver.add(Implies(addsum(suma_fila) > 0, addsum(suma_col) == 0))
+    solver.add(Implies(addsum(suma_col) > 0, addsum(suma_fila) == 0))
+    solver.add(addsum(suma_col) <= 1)
+
+    # Minimizar número de variables creadas
+    solver.add_soft(addsum(suma_fila) == 0, 1)
 
 if solver.check() == sat:
     modelo = solver.model()
     print("Solución encontrada:\n")
 
     expanden = [i for i in range(num_expresiones) if modelo.evaluate(expando[i]) == True]
+    no_expand = [i for i in range(num_expresiones) if modelo.evaluate(expando[i]) == False]
 
     # Helper: convertir una fracción en texto legible
     def fraccion_a_texto(exp):
@@ -153,5 +182,12 @@ if solver.check() == sat:
                 print(f"    - {fraccion_a_texto(g)}")
     else:
         print("No se han unificado fracciones.")
+
+    # MOSTRAR LAS QUE SE MANTIENEN ORIGINALES
+    if no_expand:
+        print("\nFracciones originales que no se han expandido:")
+        for i in no_expand:
+            print(f"    - Expresión {i}: {fraccion_a_texto(i)}")
 else:
     print("No se encontró una solución válida bajo las restricciones dadas.")
+
