@@ -18,9 +18,9 @@ def generar_fracciones_json(
         grado_num = random.randint(grado_min, grado_max)
         grado_den = random.randint(grado_min, grado_max)
 
-        num_signal = [señal_actual]
+        num_signal = [random.randint(señal_inicial, num_fracciones)]
         señal_actual += 1
-        den_signal = [señal_actual]
+        den_signal = [random.randint(señal_inicial + num_fracciones, 2 * num_fracciones)]
         señal_actual += 1
 
         numerador = {
