@@ -13,6 +13,8 @@ El grado de una suma de fracciones es el máximo entre todos los productos de lo
 
 Cuando se cambia por variables ya no son fracciones, el grado es el máximo grado de los operandos de la suma
 
+Versión sin controlar fracciones repetidas
+
 """
 def addsum(a):
     if len(a) == 0:
@@ -39,36 +41,36 @@ expresiones = data["expressions"]
 maxDeg = data["degree"]
 num_expresiones = len(expresiones)
 
-cjto_variables = set()
+# cjto_variables = set()
 
-for exp in range(num_expresiones):
+# for exp in range(num_expresiones):
 
-    cjto_variables.add(expresiones[exp]["values"][0]["signals"])
-    cjto_variables.add(expresiones[exp]["values"][1]["signals"])
+#     cjto_variables.add(expresiones[exp]["values"][0]["signals"])
+#     cjto_variables.add(expresiones[exp]["values"][1]["signals"])
 
-cjto_variables = sorted(list(cjto_variables))
+# cjto_variables = sorted(list(cjto_variables))
 
-variables_expresion = [] # Cada expresión, cuántas variables de cada contiene
-for exp in range(num_expresiones):
-    vars = []
+# variables_expresion = [] # Cada expresión, cuántas variables de cada contiene
+# for exp in range(num_expresiones):
+#     vars = []
 
-    for var in cjto_variables:
-        num = 0
-        if expresiones[exp]["values"][0]["signals"] == var: num += 1
-        if expresiones[exp]["values"][1]["signals"] == var: num += 1
+#     for var in cjto_variables:
+#         num = 0
+#         if expresiones[exp]["values"][0]["signals"] == var: num += 1
+#         if expresiones[exp]["values"][1]["signals"] == var: num += 1
 
-        vars.append(num)
+#         vars.append(num)
 
-    variables_expresion.append(vars)
+#     variables_expresion.append(vars)
 
-variables_total = [] # La expresión inicial, cuántas variables de cada contiene
-for var in cjto_variables:
-    c = 0
-    for exp in range(num_expresiones):
-        if expresiones[exp]["values"][0]["signals"] == var: c += 1
-        if expresiones[exp]["values"][1]["signals"] == var: c += 1
+# variables_total = [] # La expresión inicial, cuántas variables de cada contiene
+# for var in cjto_variables:
+#     c = 0
+#     for exp in range(num_expresiones):
+#         if expresiones[exp]["values"][0]["signals"] == var: c += 1
+#         if expresiones[exp]["values"][1]["signals"] == var: c += 1
 
-    variables_total.append(c)
+#     variables_total.append(c)
 
 solver = Optimize()
 
@@ -156,28 +158,28 @@ for exp in range(num_expresiones):
 solver.add(grado_final[-1] <= maxDeg)
 
 # Numero de señales que contiene cada variable nueva
-cuantas_variables = []
-for exp in range(num_expresiones):
-    c = []
-    for var in range(len(cjto_variables)):
-        c.append(Int("cuantas_" + str(exp) + "_" + str(var)))
-        solver.add(c[var] >= 0)
-        solver.add(c[var] <= variables_total[var])
+# cuantas_variables = []
+# for exp in range(num_expresiones):
+#     c = []
+#     for var in range(len(cjto_variables)):
+#         c.append(Int("cuantas_" + str(exp) + "_" + str(var)))
+#         solver.add(c[var] >= 0)
+#         solver.add(c[var] <= variables_total[var])
     
-    cuantas_variables.append(c)
+#     cuantas_variables.append(c)
 
-for exp in range(num_expresiones):
-    for var in range(len(cjto_variables)):
-        cuantas = []
-        cuantas.append(variables_expresion[exp][var])
-        for e in range(num_expresiones):
-            cuantas.append(If(juntar[exp][e], variables_expresion[e][var], 0))
+# for exp in range(num_expresiones):
+#     for var in range(len(cjto_variables)):
+#         cuantas = []
+#         cuantas.append(variables_expresion[exp][var])
+#         for e in range(num_expresiones):
+#             cuantas.append(If(juntar[exp][e], variables_expresion[e][var], 0))
         
-        solver.add(cuantas_variables[exp][var] == addsum(cuantas))
+#         solver.add(cuantas_variables[exp][var] == addsum(cuantas))
 
-cuentan = []
-for exp in range(num_expresiones):
-    cuentan.append(Bool("cuenta_" + str(exp)))
+# cuentan = []
+# for exp in range(num_expresiones):
+#     cuentan.append(Bool("cuenta_" + str(exp)))
 
 # Si se expande una expresión, obligatoriamente se tiene que unificar con otra. Variables que realmente cuentan
 for exp in range(num_expresiones):
@@ -194,61 +196,64 @@ for exp in range(num_expresiones):
 
     solver.add(Implies(expando[exp], Or(addsum(suma_fila) > 0, addsum(suma_col) > 0)))
 
-    num_var_iguales = []
-    for e in range(exp + 1, num_expresiones): # Para todas las siguientes, no puede haber ninguna igual, me quedo la última aparición    
-        cuantas_iguales = []
-
-        # Las señales de las que está formada son iguales
-        for var in range(len(cjto_variables)):
-            cuantas_iguales.append(If(cuantas_variables[exp][var] == cuantas_variables[e][var], 1, 0))
-        
-        # Coinciden en todas las variables
-        num_var_iguales.append(If(addsum(cuantas_iguales) == len(cjto_variables), 1, 0))
-        # solver.add(Implies(addsum(cuantas_iguales) == len(cjto_variables), Or(Not(cuentan[exp]), Not(cuentan[e]))))
-
-    # Solo cuenta si está formando una nueva variable y no existe otra variable exactamente igual
-    solver.add(cuentan[exp] == And(addsum(suma_fila) > 0, addsum(num_var_iguales) == 0))            
-
     # Minimizar número de variables creadas
-    solver.add_soft(Not(cuentan[exp]), 1, "cuentan")
+    solver.add_soft(addsum(suma_fila) == 0, 1)
+
+    # num_var_iguales = []
+    # for e in range(exp + 1, num_expresiones): # Para todas las siguientes, no puede haber ninguna igual, me quedo la última aparición    
+    #     cuantas_iguales = []
+
+    #     # Las señales de las que está formada son iguales
+    #     for var in range(len(cjto_variables)):
+    #         cuantas_iguales.append(If(cuantas_variables[exp][var] == cuantas_variables[e][var], 1, 0))
+        
+    #     # Coinciden en todas las variables
+    #     num_var_iguales.append(If(addsum(cuantas_iguales) == len(cjto_variables), 1, 0))
+    #     # solver.add(Implies(addsum(cuantas_iguales) == len(cjto_variables), Or(Not(cuentan[exp]), Not(cuentan[e]))))
+
+    # # Solo cuenta si está formando una nueva variable y no existe otra variable exactamente igual
+    # solver.add(cuentan[exp] == addsum(suma_fila) > 0)            
+
+    # # Minimizar número de variables creadas
+    # solver.add_soft(Not(cuentan[exp]), 1, "cuentan")
 
 # La expresión final, por qué expresiones está formada
-num_huecos = num_expresiones
-huecos = []
-for hueco in range(num_huecos):
-    h = []
-    for exp in range(num_expresiones):
-        h.append(Bool("hueco_" + str(hueco) + "_" + str(exp)))
-        solver.add(Implies(h[exp], Or(Not(expando[exp]), cuentan[exp])))
-    huecos.append(h)
+# num_huecos = num_expresiones
+# huecos = []
+# for hueco in range(num_huecos):
+#     h = []
+#     for exp in range(num_expresiones):
+#         h.append(Bool("hueco_" + str(hueco) + "_" + str(exp)))
+#         solver.add(Implies(h[exp], Or(Not(expando[exp]), cuentan[exp])))
+#     huecos.append(h)
 
-for hueco in range(num_huecos):
-    ocupa_hueco = []
-    ocupa_hueco_sig = []
-    for exp in range(num_expresiones):
-        ocupa_hueco.append(If(huecos[hueco][exp], 1, 0))
-        if hueco < num_huecos - 1:
-            ocupa_hueco_sig.append(If(huecos[hueco + 1][exp], 1, 0))
+# for hueco in range(num_huecos):
+#     ocupa_hueco = []
+#     ocupa_hueco_sig = []
+#     for exp in range(num_expresiones):
+#         ocupa_hueco.append(If(huecos[hueco][exp], 1, 0))
+#         if hueco < num_huecos - 1:
+#             ocupa_hueco_sig.append(If(huecos[hueco + 1][exp], 1, 0))
     
-    solver.add(addsum(ocupa_hueco) <= 1) # Puede estar vacío u ocupado por 1 única variable
-    solver.add(Implies(addsum(ocupa_hueco) == 0, addsum(ocupa_hueco_sig) == 0)) # Los huecos se rellenan en orden, los vacíos al final
+#     solver.add(addsum(ocupa_hueco) <= 1) # Puede estar vacío u ocupado por 1 única variable
+#     solver.add(Implies(addsum(ocupa_hueco) == 0, addsum(ocupa_hueco_sig) == 0)) # Los huecos se rellenan en orden, los vacíos al final
 
-# Los repetidos aparecen juntos
-for exp in range(num_expresiones):
-    for hueco in range(num_huecos - 1):
-        for huecos_sig in range(hueco + 2, num_huecos - 1): # Si no hay 2 seguidos, no puede haber más después
-            solver.add(Implies(And(huecos[hueco][exp], Not(huecos[hueco + 1][exp])), Not(huecos[huecos_sig][exp])))
+# # Los repetidos aparecen juntos
+# for exp in range(num_expresiones):
+#     for hueco in range(num_huecos - 1):
+#         for huecos_sig in range(hueco + 2, num_huecos - 1): # Si no hay 2 seguidos, no puede haber más después
+#             solver.add(Implies(And(huecos[hueco][exp], Not(huecos[hueco + 1][exp])), Not(huecos[huecos_sig][exp])))
 
 
 # Se cubren todas las variables que había al principio
-for var in range(len(cjto_variables)):
-    c = []
-    for exp in range(num_expresiones):
-        for hueco in range(num_huecos):
-            c.append(If(And(cuentan[exp], huecos[hueco][exp]), cuantas_variables[exp][var], 0))
-            c.append(If(And(Not(expando[exp]), huecos[hueco][exp]), variables_expresion[exp][var], 0))
+# for var in range(len(cjto_variables)):
+#     c = []
+#     for exp in range(num_expresiones):
+#         for hueco in range(num_huecos):
+#             c.append(If(And(cuentan[exp], huecos[hueco][exp]), cuantas_variables[exp][var], 0))
+#             c.append(If(And(Not(expando[exp]), huecos[hueco][exp]), variables_expresion[exp][var], 0))
     
-    solver.add(addsum(c) == variables_total[var])
+#     solver.add(addsum(c) == variables_total[var])
 
 if solver.check() == sat:
     modelo = solver.model()
@@ -256,67 +261,36 @@ if solver.check() == sat:
 
     expanden = [i for i in range(num_expresiones) if modelo.evaluate(expando[i]) == True]
     no_expand = [i for i in range(num_expresiones) if modelo.evaluate(expando[i]) == False]
-    cuentan_final = [i for i in range(num_expresiones) if modelo.evaluate(cuentan[i]) == True]
 
-    # Identificar clave estructural de un grupo de expresiones
-    def clave_combinacion(grupo):
-        claves = []
-        for idx in sorted(grupo):
-            num = expresiones[idx]["values"][0]["signals"]
-            den = expresiones[idx]["values"][1]["signals"]
-            grado_num = expresiones[idx]["values"][0]["degree"]
-            grado_den = expresiones[idx]["values"][1]["degree"]
-            claves.append((num, grado_num, den, grado_den))
-        return tuple(sorted(claves))
+    unificaciones = []
+    ya_vistas = set()
 
-    estructuras_vistas = set()
-    unificaciones = []  # cada item: {"indice": i, "grupo": [...], "clave": ..., "huecos": [...]}
-
-    # Obtener ocupación de cada hueco
-    ocupacion_huecos = {}
-    for hueco in range(num_huecos):
-        for exp in range(num_expresiones):
-            if modelo.evaluate(huecos[hueco][exp]) == True:
-                if exp not in ocupacion_huecos:
-                    ocupacion_huecos[exp] = []
-                ocupacion_huecos[exp].append(hueco)
-
-    # Procesar VI unificadas que cuentan
-    for i in cuentan_final:
+    for i in expanden:
         grupo = [i]
         for j in range(num_expresiones):
             if i != j and modelo.evaluate(juntar[i][j]) == True:
                 grupo.append(j)
+        grupo_set = frozenset(grupo)
+        if len(grupo) > 1 and grupo_set not in ya_vistas:
+            unificaciones.append(sorted(grupo))
+            ya_vistas.add(grupo_set)
 
-        clave = clave_combinacion(grupo)
-        if clave not in estructuras_vistas:
-            estructuras_vistas.add(clave)
-            unificaciones.append({
-                "indice": i,
-                "grupo": sorted(grupo),
-                "clave": clave,
-                "huecos": ocupacion_huecos.get(i, [])
-            })
-
-    # Imprimir VI unificadas
     if unificaciones:
-        print("Fracciones unificadas en nuevas variables intermedias (solo las que cuentan):")
-        for idx, unif in enumerate(unificaciones):
-            print(f"\n  - VI {idx+1} (ocupa huecos {unif['huecos']}): combinación de expresiones {unif['grupo']}")
-            for g in unif["grupo"]:
+        for idx, grupo in enumerate(unificaciones):
+            print(f"Fracción nueva {idx+1}: combinación de expresiones {grupo}")
+            for g in grupo:
                 num = expresiones[g]["values"][0]["signals"]
                 den = expresiones[g]["values"][1]["signals"]
-                print(f"      · Exp {g}: {num} \\ {den}")
+                print(f"      · Exp {g}: ({num}) \\ ({den})")
     else:
-        print("No se han generado fracciones nuevas únicas (VI).")
+        print("No se han unificado fracciones.")
 
-    # Imprimir expresiones originales no expandidas
+    # MOSTRAR LAS QUE SE MANTIENEN ORIGINALES
     if no_expand:
-        print("\nFracciones originales que no se han expandido y se conservan:")
+        print("\nFracciones originales que no se han expandido:")
         for i in no_expand:
-            huecos_exp = ocupacion_huecos.get(i, [])
             num = expresiones[i]["values"][0]["signals"]
             den = expresiones[i]["values"][1]["signals"]
-            print(f"  - Expresión {i} → {num} \\ {den} (ocupa huecos {huecos_exp})")
+            print(f"  - Expresión {i} → ({num}) \\ ({den})")
 else:
     print("No se encontró una solución válida bajo las restricciones dadas.")
