@@ -74,14 +74,14 @@ num_expresiones = len(expresiones)
 
 solver = Optimize()
 
-# Para cada expresión, me la quedo tal cual o la expando. Si me la quedo significa que va a ser un "VI" final
+# Para cada expresión, me la quedo tal cual o la expando. Si me la quedo significa que va a ser una "VI" final
 expando = []
 
 for exp in range(num_expresiones):
     expando.append(Bool("exp_" + str(exp)))
 
     # Minimiza el número de variables "originales"
-    solver.add_soft(expando[exp], 1, "keeps")
+    solver.add_soft(expando[exp], 10, "keeps")
     
 # Para cada expresión que ha sido expandida, booleano que indica si se junta o no con la expresión i-ésima
 juntar = []
@@ -95,11 +95,11 @@ for exp in range(num_expresiones):
 
 for exp in range(num_expresiones):
     for e in range(num_expresiones):
-        if exp == e:  # No juntar una expresión consigo misma
+        if exp >= e:  # No juntar una expresión consigo misma ni con una anterior
             solver.add(Not(juntar[exp][e]))
 
-        elif exp > e:
-            solver.add(Not(juntar[exp][e]))
+        # elif exp > e:
+        #     solver.add(Not(juntar[exp][e]))
         else:
             # Si se cumple esto, se pueden unir. Sino, obligatoriamente el booleano debe ir a false
             solver.add(Implies(Not(And(expando[exp], expando[e])), Not(juntar[exp][e])))
@@ -139,23 +139,26 @@ for exp in range(num_expresiones):
     solver.add(grado_total <= maxDeg)
         
 # La expresión final no supera el grado máximo
-grado_final = []
-for exp in range(num_expresiones):
-    depende = []
-    for e in range(num_expresiones):
-        depende.append(If(juntar[exp][e], 1, 0)) # Para no contar más de una vez las fracciones que forman una nueva VI tras expandirse
+# grado_final = []
+# for exp in range(num_expresiones):
+#     depende = []
+#     for e in range(num_expresiones):
+#         depende.append(If(juntar[exp][e], 1, 0)) # Para no contar más de una vez las fracciones que forman una nueva VI tras expandirse
 
-    if exp == 0:
-        grado_act = 1 
-    else:
-        grado_act = grado_final[-1]
+#     if exp == 0:
+#         grado_act = 1 
+#     else:
+#         grado_act = grado_final[-1]
 
-    mayor = If(grado_act > 1, grado_act, 1)
-    grado_final.append(If(Or(Not(expando[exp]), addsum(depende) > 0), mayor, grado_act))
-    # grado_final.append(If(And(expando[exp], addsum(depende) == 0), 0, 0))
-    # grado_final.append(If(Not(expando[exp]), 1, 0)) # If(exp1 > exp2, exp1, exp2), 0))
+#     mayor = If(grado_act > 1, grado_act, 1)
+#     grado_final.append(If(Or(Not(expando[exp]), addsum(depende) > 0), mayor, grado_act))
+#     # grado_final.append(If(And(expando[exp], addsum(depende) == 0), 0, 0))
+#     # grado_final.append(If(Not(expando[exp]), 1, 0)) # If(exp1 > exp2, exp1, exp2), 0))
 
-solver.add(grado_final[-1] <= maxDeg)
+# solver.add(grado_final[-1] <= maxDeg)
+
+
+
 
 # Numero de señales que contiene cada variable nueva
 # cuantas_variables = []
@@ -195,9 +198,10 @@ for exp in range(num_expresiones):
     solver.add(addsum(suma_col) <= 1)
 
     solver.add(Implies(expando[exp], Or(addsum(suma_fila) > 0, addsum(suma_col) > 0)))
+    # solver.add(Implies(Not(expando[exp]), addsum(suma_fila) == 0))
 
     # Minimizar número de variables creadas
-    solver.add_soft(addsum(suma_fila) == 0, 1)
+    solver.add_soft(addsum(suma_fila) == 0, 5, "min_vars")
 
     # num_var_iguales = []
     # for e in range(exp + 1, num_expresiones): # Para todas las siguientes, no puede haber ninguna igual, me quedo la última aparición    
@@ -285,7 +289,6 @@ if solver.check() == sat:
     else:
         print("No se han unificado fracciones.")
 
-    # MOSTRAR LAS QUE SE MANTIENEN ORIGINALES
     if no_expand:
         print("\nFracciones originales que no se han expandido:")
         for i in no_expand:

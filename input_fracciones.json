@@ -5,11 +5,11 @@
             "values": [
                 {
                     "signals": 1,
-                    "degree": 0
+                    "degree": 3
                 },
                 {
                     "signals": 2,
-                    "degree": 2
+                    "degree": 0
                 }
             ]
         },
@@ -18,11 +18,11 @@
             "values": [
                 {
                     "signals": 3,
-                    "degree": 1
+                    "degree": 3
                 },
                 {
                     "signals": 4,
-                    "degree": 0
+                    "degree": 3
                 }
             ]
         },
@@ -31,11 +31,11 @@
             "values": [
                 {
                     "signals": 5,
-                    "degree": 3
+                    "degree": 0
                 },
                 {
                     "signals": 6,
-                    "degree": 3
+                    "degree": 1
                 }
             ]
         },
@@ -44,11 +44,11 @@
             "values": [
                 {
                     "signals": 7,
-                    "degree": 1
+                    "degree": 3
                 },
                 {
                     "signals": 8,
-                    "degree": 3
+                    "degree": 1
                 }
             ]
         },
@@ -61,7 +61,7 @@
                 },
                 {
                     "signals": 10,
-                    "degree": 3
+                    "degree": 1
                 }
             ]
         },
@@ -74,7 +74,7 @@
                 },
                 {
                     "signals": 12,
-                    "degree": 1
+                    "degree": 2
                 }
             ]
         },
@@ -87,7 +87,7 @@
                 },
                 {
                     "signals": 14,
-                    "degree": 2
+                    "degree": 0
                 }
             ]
         },
@@ -96,11 +96,11 @@
             "values": [
                 {
                     "signals": 15,
-                    "degree": 2
+                    "degree": 0
                 },
                 {
                     "signals": 16,
-                    "degree": 1
+                    "degree": 3
                 }
             ]
         },
@@ -113,7 +113,7 @@
                 },
                 {
                     "signals": 18,
-                    "degree": 2
+                    "degree": 0
                 }
             ]
         },
@@ -126,71 +126,6 @@
                 },
                 {
                     "signals": 20,
-                    "degree": 1
-                }
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {
-                    "signals": 21,
-                    "degree": 0
-                },
-                {
-                    "signals": 22,
-                    "degree": 1
-                }
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {
-                    "signals": 23,
-                    "degree": 1
-                },
-                {
-                    "signals": 24,
-                    "degree": 3
-                }
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {
-                    "signals": 25,
-                    "degree": 0
-                },
-                {
-                    "signals": 26,
-                    "degree": 3
-                }
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {
-                    "signals": 27,
-                    "degree": 3
-                },
-                {
-                    "signals": 28,
-                    "degree": 3
-                }
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {
-                    "signals": 29,
-                    "degree": 1
-                },
-                {
-                    "signals": 30,
                     "degree": 1
                 }
             ]

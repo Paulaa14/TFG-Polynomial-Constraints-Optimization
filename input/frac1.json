@@ -8,5 +8,5 @@
     {"op": "frac","values": [{"signals": 5,"degree": 1}, {"signals": 11, "degree": 1}]},
     {"op": "frac","values": [{"signals": 6,"degree": 1}, {"signals": 12, "degree": 2}]}
 ],
-    "degree": 2
+    "degree": 3
 }
