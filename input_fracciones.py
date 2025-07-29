@@ -3,7 +3,7 @@ import json
 import subprocess
 
 def generar_fracciones_json(
-    num_fracciones=10,
+    num_fracciones=15,
     grado_min=0,
     grado_max=3,
     señal_inicial=1
@@ -59,4 +59,4 @@ with open("input_fracciones.json", "w") as f:
     json.dump(generar_fracciones_json(), f, indent=4)
 
 # Ejecutar el solucionador Z3
-subprocess.run(["python", "fracciones_v2_1.py", "input_fracciones.json"])
+subprocess.run(["python", "fracciones_v1_1.py", "input_fracciones.json"])

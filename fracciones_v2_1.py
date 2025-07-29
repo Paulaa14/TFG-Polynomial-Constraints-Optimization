@@ -13,7 +13,7 @@ El grado de una suma de fracciones es el máximo entre todos los productos de lo
 
 Cuando se cambia por variables ya no son fracciones, el grado es el máximo grado de los operandos de la suma
 
-Versión sin controlar fracciones repetidas
+Versión sin controlar fracciones repetidas. En vez de crear variables a partir de una fracción, se "rellenan huecos"
 
 """
 def addsum(a):

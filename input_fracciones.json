@@ -5,11 +5,11 @@
             "values": [
                 {
                     "signals": 1,
-                    "degree": 3
+                    "degree": 2
                 },
                 {
                     "signals": 2,
-                    "degree": 0
+                    "degree": 2
                 }
             ]
         },
@@ -18,11 +18,11 @@
             "values": [
                 {
                     "signals": 3,
-                    "degree": 3
+                    "degree": 0
                 },
                 {
                     "signals": 4,
-                    "degree": 3
+                    "degree": 0
                 }
             ]
         },
@@ -31,11 +31,11 @@
             "values": [
                 {
                     "signals": 5,
-                    "degree": 0
+                    "degree": 1
                 },
                 {
                     "signals": 6,
-                    "degree": 1
+                    "degree": 2
                 }
             ]
         },
@@ -44,11 +44,11 @@
             "values": [
                 {
                     "signals": 7,
-                    "degree": 3
+                    "degree": 2
                 },
                 {
                     "signals": 8,
-                    "degree": 1
+                    "degree": 3
                 }
             ]
         },
@@ -61,19 +61,6 @@
                 },
                 {
                     "signals": 10,
-                    "degree": 1
-                }
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {
-                    "signals": 11,
-                    "degree": 3
-                },
-                {
-                    "signals": 12,
                     "degree": 2
                 }
             ]
@@ -82,11 +69,11 @@
             "op": "frac",
             "values": [
                 {
-                    "signals": 13,
-                    "degree": 0
+                    "signals": 11,
+                    "degree": 1
                 },
                 {
-                    "signals": 14,
+                    "signals": 12,
                     "degree": 0
                 }
             ]
@@ -95,8 +82,21 @@
             "op": "frac",
             "values": [
                 {
+                    "signals": 13,
+                    "degree": 1
+                },
+                {
+                    "signals": 14,
+                    "degree": 3
+                }
+            ]
+        },
+        {
+            "op": "frac",
+            "values": [
+                {
                     "signals": 15,
-                    "degree": 0
+                    "degree": 2
                 },
                 {
                     "signals": 16,
@@ -109,7 +109,7 @@
             "values": [
                 {
                     "signals": 17,
-                    "degree": 2
+                    "degree": 0
                 },
                 {
                     "signals": 18,
@@ -122,10 +122,75 @@
             "values": [
                 {
                     "signals": 19,
-                    "degree": 1
+                    "degree": 0
                 },
                 {
                     "signals": 20,
+                    "degree": 1
+                }
+            ]
+        },
+        {
+            "op": "frac",
+            "values": [
+                {
+                    "signals": 21,
+                    "degree": 2
+                },
+                {
+                    "signals": 22,
+                    "degree": 1
+                }
+            ]
+        },
+        {
+            "op": "frac",
+            "values": [
+                {
+                    "signals": 23,
+                    "degree": 1
+                },
+                {
+                    "signals": 24,
+                    "degree": 0
+                }
+            ]
+        },
+        {
+            "op": "frac",
+            "values": [
+                {
+                    "signals": 25,
+                    "degree": 2
+                },
+                {
+                    "signals": 26,
+                    "degree": 2
+                }
+            ]
+        },
+        {
+            "op": "frac",
+            "values": [
+                {
+                    "signals": 27,
+                    "degree": 3
+                },
+                {
+                    "signals": 28,
+                    "degree": 0
+                }
+            ]
+        },
+        {
+            "op": "frac",
+            "values": [
+                {
+                    "signals": 29,
+                    "degree": 0
+                },
+                {
+                    "signals": 30,
                     "degree": 1
                 }
             ]

@@ -51,32 +51,32 @@ async function main() {
   for (let exp = 0; exp < num_expresiones; exp++) {
     let boolVar = z3.Bool.const(`exp_${exp}`);
     expando.push(boolVar);
-    solver.addSoft(expando[exp], 10, "keeps")
+    solver.addSoft(boolVar, 10, "keeps");
   }
 
-  const juntar = []
+  const juntar = [];
 
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const juntar_exp =[]
+    const juntar_exp =[];
 
     for (let e = 0; e < num_expresiones; e++) {
-      const boolVar = z3.Bool.const(`juntar_${exp}_${e}`)
-      juntar_exp.push(boolVar)
+      const boolVar = z3.Bool.const(`juntar_${exp}_${e}`);
+      juntar_exp.push(boolVar);
     }
 
-    juntar.push(juntar_exp)
+    juntar.push(juntar_exp);
   }
 
   for (let exp = 0; exp < num_expresiones; exp++) {
     for (let e = 0; e < num_expresiones; e++) {
       if (exp >= e) {
-         solver.add(z3.Not(juntar[exp][e]))
+         solver.add(z3.Not(juntar[exp][e]));
       }
       else {
-        solver.add(z3.Implies(z3.Or(z3.Not(expando[exp]), z3.Not(expando[e])), z3.Not(juntar[exp][e])))
+        solver.add(z3.Implies(z3.Or(z3.Not(expando[exp]), z3.Not(expando[e])), z3.Not(juntar[exp][e])));
         
         for (let anterior = 0; anterior < e; anterior ++) {
-          solver.add(z3.Implies(z3.And(juntar[exp][e], juntar[exp][anterior]), z3.Not(juntar[anterior][e])))
+          solver.add(z3.Implies(z3.And(juntar[exp][e], juntar[exp][anterior]), z3.Not(juntar[anterior][e])));
         }
       }
     }
@@ -84,64 +84,72 @@ async function main() {
 
   // Comprobar que las expresiones que se forman no superan el grado
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const grado_num = [z3.If(expando[exp], expresiones[exp]["values"][0]["degree"], z3.Int.val(0))]
-    const grado_den = [z3.If(expando[exp], expresiones[exp]["values"][1]["degree"], z3.Int.val(0))]
+    const grado_num = [z3.If(expando[exp], expresiones[exp]["values"][0]["degree"], z3.Int.val(0))];
+    const grado_den = [z3.If(expando[exp], expresiones[exp]["values"][1]["degree"], z3.Int.val(0))];
 
     for (let e = 0; e < num_expresiones; e++) {
-      const prev_grado_num = grado_num[grado_num.length -1]
-      const prev_grado_den = grado_den[grado_den.length -1]
+      if (exp != e){
+        const prev_grado_num = grado_num[grado_num.length -1];
+        const prev_grado_den = grado_den[grado_den.length -1];
 
-      const expr1 = prev_grado_num.add(expresiones[e]["values"][1]["degree"]);
-      const expr2 = prev_grado_den.add(expresiones[e]["values"][0]["degree"]);
+        const expr1 = z3.Sum(prev_grado_num, expresiones[e]["values"][1]["degree"]);
+        const expr2 = z3.Sum(prev_grado_den, expresiones[e]["values"][0]["degree"]);
 
-      const maxExpr = z3.If(expr1.gt(expr2), expr1, expr2);
-      const nuevo_grado_num = z3.If(juntar[exp][e], maxExpr, prev_grado_num);
-      const nuevo_grado_den = z3.If(juntar[exp][e], prev_grado_den.add(expresiones[e]["values"][1]["degree"]), prev_grado_den);
+        const maxExpr = z3.If(expr1.gt(expr2), expr1, expr2);
+        const nuevo_grado_num = z3.If(juntar[exp][e], maxExpr, prev_grado_num);
+        const nuevo_grado_den = z3.If(juntar[exp][e], z3.Sum(prev_grado_den, expresiones[e]["values"][1]["degree"]), prev_grado_den);
 
-      grado_num.push(nuevo_grado_num)
-      grado_den.push(nuevo_grado_den)
+        grado_num.push(nuevo_grado_num);
+        grado_den.push(nuevo_grado_den);
+      }
     }
 
-    const final_num = grado_num[grado_num.length -1]
-    const final_den = grado_den[grado_den.length -1]
+    const final_num = grado_num[grado_num.length -1];
+    const final_den = grado_den[grado_den.length -1];
 
     const grado_total = z3.If(expando[exp], z3.If(final_num.gt(final_den), final_num, final_den), z3.Int.val(0));
+    
+    // solver.add(expando[0]); // fuerza a que al menos una expresión esté "activa"
+    // solver.add(expresiones[0]["values"][0]["degree"].gt(z3.Int.val(0)));
+    // solver.add(expresiones[0]["values"][1]["degree"].gt(z3.Int.val(0)));
+    // const expr = z3.If(expando[exp], z3.If(final_num.gt(final_den), final_num, final_den), z3.Int.val(0));
+    // console.log(`Expr [${exp}]:`, expr.toString());
 
     solver.add(grado_total.le(maxDeg));
   }
 
-  const grado_final = []
+  const grado_final = [];
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const depende = []
+    const depende = [];
     for (let e = 0; e < num_expresiones; e++) {
-      depende.push(z3.If(juntar[exp][e], 1, 0))
+      depende.push(z3.If(juntar[exp][e], 1, 0));
     }
 
-    let grado_act = 1
-    if (exp != 0) grado_act = grado_final[grado_final.length - 1]
+    let grado_act = 1;
+    if (exp != 0) grado_act = grado_final[grado_final.length - 1];
 
     const mayor = z3.If(grado_act > 1, grado_act, 1)
-    grado_final.push(z3.If(z3.Or(z3.Not(expando[exp]), addsum(depende).gt(0)), mayor, grado_act))
+    grado_final.push(z3.If(z3.Or(z3.Not(expando[exp]), addsum(depende).gt(0)), mayor, grado_act));
   }
 
-  solver.add(grado_final[grado_final.length - 1].le(maxDeg))
+  solver.add(grado_final[grado_final.length - 1].le(maxDeg));
 
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const suma_fila = []
-    const suma_col = []
+    const suma_fila = [];
+    const suma_col = [];
 
     for(let e = 0; e < num_expresiones; e++) {
-      suma_fila.push(z3.If(juntar[exp][e], 1, 0))
-      suma_col.push(z3.If(juntar[e][exp], 1, 0))
+      suma_fila.push(z3.If(juntar[exp][e], 1, 0));
+      suma_col.push(z3.If(juntar[e][exp], 1, 0));
     }
 
-    solver.add(z3.Implies(addsum(suma_fila).gt(0), addsum(suma_col).eq(0)))
-    solver.add(z3.Implies(addsum(suma_col).gt(0), addsum(suma_fila).eq(0)))
-    solver.add(addsum(suma_col).le(1))
+    solver.add(z3.Implies(addsum(suma_fila).gt(0), addsum(suma_col).eq(0)));
+    solver.add(z3.Implies(addsum(suma_col).gt(0), addsum(suma_fila).eq(0)));
+    solver.add(addsum(suma_col).le(1));
 
-    solver.add(z3.Implies(expando[exp], z3.Or(addsum(suma_fila).gt(0), addsum(suma_col).gt(0))))
+    solver.add(z3.Implies(expando[exp], z3.Or(addsum(suma_fila).gt(0), addsum(suma_col).gt(0))));
 
-    solver.addSoft(addsum(suma_fila).eq(0), 5, "min_vars")
+    solver.addSoft(addsum(suma_fila).eq(0), 5, "min_vars");
   }
 
   const result = await solver.check();
@@ -181,6 +189,10 @@ async function main() {
 
     console.log('✅ Solución encontrada:\n');
 
+    console.log('Fracciones con expando = true:', expanded);
+    console.log('Fracciones con expando = false:', notExpanded);
+    console.log();
+
     if (unifications.length > 0) {
       unifications.forEach((group, idx) => {
         console.log(`Fracción nueva ${idx + 1}: combinación de expresiones [${group.join(', ')}]`);
@@ -205,6 +217,17 @@ async function main() {
   } else {
     console.log('❌ No se encontró una solución válida bajo las restricciones dadas.');
   }
+
+  // ✅ Corrección para escribir restricciones a archivo
+  const assertions = solver.assertions();
+  const constraints = [];
+
+  for (let i = 0; i < assertions.length(); i++) {
+    constraints.push(assertions.get(i).toString());
+  }
+
+  fs.writeFileSync('restricciones.smt2', constraints.join('\n'), 'utf8');
+
 }
 
 main();
