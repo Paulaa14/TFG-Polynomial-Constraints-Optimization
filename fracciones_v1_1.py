@@ -100,23 +100,6 @@ for exp in range(num_expresiones):
     grado_total = If(expando[exp], If(final_num > final_den, final_num, final_den), 0)
 
     solver.add(grado_total <= maxDeg)
-        
-# La expresión final no supera el grado máximo -> No es necesario porque es suma de fracciones
-# grado_final = []
-# for exp in range(num_expresiones):
-#     depende = []
-#     for e in range(num_expresiones):
-#         depende.append(If(juntar[exp][e], 1, 0)) # Para no contar más de una vez las fracciones que forman una nueva VI tras expandirse
-
-#     if exp == 0:
-#         grado_act = 1 
-#     else:
-#         grado_act = grado_final[-1]
-
-#     mayor = If(grado_act > 1, grado_act, 1)
-#     grado_final.append(If(Or(Not(expando[exp]), addsum(depende) > 0), mayor, grado_act))
-
-# solver.add(grado_final[-1] <= maxDeg)
 
 # Si se expande una expresión, obligatoriamente se tiene que unificar con otra. Variables que realmente cuentan
 for exp in range(num_expresiones):

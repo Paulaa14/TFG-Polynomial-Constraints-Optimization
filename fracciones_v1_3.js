@@ -3,7 +3,7 @@ const init = z3s.init;
 const fs = require("fs");
 const path = require("path");
 
-function addsum(arr) {
+function addsum(arr, z3) {
   if (arr.length === 0) return z3.Int.val(0);
   let asum = arr[0];
   for (let i = 1; i < arr.length; i++) {
@@ -57,7 +57,7 @@ async function main() {
   for (let exp = 0; exp < num_expresiones; exp++) {
     let juntar_exp =[];
 
-    for (let e = 0; e < num_expresiones; e++) {
+    for (let e = exp + 1; e < num_expresiones; e++) {
       let boolVar = z3.Bool.const(`juntar_${exp}_${e}`);
       juntar_exp.push(boolVar);
     }
@@ -66,17 +66,12 @@ async function main() {
   }
 
   for (let exp = 0; exp < num_expresiones; exp++) {
-    for (let e = 0; e < num_expresiones; e++) {
-      if (exp >= e) {
-         solver.add(z3.Not(juntar[exp][e]));
-      }
-      else {
-        solver.add(z3.Implies(z3.Or(z3.Not(expando[exp]), z3.Not(expando[e])), z3.Not(juntar[exp][e])));
+    for (let e = exp + 1; e < num_expresiones; e++) {
+        solver.add(z3.Implies(z3.Or(z3.Not(expando[exp]), z3.Not(expando[e])), z3.Not(juntar[exp][e - exp - 1])));
         
-        for (let anterior = 0; anterior < e; anterior ++) {
-          solver.add(z3.Implies(z3.And(juntar[exp][e], juntar[exp][anterior]), z3.Not(juntar[anterior][e])));
+        for (let anterior = 0; anterior < e - exp - 1; anterior ++) {
+            solver.add(z3.Implies(z3.And(juntar[exp][e - exp - 1], juntar[exp][anterior]), z3.Not(juntar[anterior][e - anterior - 1])));
         }
-      }
     }
   }
 
@@ -85,8 +80,7 @@ async function main() {
     let grado_num = [expresiones[exp]["values"][0]["degree"]];
     let grado_den = [expresiones[exp]["values"][1]["degree"]];
 
-    for (let e = 0; e < num_expresiones; e++) {
-      if (exp < e) {
+    for (let e = exp + 1; e < num_expresiones; e++) {
         let prev_grado_num = grado_num[grado_num.length -1];
         let prev_grado_den = grado_den[grado_den.length -1];
 
@@ -94,12 +88,11 @@ async function main() {
         let expr2 = prev_grado_den.add(expresiones[e]["values"][0]["degree"]);
 
         let maxExpr = z3.If(expr1.gt(expr2), expr1, expr2);
-        let nuevo_grado_num = z3.If(juntar[exp][e], maxExpr, prev_grado_num);
-        let nuevo_grado_den = z3.If(juntar[exp][e], prev_grado_den.add(expresiones[e]["values"][1]["degree"]), prev_grado_den);
+        let nuevo_grado_num = z3.If(juntar[exp][e - exp - 1], maxExpr, prev_grado_num);
+        let nuevo_grado_den = z3.If(juntar[exp][e - exp - 1], prev_grado_den.add(expresiones[e]["values"][1]["degree"]), prev_grado_den);
 
         grado_num.push(nuevo_grado_num);
         grado_den.push(nuevo_grado_den);
-      }
     }
 
     let final_num = grado_num[grado_num.length -1];
@@ -114,18 +107,21 @@ async function main() {
     let suma_fila = [];
     let suma_col = [];
 
-    for(let e = 0; e < num_expresiones; e++) {
-      suma_fila.push(z3.If(juntar[exp][e], 1, 0));
-      suma_col.push(z3.If(juntar[e][exp], 1, 0));
+    for(let e = exp + 1; e < num_expresiones; e++) {
+      suma_fila.push(z3.If(juntar[exp][e - exp - 1], 1, 0));
     }
 
-    solver.add(z3.Implies(addsum(suma_fila).gt(0), addsum(suma_col).eq(0)));
-    solver.add(z3.Implies(addsum(suma_col).gt(0), addsum(suma_fila).eq(0)));
-    solver.add(addsum(suma_col).le(1));
+    for (let e = 0; e < exp; e++) {
+        suma_col.push(z3.If(juntar[e][exp - e - 1], 1, 0));
+    }
 
-    solver.add(z3.Implies(expando[exp], z3.Or(addsum(suma_fila).gt(0), addsum(suma_col).gt(0))));
+    solver.add(z3.Implies(addsum(suma_fila, z3).gt(0), addsum(suma_col, z3).eq(0)));
+    solver.add(z3.Implies(addsum(suma_col, z3).gt(0), addsum(suma_fila, z3).eq(0)));
+    solver.add(addsum(suma_col, z3).le(1));
 
-    solver.addSoft(addsum(suma_fila).eq(0), 5, "min_vars");
+    solver.add(z3.Implies(expando[exp], z3.Or(addsum(suma_fila, z3).gt(0), addsum(suma_col, z3).gt(0))));
+
+    solver.addSoft(addsum(suma_fila, z3).eq(0), 5, "min_vars");
   }
 
   let result = await solver.check();
@@ -149,9 +145,9 @@ async function main() {
 
     for (const i of expanded) {
       const group = [i];
-      for (let j = 0; j < num_expresiones; j++) {
-        const joinVal = model.eval(juntar[i][j]).toString();
-        if (i !== j && joinVal === "true") {
+      for (let j = i + 1; j < num_expresiones; j++) {
+        const joinVal = model.eval(juntar[i][j - i - 1]).toString();
+        if (joinVal === "true") {
           group.push(j);
         }
       }
