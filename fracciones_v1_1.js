@@ -37,17 +37,17 @@ async function main() {
     process.exit(1);
   }
 
-  const expresiones = data["expressions"];
-  const maxDeg = z3.Int.val(data["degree"]);
-  const num_expresiones = expresiones.length;
+  let expresiones = data["expressions"];
+  let maxDeg = z3.Int.val(data["degree"]);
+  let num_expresiones = expresiones.length;
   
-  for (const expr of expresiones) {
-    for (const value of expr.values) {
+  for (let expr of expresiones) {
+    for (let value of expr.values) {
       value.degree = z3.Int.val(value.degree);
     }
   }
 
-  const expando = [];
+  let expando = [];
 
   for (let exp = 0; exp < num_expresiones; exp++) {
     let boolVar = z3.Bool.const(`exp_${exp}`);
@@ -55,13 +55,13 @@ async function main() {
     solver.addSoft(boolVar, 10, "keeps");
   }
 
-  const juntar = [];
+  let juntar = [];
 
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const juntar_exp =[];
+    let juntar_exp =[];
 
     for (let e = 0; e < num_expresiones; e++) {
-      const boolVar = z3.Bool.const(`juntar_${exp}_${e}`);
+      let boolVar = z3.Bool.const(`juntar_${exp}_${e}`);
       juntar_exp.push(boolVar);
     }
 
@@ -85,30 +85,30 @@ async function main() {
 
   // Comprobar que las expresiones que se forman no superan el grado
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const grado_num = [expresiones[exp]["values"][0]["degree"]];
-    const grado_den = [expresiones[exp]["values"][1]["degree"]];
+    let grado_num = [expresiones[exp]["values"][0]["degree"]];
+    let grado_den = [expresiones[exp]["values"][1]["degree"]];
 
     for (let e = 0; e < num_expresiones; e++) {
-      if (exp < e){
-        const prev_grado_num = grado_num[grado_num.length -1];
-        const prev_grado_den = grado_den[grado_den.length -1];
+      if (exp < e) {
+        let prev_grado_num = grado_num[grado_num.length -1];
+        let prev_grado_den = grado_den[grado_den.length -1];
 
-        const expr1 = prev_grado_num.add(expresiones[e]["values"][1]["degree"]);
-        const expr2 = prev_grado_den.add(expresiones[e]["values"][0]["degree"]);
+        let expr1 = prev_grado_num.add(expresiones[e]["values"][1]["degree"]);
+        let expr2 = prev_grado_den.add(expresiones[e]["values"][0]["degree"]);
 
-        const maxExpr = z3.If(expr1.gt(expr2), expr1, expr2);
-        const nuevo_grado_num = z3.If(juntar[exp][e], maxExpr, prev_grado_num);
-        const nuevo_grado_den = z3.If(juntar[exp][e], prev_grado_den.add(expresiones[e]["values"][1]["degree"]), prev_grado_den);
+        let maxExpr = z3.If(expr1.gt(expr2), expr1, expr2);
+        let nuevo_grado_num = z3.If(juntar[exp][e], maxExpr, prev_grado_num);
+        let nuevo_grado_den = z3.If(juntar[exp][e], prev_grado_den.add(expresiones[e]["values"][1]["degree"]), prev_grado_den);
 
         grado_num.push(nuevo_grado_num);
         grado_den.push(nuevo_grado_den);
       }
     }
 
-    const final_num = grado_num[grado_num.length -1];
-    const final_den = grado_den[grado_den.length -1];
+    let final_num = grado_num[grado_num.length -1];
+    let final_den = grado_den[grado_den.length -1];
 
-    const grado_total = z3.If(expando[exp], z3.If(final_num.gt(final_den), final_num, final_den), 0);
+    let grado_total = z3.If(expando[exp], z3.If(final_num.gt(final_den), final_num, final_den), 0);
 
     solver.add(grado_total.le(maxDeg));
   }
@@ -130,8 +130,8 @@ async function main() {
   // solver.add(grado_final[grado_final.length - 1].le(maxDeg));
 
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const suma_fila = [];
-    const suma_col = [];
+    let suma_fila = [];
+    let suma_col = [];
 
     for(let e = 0; e < num_expresiones; e++) {
       suma_fila.push(z3.If(juntar[exp][e], 1, 0));
@@ -147,17 +147,16 @@ async function main() {
     solver.addSoft(addsum(suma_fila).eq(0), 5, "min_vars");
   }
 
-  const result = await solver.check();
+  let result = await solver.check();
   if (result === 'sat') {
-    const model = solver.model();
+    let model = solver.model();
 
     const expanded = [];
     const notExpanded = [];
 
     for (let i = 0; i < num_expresiones; i++) {
-      const val = model.eval(expando[i]).value();
-      console.log(val);
-      if (val && val.eq(z3.Bool.val(true))) {
+      const val = model.eval(expando[i]).toString();
+      if (val === "true") {
         expanded.push(i);
       } else {
         notExpanded.push(i);
@@ -170,8 +169,8 @@ async function main() {
     for (const i of expanded) {
       const group = [i];
       for (let j = 0; j < num_expresiones; j++) {
-        const joinVal = model.eval(juntar[i][j]);
-        if (i !== j && joinVal && joinVal.eq(z3.Bool.val(true))) {
+        const joinVal = model.eval(juntar[i][j]).toString();
+        if (i !== j && joinVal === "true") {
           group.push(j);
         }
       }
