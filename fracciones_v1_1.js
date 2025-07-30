@@ -1,6 +1,7 @@
-import { init } from 'z3-solver';
-import fs from 'fs';
-import path from 'path';
+const z3s = require("z3-solver")
+const init = z3s.init;
+const fs = require("fs");
+const path = require("path");
 
 function addsum(arr) {
   if (arr.length === 0) return z3.Int.val(0);
@@ -12,7 +13,7 @@ function addsum(arr) {
 }
 
 async function main() {
-  let { Context, em } = await init();
+  let { Context } = await init();
   let z3 = Context('main');
 
   // const ctx = new Context('main');
@@ -84,20 +85,20 @@ async function main() {
 
   // Comprobar que las expresiones que se forman no superan el grado
   for (let exp = 0; exp < num_expresiones; exp++) {
-    const grado_num = [z3.If(expando[exp], expresiones[exp]["values"][0]["degree"], z3.Int.val(0))];
-    const grado_den = [z3.If(expando[exp], expresiones[exp]["values"][1]["degree"], z3.Int.val(0))];
+    const grado_num = [expresiones[exp]["values"][0]["degree"]];
+    const grado_den = [expresiones[exp]["values"][1]["degree"]];
 
     for (let e = 0; e < num_expresiones; e++) {
-      if (exp != e){
+      if (exp < e){
         const prev_grado_num = grado_num[grado_num.length -1];
         const prev_grado_den = grado_den[grado_den.length -1];
 
-        const expr1 = z3.Sum(prev_grado_num, expresiones[e]["values"][1]["degree"]);
-        const expr2 = z3.Sum(prev_grado_den, expresiones[e]["values"][0]["degree"]);
+        const expr1 = prev_grado_num.add(expresiones[e]["values"][1]["degree"]);
+        const expr2 = prev_grado_den.add(expresiones[e]["values"][0]["degree"]);
 
         const maxExpr = z3.If(expr1.gt(expr2), expr1, expr2);
         const nuevo_grado_num = z3.If(juntar[exp][e], maxExpr, prev_grado_num);
-        const nuevo_grado_den = z3.If(juntar[exp][e], z3.Sum(prev_grado_den, expresiones[e]["values"][1]["degree"]), prev_grado_den);
+        const nuevo_grado_den = z3.If(juntar[exp][e], prev_grado_den.add(expresiones[e]["values"][1]["degree"]), prev_grado_den);
 
         grado_num.push(nuevo_grado_num);
         grado_den.push(nuevo_grado_den);
@@ -107,32 +108,26 @@ async function main() {
     const final_num = grado_num[grado_num.length -1];
     const final_den = grado_den[grado_den.length -1];
 
-    const grado_total = z3.If(expando[exp], z3.If(final_num.gt(final_den), final_num, final_den), z3.Int.val(0));
-    
-    // solver.add(expando[0]); // fuerza a que al menos una expresión esté "activa"
-    // solver.add(expresiones[0]["values"][0]["degree"].gt(z3.Int.val(0)));
-    // solver.add(expresiones[0]["values"][1]["degree"].gt(z3.Int.val(0)));
-    // const expr = z3.If(expando[exp], z3.If(final_num.gt(final_den), final_num, final_den), z3.Int.val(0));
-    // console.log(`Expr [${exp}]:`, expr.toString());
+    const grado_total = z3.If(expando[exp], z3.If(final_num.gt(final_den), final_num, final_den), 0);
 
     solver.add(grado_total.le(maxDeg));
   }
 
-  const grado_final = [];
-  for (let exp = 0; exp < num_expresiones; exp++) {
-    const depende = [];
-    for (let e = 0; e < num_expresiones; e++) {
-      depende.push(z3.If(juntar[exp][e], 1, 0));
-    }
+  // const grado_final = [];
+  // for (let exp = 0; exp < num_expresiones; exp++) {
+  //   const depende = [];
+  //   for (let e = 0; e < num_expresiones; e++) {
+  //     depende.push(z3.If(juntar[exp][e], 1, 0));
+  //   }
 
-    let grado_act = 1;
-    if (exp != 0) grado_act = grado_final[grado_final.length - 1];
+  //   let grado_act = 1;
+  //   if (exp > 0) grado_act = grado_final[grado_final.length - 1];
 
-    const mayor = z3.If(grado_act > 1, grado_act, 1)
-    grado_final.push(z3.If(z3.Or(z3.Not(expando[exp]), addsum(depende).gt(0)), mayor, grado_act));
-  }
+  //   const mayor = z3.If(grado_act > 1, grado_act, 1)
+  //   grado_final.push(z3.If(z3.Or(z3.Not(expando[exp]), addsum(depende).gt(0)), mayor, grado_act));
+  // }
 
-  solver.add(grado_final[grado_final.length - 1].le(maxDeg));
+  // solver.add(grado_final[grado_final.length - 1].le(maxDeg));
 
   for (let exp = 0; exp < num_expresiones; exp++) {
     const suma_fila = [];
@@ -160,7 +155,8 @@ async function main() {
     const notExpanded = [];
 
     for (let i = 0; i < num_expresiones; i++) {
-      const val = model.eval(expando[i]);
+      const val = model.eval(expando[i]).value();
+      console.log(val);
       if (val && val.eq(z3.Bool.val(true))) {
         expanded.push(i);
       } else {
@@ -218,7 +214,8 @@ async function main() {
     console.log('❌ No se encontró una solución válida bajo las restricciones dadas.');
   }
 
-  // ✅ Corrección para escribir restricciones a archivo
+  const result2 = await solver.check();
+  
   const assertions = solver.assertions();
   const constraints = [];
 

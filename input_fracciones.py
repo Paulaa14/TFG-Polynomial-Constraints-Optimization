@@ -3,7 +3,7 @@ import json
 import subprocess
 
 def generar_fracciones_json(
-    num_fracciones=15,
+    num_fracciones=20,
     grado_min=0,
     grado_max=3,
     señal_inicial=1

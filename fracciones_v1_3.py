@@ -12,12 +12,12 @@ El grado de una suma de fracciones es el máximo entre todos los productos de lo
 
 Cuando se cambia por variables ya no son fracciones, el grado es el máximo grado de los operandos de la suma
 
-Versión sin controlar fracciones repetidas
+Versión sin controlar fracciones repetidas pero reduciendo el número de variables -> triángulo superior
 
 """
 def addsum(a):
     if len(a) == 0:
-        return 0
+        return IntVal(0)
     else:
         asum = a[0]
         for i in range(1,len(a)):
@@ -56,44 +56,43 @@ juntar = []
 
 for exp in range(num_expresiones):
     juntar_exp = []
-    for e in range(num_expresiones):
+    for e in range(exp + 1, num_expresiones):
         juntar_exp.append(Bool("juntar_" + str(exp) + "_" + str(e)))
     
     juntar.append(juntar_exp)
 
 for exp in range(num_expresiones):
-    for e in range(num_expresiones):
-        if exp >= e:  # No juntar una expresión consigo misma ni con una anterior
-            solver.add(Not(juntar[exp][e]))
-        else:
-            # Si se cumple esto, se pueden unir. Sino, obligatoriamente el booleano debe ir a false
-            solver.add(Implies(Or(Not(expando[exp]), Not(expando[e])), Not(juntar[exp][e])))
+    for e in range(exp + 1, num_expresiones):
+        # if exp >= e:  # No juntar una expresión consigo misma ni con una anterior
+        #     solver.add(Not(juntar[exp][e]))
+        # else:
+        
+        # Si se cumple esto, se pueden unir. Sino, obligatoriamente el booleano debe ir a false
+        solver.add(Implies(Or(Not(expando[exp]), Not(expando[e])), Not(juntar[exp][e - exp - 1])))
 
-            # Para que las relaciones entén en la primera fracción que forma la unión de fracciones y no contar el grado 2 veces
-            for anterior in range(0, e):
-                solver.add(Implies(And(juntar[exp][e], juntar[exp][anterior]), Not(juntar[anterior][e])))
-                # La implicación de no juntar e con anterior se cumple trivial porque e > anterior
+        # Para que las relaciones entén en la primera fracción que forma la unión de fracciones y no contar el grado 2 veces
+        for anterior in range(0, e - exp - 1):
+            solver.add(Implies(And(juntar[exp][e - exp - 1], juntar[exp][anterior]), Not(juntar[anterior][e - anterior - 1])))
 
 # Comprobar que las expresiones que se forman no superan el grado
 for exp in range(num_expresiones):
     grado_num = [expresiones[exp]["values"][0]["degree"]]
     grado_den = [expresiones[exp]["values"][1]["degree"]]
 
-    for e in range(num_expresiones):
-        if exp < e:
-            # Trabajo con el último elemento del array que tiene el grado acumulado
-            prev_grado_num = grado_num[-1]
-            prev_grado_den = grado_den[-1]
+    for e in range(exp + 1, num_expresiones):
+        # Trabajo con el último elemento del array que tiene el grado acumulado
+        prev_grado_num = grado_num[-1]
+        prev_grado_den = grado_den[-1]
 
-            # max(numerador actual * denominador de e, numerador de e * denominador actual)
-            expr1 = prev_grado_num + expresiones[e]["values"][1]["degree"]
-            expr2 = prev_grado_den + expresiones[e]["values"][0]["degree"]
+        # max(numerador actual * denominador de e, numerador de e * denominador actual)
+        expr1 = prev_grado_num + expresiones[e]["values"][1]["degree"]
+        expr2 = prev_grado_den + expresiones[e]["values"][0]["degree"]
 
-            nuevo_grado_num = If(juntar[exp][e], If(expr1 > expr2, expr1, expr2), prev_grado_num)
-            nuevo_grado_den = If(juntar[exp][e], prev_grado_den + expresiones[e]["values"][1]["degree"], prev_grado_den)
+        nuevo_grado_num = If(juntar[exp][e - exp - 1], If(expr1 > expr2, expr1, expr2), prev_grado_num)
+        nuevo_grado_den = If(juntar[exp][e - exp - 1], prev_grado_den + expresiones[e]["values"][1]["degree"], prev_grado_den)
 
-            grado_num.append(nuevo_grado_num)
-            grado_den.append(nuevo_grado_den)
+        grado_num.append(nuevo_grado_num)
+        grado_den.append(nuevo_grado_den)
 
     final_num = grado_num[-1]
     final_den = grado_den[-1]
@@ -122,9 +121,11 @@ for exp in range(num_expresiones):
 for exp in range(num_expresiones):
     suma_fila = []
     suma_col = []
-    for e in range(num_expresiones):
-        suma_fila.append(If(juntar[exp][e], 1, 0))
-        suma_col.append(If(juntar[e][exp], 1, 0))
+    for e in range(exp + 1, num_expresiones): # En la fila solo puede tener activos los siguientes
+        suma_fila.append(If(juntar[exp][e - exp - 1], 1, 0))
+    
+    for e in range(0, exp): # En la columna solo puede estar activo en los anteriores
+        suma_col.append(If(juntar[e][exp - e - 1], 1, 0))
     
     # Cada fracción unicamente está unificada 1 vez
     solver.add(Implies(addsum(suma_fila) > 0, addsum(suma_col) == 0))
@@ -148,8 +149,8 @@ if solver.check() == sat:
 
     for i in expanden:
         grupo = [i]
-        for j in range(num_expresiones):
-            if i != j and modelo.evaluate(juntar[i][j]) == True:
+        for j in range(i + 1, num_expresiones):
+            if modelo.evaluate(juntar[i][j - i - 1]) == True:
                 grupo.append(j)
         grupo_set = frozenset(grupo)
         if len(grupo) > 1 and grupo_set not in ya_vistas:

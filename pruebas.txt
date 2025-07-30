@@ -15,3 +15,7 @@ Random2 -> 6 VI vs 5 VI
 Random3 -> 10 VI vs 9 VI
 
 Random3 con grado máximo 4 -> 10 VI vs 7 VI 
+
+Random4 -> 16 VI vs 12 VI
+
+Random4 con grado máximo 4 -> 16 VI vs 9 VI
