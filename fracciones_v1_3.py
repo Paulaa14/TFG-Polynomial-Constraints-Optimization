@@ -49,7 +49,15 @@ for exp in range(num_expresiones):
     expando.append(Bool("exp_" + str(exp)))
 
     # Minimiza el número de variables "originales"
-    solver.add_soft(expando[exp], 10, "keeps")
+    solver.add_soft(expando[exp], 5, "keeps")
+
+for exp in range(num_expresiones):
+    grado_num_exp = expresiones[exp]["values"][0]["degree"]
+    grado_den_exp = expresiones[exp]["values"][1]["degree"] 
+    
+    # Si ya se pasa de grado no se va a poder unificar con nada
+    if grado_num_exp > maxDeg or grado_den_exp > maxDeg:
+        solver.add(Not(expando[exp]))
     
 # Para cada expresión que ha sido expandida, booleano que indica si se junta o no con la expresión i-ésima
 juntar = []
@@ -59,7 +67,7 @@ for exp in range(num_expresiones):
     for e in range(exp + 1, num_expresiones):
         juntar_exp.append(Bool("juntar_" + str(exp) + "_" + str(e)))
     
-    juntar.append(juntar_exp)
+    juntar.append(juntar_exp) 
 
 for exp in range(num_expresiones):
     for e in range(exp + 1, num_expresiones):     
@@ -70,29 +78,35 @@ for exp in range(num_expresiones):
         for anterior in range(0, e - exp - 1):
             solver.add(Implies(And(juntar[exp][e - exp - 1], juntar[exp][anterior]), Not(juntar[anterior][e - anterior - 1])))
 
+for exp in range(num_expresiones):
+    for e in range(exp + 1, num_expresiones):
+        grado_num_exp = expresiones[exp]["values"][0]["degree"]
+        grado_den_exp = expresiones[exp]["values"][1]["degree"] 
+        grado_num_e = expresiones[e]["values"][0]["degree"]
+        grado_den_e = expresiones[e]["values"][1]["degree"]
+
+        # Si se juntan se pasa de grado
+        if grado_num_exp + grado_den_e > maxDeg or grado_num_e + grado_den_exp > maxDeg or grado_den_exp + grado_den_e > maxDeg:
+            solver.add(Not(juntar[exp][e - exp - 1]))
+
 # Comprobar que las expresiones que se forman no superan el grado
 for exp in range(num_expresiones):
-    grado_num = [expresiones[exp]["values"][0]["degree"]]
-    grado_den = [expresiones[exp]["values"][1]["degree"]]
+    grado_num = expresiones[exp]["values"][0]["degree"]
+    grado_den = expresiones[exp]["values"][1]["degree"]
 
     for e in range(exp + 1, num_expresiones):
-        # Trabajo con el último elemento del array que tiene el grado acumulado
-        prev_grado_num = grado_num[-1]
-        prev_grado_den = grado_den[-1]
 
         # max(numerador actual * denominador de e, numerador de e * denominador actual)
-        expr1 = prev_grado_num + expresiones[e]["values"][1]["degree"]
-        expr2 = prev_grado_den + expresiones[e]["values"][0]["degree"]
+        expr1 = grado_num + expresiones[e]["values"][1]["degree"]
+        expr2 = grado_den + expresiones[e]["values"][0]["degree"]
 
-        nuevo_grado_num = If(juntar[exp][e - exp - 1], If(expr1 > expr2, expr1, expr2), prev_grado_num)
-        nuevo_grado_den = If(juntar[exp][e - exp - 1], prev_grado_den + expresiones[e]["values"][1]["degree"], prev_grado_den)
+        nuevo_grado_num = If(juntar[exp][e - exp - 1], If(expr1 > expr2, expr1, expr2), grado_num)
+        nuevo_grado_den = If(juntar[exp][e - exp - 1], grado_den + expresiones[e]["values"][1]["degree"], grado_den)
 
-        grado_num.append(nuevo_grado_num)
-        grado_den.append(nuevo_grado_den)
+        grado_num = nuevo_grado_num
+        grado_den = nuevo_grado_den
 
-    final_num = grado_num[-1]
-    final_den = grado_den[-1]
-    grado_total = If(expando[exp], If(final_num > final_den, final_num, final_den), 0)
+    grado_total = If(expando[exp], If(grado_num > grado_den, grado_num, grado_den), 0)
 
     solver.add(grado_total <= maxDeg)
 
@@ -107,14 +121,21 @@ for exp in range(num_expresiones):
         suma_col.append(If(juntar[e][exp - e - 1], 1, 0))
     
     # Cada fracción unicamente está unificada 1 vez
-    solver.add(Implies(addsum(suma_fila) > 0, addsum(suma_col) == 0))
-    solver.add(Implies(addsum(suma_col) > 0, addsum(suma_fila) == 0))
-    solver.add(addsum(suma_col) <= 1)
+    s_fila = addsum(suma_fila)
+    s_col = addsum(suma_col)
+    solver.add(Implies(s_fila > 0, s_col == 0))
+    solver.add(Implies(s_col > 0, s_fila == 0))
+    # solver.add(s_col <= 1)
 
-    solver.add(Implies(expando[exp], Or(addsum(suma_fila) > 0, addsum(suma_col) > 0)))
+    # Solo puede ser usada en una variable nueva
+    for e in range(exp + 1, num_expresiones - 1):
+        for sig in range(exp + 1, e):
+            solver.add(Implies(juntar[exp][e - exp - 1], Not(juntar[sig][e - sig - 1])))
+
+    solver.add(Implies(expando[exp], Or(s_fila > 0, s_col > 0)))
 
     # Minimizar número de variables creadas
-    solver.add_soft(addsum(suma_fila) == 0, 5, "min_vars")
+    solver.add_soft(s_fila == 0, 5, "min_vars")
 
 if solver.check() == sat:
     modelo = solver.model()

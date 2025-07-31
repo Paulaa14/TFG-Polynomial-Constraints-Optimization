@@ -558,6 +558,55 @@
 (=> (or (not exp_12) (not exp_14)) (not juntar_12_14))
 (=> (and juntar_12_14 juntar_12_13) (not juntar_0_14))
 (=> (or (not exp_13) (not exp_14)) (not juntar_13_14))
+(not juntar_0_4)
+(not juntar_0_13)
+(not juntar_1_4)
+(not juntar_1_13)
+(not juntar_2_4)
+(not juntar_2_13)
+(not juntar_3_4)
+(not juntar_3_5)
+(not juntar_3_6)
+(not juntar_3_7)
+(not juntar_3_8)
+(not juntar_3_9)
+(not juntar_3_10)
+(not juntar_3_11)
+(not juntar_3_12)
+(not juntar_3_13)
+(not juntar_3_14)
+(not juntar_4_5)
+(not juntar_4_6)
+(not juntar_4_7)
+(not juntar_4_8)
+(not juntar_4_9)
+(not juntar_4_10)
+(not juntar_4_11)
+(not juntar_4_12)
+(not juntar_4_13)
+(not juntar_4_14)
+(not juntar_5_13)
+(not juntar_6_7)
+(not juntar_6_8)
+(not juntar_6_9)
+(not juntar_6_10)
+(not juntar_6_11)
+(not juntar_6_12)
+(not juntar_6_13)
+(not juntar_6_14)
+(not juntar_7_8)
+(not juntar_7_9)
+(not juntar_7_10)
+(not juntar_7_11)
+(not juntar_7_12)
+(not juntar_7_13)
+(not juntar_7_14)
+(not juntar_8_13)
+(not juntar_9_13)
+(not juntar_10_13)
+(not juntar_11_13)
+(not juntar_12_13)
+(not juntar_13_14)
 (let ((a!1 (ite juntar_0_1 (ite (> (+ 2 0) (+ 2 0)) (+ 2 0) (+ 2 0)) 2))
       (a!4 (ite juntar_0_2
                 (+ (ite juntar_0_1 (+ 2 0) 2) 2)
@@ -633,7 +682,7 @@
                       (ite juntar_0_14 a!30 a!28)
                       a!31)
                  0)))
-  (<= a!32 4))))))))))))))))))))))))))
+  (<= a!32 3))))))))))))))))))))))))))
 (let ((a!1 (ite juntar_1_2 (ite (> (+ 0 2) (+ 0 1)) (+ 0 2) (+ 0 1)) 0))
       (a!4 (ite juntar_1_3
                 (+ (ite juntar_1_2 (+ 0 2) 0) 3)
@@ -702,7 +751,7 @@
 (let ((a!29 (ite (> a!28 (ite juntar_1_14 (+ a!27 1) a!27))
                  a!28
                  (ite juntar_1_14 (+ a!27 1) a!27))))
-  (<= (ite exp_1 a!29 0) 4))))))))))))))))))))))))
+  (<= (ite exp_1 a!29 0) 3))))))))))))))))))))))))
 (let ((a!1 (ite juntar_2_3 (ite (> (+ 1 3) (+ 2 2)) (+ 1 3) (+ 2 2)) 1))
       (a!4 (ite juntar_2_4
                 (+ (ite juntar_2_3 (+ 2 3) 2) 2)
@@ -765,7 +814,7 @@
 (let ((a!26 (ite juntar_2_14
                  a!25
                  (ite juntar_2_13 a!23 (ite juntar_2_12 a!21 a!19)))))
-  (<= (ite exp_2 (ite (> a!26 a!27) a!26 a!27) 0) 4))))))))))))))))))))))
+  (<= (ite exp_2 (ite (> a!26 a!27) a!26 a!27) 0) 3))))))))))))))))))))))
 (let ((a!1 (ite juntar_3_4 (ite (> (+ 2 2) (+ 3 3)) (+ 2 2) (+ 3 3)) 2))
       (a!4 (ite juntar_3_5
                 (+ (ite juntar_3_4 (+ 3 2) 3) 0)
@@ -821,7 +870,7 @@
                     (ite juntar_3_14 (+ a!22 1) a!22))
                  (ite juntar_3_14 a!23 (ite juntar_3_13 a!21 a!19))
                  (ite juntar_3_14 (+ a!22 1) a!22))))
-  (<= (ite exp_3 a!24 0) 4))))))))))))))))))))
+  (<= (ite exp_3 a!24 0) 3))))))))))))))))))))
 (let ((a!1 (ite juntar_4_5 (ite (> (+ 3 0) (+ 2 1)) (+ 3 0) (+ 2 1)) 3))
       (a!4 (ite juntar_4_6
                 (+ (ite juntar_4_5 (+ 2 0) 2) 3)
@@ -875,7 +924,7 @@
                       (ite juntar_4_14 a!21 a!19)
                       a!22)
                  0)))
-  (<= a!23 4)))))))))))))))))))
+  (<= a!23 3)))))))))))))))))))
 (let ((a!1 (ite juntar_5_6 (ite (> (+ 1 3) (+ 0 1)) (+ 1 3) (+ 0 1)) 1))
       (a!4 (ite juntar_5_7
                 (+ (ite juntar_5_6 (+ 0 3) 0) 3)
@@ -922,7 +971,7 @@
 (let ((a!20 (ite (> a!19 (ite juntar_5_14 (+ a!18 1) a!18))
                  a!19
                  (ite juntar_5_14 (+ a!18 1) a!18))))
-  (<= (ite exp_5 a!20 0) 4)))))))))))))))))
+  (<= (ite exp_5 a!20 0) 3)))))))))))))))))
 (let ((a!1 (ite juntar_6_7 (ite (> (+ 1 3) (+ 3 2)) (+ 1 3) (+ 3 2)) 1))
       (a!4 (ite juntar_6_8
                 (+ (ite juntar_6_7 (+ 3 3) 3) 0)
@@ -963,7 +1012,7 @@
 (let ((a!17 (ite juntar_6_14
                  a!16
                  (ite juntar_6_13 a!14 (ite juntar_6_12 a!12 a!10)))))
-  (<= (ite exp_6 (ite (> a!17 a!18) a!17 a!18) 0) 4)))))))))))))))
+  (<= (ite exp_6 (ite (> a!17 a!18) a!17 a!18) 0) 3)))))))))))))))
 (let ((a!1 (ite juntar_7_8 (ite (> (+ 2 0) (+ 3 0)) (+ 2 0) (+ 3 0)) 2))
       (a!4 (ite juntar_7_9
                 (+ (ite juntar_7_8 (+ 3 0) 3) 1)
@@ -997,7 +1046,7 @@
                     (ite juntar_7_14 (+ a!13 1) a!13))
                  (ite juntar_7_14 a!14 (ite juntar_7_13 a!12 a!10))
                  (ite juntar_7_14 (+ a!13 1) a!13))))
-  (<= (ite exp_7 a!15 0) 4)))))))))))))
+  (<= (ite exp_7 a!15 0) 3)))))))))))))
 (let ((a!1 (ite juntar_8_9 (ite (> (+ 0 1) (+ 0 0)) (+ 0 1) (+ 0 0)) 0))
       (a!4 (ite juntar_8_10
                 (+ (ite juntar_8_9 (+ 0 1) 0) 1)
@@ -1029,7 +1078,7 @@
                       (ite juntar_8_14 a!12 a!10)
                       a!13)
                  0)))
-  (<= a!14 4))))))))))))
+  (<= a!14 3))))))))))))
 (let ((a!1 (ite juntar_9_10 (ite (> (+ 0 1) (+ 1 2)) (+ 0 1) (+ 1 2)) 0))
       (a!4 (ite juntar_9_11
                 (+ (ite juntar_9_10 (+ 1 1) 1) 0)
@@ -1054,7 +1103,7 @@
 (let ((a!11 (ite (> a!10 (ite juntar_9_14 (+ a!9 1) a!9))
                  a!10
                  (ite juntar_9_14 (+ a!9 1) a!9))))
-  (<= (ite exp_9 a!11 0) 4))))))))))
+  (<= (ite exp_9 a!11 0) 3))))))))))
 (let ((a!1 (ite juntar_10_11 (ite (> (+ 2 0) (+ 1 1)) (+ 2 0) (+ 1 1)) 2))
       (a!4 (ite juntar_10_12
                 (+ (ite juntar_10_11 (+ 1 0) 1) 2)
@@ -1075,7 +1124,7 @@
 (let ((a!8 (ite juntar_10_14
                 a!7
                 (ite juntar_10_13 a!5 (ite juntar_10_12 a!3 a!1)))))
-  (<= (ite exp_10 (ite (> a!8 a!9) a!8 a!9) 0) 4))))))))
+  (<= (ite exp_10 (ite (> a!8 a!9) a!8 a!9) 0) 3))))))))
 (let ((a!1 (ite juntar_11_12 (ite (> (+ 1 2) (+ 0 2)) (+ 1 2) (+ 0 2)) 1))
       (a!4 (ite juntar_11_13
                 (+ (ite juntar_11_12 (+ 0 2) 0) 0)
@@ -1089,7 +1138,7 @@
                    (ite juntar_11_14 (+ a!4 1) a!4))
                 (ite juntar_11_14 a!5 (ite juntar_11_13 a!3 a!1))
                 (ite juntar_11_14 (+ a!4 1) a!4))))
-  (<= (ite exp_11 a!6 0) 4))))))
+  (<= (ite exp_11 a!6 0) 3))))))
 (let ((a!1 (ite juntar_12_13 (ite (> (+ 2 0) (+ 2 3)) (+ 2 0) (+ 2 3)) 2))
       (a!4 (ite juntar_12_14
                 (+ (ite juntar_12_13 (+ 2 0) 2) 1)
@@ -1101,13 +1150,13 @@
                      (ite juntar_12_14 a!3 a!1)
                      a!4)
                 0)))
-  (<= a!5 4)))))
+  (<= a!5 3)))))
 (let ((a!1 (ite juntar_13_14 (ite (> (+ 3 1) (+ 0 0)) (+ 3 1) (+ 0 0)) 3)))
 (let ((a!2 (ite (> a!1 (ite juntar_13_14 (+ 0 1) 0))
                 a!1
                 (ite juntar_13_14 (+ 0 1) 0))))
-  (<= (ite exp_13 a!2 0) 4)))
-(<= (ite exp_14 (ite (> 0 1) 0 1) 0) 4)
+  (<= (ite exp_13 a!2 0) 3)))
+(<= (ite exp_14 (ite (> 0 1) 0 1) 0) 3)
 (=> (> (+ (ite juntar_0_1 1 0)
           (ite juntar_0_2 1 0)
           (ite juntar_0_3 1 0)

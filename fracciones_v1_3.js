@@ -52,6 +52,16 @@ async function main() {
     solver.addSoft(boolVar, 10, "keeps");
   }
 
+  for (let exp = 0; exp < num_expresiones; exp++) {
+    let grado_num_exp = expresiones[exp]["values"][0]["degree"]
+    let grado_den_exp = expresiones[exp]["values"][1]["degree"] 
+    
+    // Si ya se pasa de grado no se va a poder unificar con nada
+    if (grado_num_exp > maxDeg || grado_den_exp > maxDeg) {
+      solver.add(z3.Not(expando[exp]))
+    }
+  }
+
   let juntar = [];
 
   for (let exp = 0; exp < num_expresiones; exp++) {
@@ -71,6 +81,20 @@ async function main() {
         
         for (let anterior = 0; anterior < e - exp - 1; anterior ++) {
             solver.add(z3.Implies(z3.And(juntar[exp][e - exp - 1], juntar[exp][anterior]), z3.Not(juntar[anterior][e - anterior - 1])));
+        }
+    }
+  }
+
+  for (let exp = 0; exp < num_expresiones; exp++) {
+    for (let e = exp + 1; e < num_expresiones; e++) {
+        let grado_num_exp = expresiones[exp]["values"][0]["degree"]
+        let grado_den_exp = expresiones[exp]["values"][1]["degree"] 
+        let grado_num_e = expresiones[e]["values"][0]["degree"]
+        let grado_den_e = expresiones[e]["values"][1]["degree"]
+
+        // Si se juntan se pasa de grado
+        if (grado_num_exp + grado_den_e > maxDeg || grado_num_e + grado_den_exp > maxDeg || grado_den_exp + grado_den_e > maxDeg) {
+          solver.add(z3.Not(juntar[exp][e - exp - 1]))
         }
     }
   }
