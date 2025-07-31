@@ -145,7 +145,6 @@ async function main() {
     }
 
     const unifications = [];
-    const seen = new Set();
 
     for (const i of expanded) {
       const group = [i];
@@ -156,10 +155,8 @@ async function main() {
         }
       }
 
-      const key = JSON.stringify([...new Set(group)].sort());
-      if (group.length > 1 && !seen.has(key)) {
+      if (group.length > 1) {
         unifications.push(group.sort((a, b) => a - b));
-        seen.add(key);
       }
     }
 

@@ -127,17 +127,14 @@ if solver.check() == sat:
     no_expand = [i for i in range(num_expresiones) if modelo.evaluate(expando[i]) == False]
 
     unificaciones = []
-    ya_vistas = set()
 
     for i in expanden:
         grupo = [i]
         for j in range(num_expresiones):
             if i != j and modelo.evaluate(juntar[i][j]) == True:
                 grupo.append(j)
-        grupo_set = frozenset(grupo)
-        if len(grupo) > 1 and grupo_set not in ya_vistas:
+        if len(grupo) > 1:
             unificaciones.append(sorted(grupo))
-            ya_vistas.add(grupo_set)
 
     if unificaciones:
         for idx, grupo in enumerate(unificaciones):
