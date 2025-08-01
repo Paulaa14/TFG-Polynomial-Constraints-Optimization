@@ -22,5 +22,5 @@
     {"op": "frac","values": [{"signals": 34,"degree": 0}, {"signals": 41, "degree": 0}]},
     {"op": "frac","values": [{"signals": 35,"degree": 1}, {"signals": 42, "degree": 3}]}    
 ],
-    "degree": 3
+    "degree": 5
 }

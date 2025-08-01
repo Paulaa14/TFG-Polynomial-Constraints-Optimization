@@ -5,7 +5,7 @@ import subprocess
 def generar_fracciones_json(
     num_fracciones=20,
     grado_min=0,
-    grado_max=4,
+    grado_max=3,
     señal_inicial=1
 ):
     expresiones = []
@@ -45,7 +45,7 @@ def generar_fracciones_json(
         den_str = f"{den_signal} [grado {grado_den}]"
         print(f"Expresión {idx}: {num_str} / {den_str}")
 
-    grado_objetivo = 5 # max(e["values"][0]["degree"] for e in expresiones)
+    grado_objetivo = 5
 
     print(f"\nGrado objetivo (máximo permitido): {grado_objetivo}")
 
@@ -59,4 +59,4 @@ with open("input_fracciones.json", "w") as f:
     json.dump(generar_fracciones_json(), f, indent=4)
 
 # Ejecutar el solucionador Z3
-subprocess.run(["python", "fracciones_v1_3.py", "input_fracciones.json"])
+subprocess.run(["python", "fracciones_v1_incr.py", "input_fracciones.json"])
