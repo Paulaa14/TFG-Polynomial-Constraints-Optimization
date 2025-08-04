@@ -22,10 +22,16 @@ Random4 -> 16 VI vs 12 VI
 
 Random4 con grado máximo 4 -> 16 VI vs 9 VI
 
-Random5 -> 14 VI vs 12 VI
+Random5 con grado máximo 3 -> 15 VI vs 15 VI
+
+Random5 con grado máximo 4 -> 14 VI vs 12 VI
 
 Random5 con grado máximo 5 -> 14 VI vs 9 VI
 
 Random6 con grado máximo 5 -> 13 VI vs 6 VI
 
-Random7
+Random7 con grado máximo 3 -> 16 VI vs 14 VI
+
+Random7 con grado máximo 4 -> 15 VI vs 10 VI
+
+Random7 con grado máximo 5 -> 15 VI vs 7 VI

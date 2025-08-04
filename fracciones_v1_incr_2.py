@@ -14,6 +14,8 @@ Cuando se cambia por variables ya no son fracciones, el grado es el máximo grad
 
 Versión sin controlar fracciones repetidas pero reduciendo el número de variables -> triángulo superior
 
+Versión incremental
+
 """
 def addsum(a):
     if len(a) == 0:
@@ -40,24 +42,7 @@ expresiones = data["expressions"]
 maxDeg = data["degree"]
 num_expresiones = len(expresiones)
 
-solver = Optimize()
-
-# Para cada expresión, me la quedo tal cual o la expando. Si me la quedo significa que va a ser una "VI" final
-# expando = []
-
-# for exp in range(num_expresiones):
-#     expando.append(Bool("exp_" + str(exp)))
-
-#     # Minimiza el número de variables "originales"
-#     solver.add_soft(expando[exp], 5, "keeps")
-
-# # Si ya se pasa de grado no se va a poder unificar con nada
-# for exp in range(num_expresiones):
-#     grado_num_exp = expresiones[exp]["values"][0]["degree"]
-#     grado_den_exp = expresiones[exp]["values"][1]["degree"] 
-    
-#     if grado_num_exp > maxDeg or grado_den_exp > maxDeg:
-#         solver.add(Not(expando[exp]))
+solver = Solver() # Optimize()
     
 # Booleano que indica si se junta o no con la expresión i-ésima
 juntar = []
@@ -71,21 +56,15 @@ for exp in range(num_expresiones):
 
 for exp in range(num_expresiones):
     for e in range(exp + 1, num_expresiones):     
-        # Si se cumple esto, se pueden unir. Sino, obligatoriamente el booleano debe ir a false
-        # solver.add(Implies(Or(Not(expando[exp]), Not(expando[e])), Not(juntar[exp][e - exp - 1])))
 
         # Si exp se conecta con e, la fila de e debe estar a false entera, incluido consigo misma
         for col in range(e, num_expresiones):
             solver.add(Implies(juntar[exp][e - exp], Not(juntar[e][col - e])))
 
-        # La columna de e, debe estar a false. Las filas anteriores, excluyendo exp, deben tenerlo a false
+        # La columna de e, debe estar a false
         for fila in range(e):
             if fila != exp:
                 solver.add(Implies(juntar[exp][e - exp], Not(juntar[fila][e - fila])))
-
-        # Para que las relaciones entén en la primera fracción que forma la unión de fracciones y no contar el grado 2 veces
-        # for anterior in range(0, e - exp - 1):
-        #     solver.add(Implies(And(juntar[exp][e - exp - 1], juntar[exp][anterior]), Not(juntar[anterior][e - anterior - 1])))
 
     # Cuando la fracción por si sola forma un grupo, solo puede tener activa la 0, consigo misma
     for e in range(exp + 1, num_expresiones):
@@ -110,25 +89,23 @@ for exp in range(num_expresiones):
     # Si la expresión se pasa de grado obligatoriamente tiene que ir sola
     if grado_num_exp > maxDeg or grado_den_exp > maxDeg:
         solver.add(juntar[exp][0]) 
-    
+
 # Comprobar que las expresiones que se forman no superan el grado
 for exp in range(num_expresiones):
     grado_num = [expresiones[exp]["values"][0]["degree"]]
     grado_den = [expresiones[exp]["values"][1]["degree"]]
 
     for e in range(exp + 1, num_expresiones):
+
         prev_grado_num = grado_num[-1]
         prev_grado_den = grado_den[-1]
 
-        # max(numerador actual + denominador de e, numerador de e + denominador actual)
+        # max(numerador actual * denominador de e, numerador de e * denominador actual)
         expr1 = prev_grado_num + expresiones[e]["values"][1]["degree"]
         expr2 = prev_grado_den + expresiones[e]["values"][0]["degree"]
 
         nuevo_grado_num = If(juntar[exp][e - exp], If(expr1 > expr2, expr1, expr2), prev_grado_num)
         nuevo_grado_den = If(juntar[exp][e - exp], prev_grado_den + expresiones[e]["values"][1]["degree"], prev_grado_den)
-
-        # for sig in range(e, num_expresiones):
-        #     solver.add(Implies(Or(nuevo_grado_num > maxDeg, nuevo_grado_den > maxDeg), Not(juntar[exp][sig - exp])))
 
         grado_num.append(nuevo_grado_num)
         grado_den.append(nuevo_grado_den)
@@ -137,7 +114,13 @@ for exp in range(num_expresiones):
 
     solver.add(grado_total <= maxDeg)
 
+# forma_grupo = []
+
+# for exp in range(num_expresiones):
+#     forma_grupo.append(Bool("gr_" + str(exp)))
+
 # Si se expande una expresión, obligatoriamente se tiene que unificar con otra. Variables que realmente cuentan
+num_fracciones = []
 for exp in range(num_expresiones):
     suma_fila = []
     suma_col = []
@@ -148,25 +131,46 @@ for exp in range(num_expresiones):
         suma_col.append(If(juntar[e][exp - e], 1, 0))
     
     solver.add(Or(addsum(suma_fila) > 0, addsum(suma_col) > 0))
+
+    # Si tiene algún booleano activo siginifica que es la cabeza de un grupo
+    # solver.add(forma_grupo[exp] == addsum(suma_fila) > 0)
+
+    num_fracciones.append(If(addsum(suma_fila) > 0, 1, 0))
     
-    # Minimizar número de variables creadas
-    solver.add_soft(addsum(suma_fila) == 0, 5, "min_vars")
+# Minimizar número de variables creadas
+# for exp in range(num_expresiones):
+#     solver.add_soft(Not(forma_grupo[exp]), 5, "min_vars")
 
-    # s_fila = addsum(suma_fila)
-    # s_col = addsum(suma_col)
+# Incrementalidad
+izq = 1
+dere = num_expresiones
 
-    # Cada fracción unicamente está unificada 1 vez
-    # solver.add(Implies(s_fila > 0, s_col == 0))
-    # solver.add(Implies(s_col > 0, s_fila == 0))
-    # solver.add(s_col <= 1)
+num_final = 0
+modelo = None
+probados = []
 
-    # Solo puede ser usada en una variable nueva
-    # for e in range(exp + 1, num_expresiones - 1):
-    #     for sig in range(exp + 1, e):
-    #         solver.add(Implies(juntar[exp][e - exp - 1], Not(juntar[sig][e - sig - 1])))
+max_fracciones = (izq + dere) // 2
 
-if solver.check() == sat:
-    modelo = solver.model()
+while izq < dere and max_fracciones not in probados:
+    
+    probados.append(max_fracciones)
+
+    solver.push()
+    solver.add(addsum(num_fracciones) <= max_fracciones)
+
+    res = solver.check()
+
+    if res == sat:
+        num_final = max_fracciones
+        modelo = solver.model()
+        dere = max_fracciones
+    else: 
+        izq = max_fracciones
+        solver.pop()
+    
+    max_fracciones = (izq + dere) // 2  
+
+if num_final != 0:
     print("Solución encontrada:\n")
 
     numV = 1
@@ -193,7 +197,7 @@ if solver.check() == sat:
 
     print(f"\nNúmero de variables finales: {numV - 1}")
 
-    # print("\nEstado de los juntar[i][j]:")
+    # print("\nEstado de todos los juntar[i][j]:")
     # for i in range(num_expresiones):
     #     for j in range(i, num_expresiones):
     #         val = modelo.evaluate(juntar[i][j - i])

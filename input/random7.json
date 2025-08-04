@@ -1,11 +1,5 @@
 {
-    "expressions": [
-        {
-            "op": "frac",
-            "values": [
-                {
-                    "signals": 1,
-                    "degree": 1
+    "expressions": [ {"op": "frac","values": [{"signals": 1,"degree": 1
                 },
                 {
                     "signals": 2,
@@ -261,5 +255,5 @@
             ]
         }
     ],
-    "degree": 5
+    "degree": 4
 }
