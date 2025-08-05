@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import time
 from z3 import *
 import argparse
 
@@ -14,7 +15,7 @@ Cuando se cambia por variables ya no son fracciones, el grado es el máximo grad
 
 Versión sin controlar fracciones repetidas pero reduciendo el número de variables -> triángulo superior
 
-Versión incremental
+Versión incremental y parametrizada a partir del valor devuelto por el código de Héctor
 
 """
 def addsum(a):
@@ -25,10 +26,36 @@ def addsum(a):
         for i in range(1,len(a)):
             asum = asum + a[i]
         return asum
+    
+def output(num_expresiones, juntar, modelo):
+    numV = 1
+    for i in range(num_expresiones):
+        activos = []
+        for j in range(i, num_expresiones):
+            if modelo.evaluate(juntar[i][j - i]) == True:
+                activos.append(j)
+        
+        if len(activos) > 0:
+            print(f"→ Fracción {numV}:")
+            
+            if modelo.evaluate(juntar[i][0] == False):
+                num = expresiones[i]["values"][0]["signals"]
+                den = expresiones[i]["values"][1]["signals"]
+                print(f"      · Exp {i}: ({num}) \\ ({den})")
+
+            for j in activos:
+                num = expresiones[j]["values"][0]["signals"]
+                den = expresiones[j]["values"][1]["signals"]
+                print(f"      · Exp {j}: ({num}) \\ ({den})")
+            
+            numV += 1
+
+    print(f"\nNúmero de variables finales: {numV - 1}")
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("filein", type=str)
+parser.add_argument("max_fracciones")
 # parser.add_argument("fileout")
 
 args=parser.parse_args()
@@ -136,22 +163,23 @@ for exp in range(num_expresiones):
     # solver.add(forma_grupo[exp] == addsum(suma_fila) > 0)
 
     num_fracciones.append(If(addsum(suma_fila) > 0, 1, 0))
-    
-# Minimizar número de variables creadas
-# for exp in range(num_expresiones):
-#     solver.add_soft(Not(forma_grupo[exp]), 5, "min_vars")
 
 # Incrementalidad
+upper_bound = int(args.max_fracciones)
 izq = 1
-dere = num_expresiones
+dere = upper_bound - 1
 
-num_final = 0
+num_final = upper_bound
 modelo = None
 probados = []
 
 max_fracciones = (izq + dere) // 2
 
+start = time.time()
+
 while izq < dere and max_fracciones not in probados:
+
+    print(max_fracciones)
     
     probados.append(max_fracciones)
 
@@ -163,6 +191,9 @@ while izq < dere and max_fracciones not in probados:
     if res == sat:
         num_final = max_fracciones
         modelo = solver.model()
+
+        output(num_expresiones, juntar, modelo)
+
         dere = max_fracciones
     else: 
         izq = max_fracciones
@@ -170,42 +201,14 @@ while izq < dere and max_fracciones not in probados:
     
     max_fracciones = (izq + dere) // 2  
 
-if num_final != 0:
-    print("Solución encontrada:\n")
+if num_final == upper_bound:
+    solver.add(addsum(num_fracciones) <= num_final)
 
-    numV = 1
-    for i in range(num_expresiones):
-        activos = []
-        for j in range(i, num_expresiones):
-            if modelo.evaluate(juntar[i][j - i]) == True:
-                activos.append(j)
-        
-        if len(activos) > 0:
-            print(f"→ Fracción {numV}:")
-            
-            if modelo.evaluate(juntar[i][0] == False):
-                num = expresiones[i]["values"][0]["signals"]
-                den = expresiones[i]["values"][1]["signals"]
-                print(f"      · Exp {i}: ({num}) \\ ({den})")
+    res = solver.check()
+    modelo = solver.model()
 
-            for j in activos:
-                num = expresiones[j]["values"][0]["signals"]
-                den = expresiones[j]["values"][1]["signals"]
-                print(f"      · Exp {j}: ({num}) \\ ({den})")
-            
-            numV += 1
+    output(num_expresiones, juntar, modelo)
 
-    print(f"\nNúmero de variables finales: {numV - 1}")
+end = time.time()
 
-    # print("\nEstado de todos los juntar[i][j]:")
-    # for i in range(num_expresiones):
-    #     for j in range(i, num_expresiones):
-    #         val = modelo.evaluate(juntar[i][j - i])
-    #         if val:
-    #             print(f"  juntar[{i}][{j}] = True")
-
-    #         else: 
-    #             print(f"  juntar[{i}][{j}] = False")
-
-else:
-    print("No se encontró una solución válida bajo las restricciones dadas.")
+print(f"Tiempo total de ejecución: {end - start:.2f} segundos")

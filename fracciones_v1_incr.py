@@ -136,10 +136,6 @@ for exp in range(num_expresiones):
     # solver.add(forma_grupo[exp] == addsum(suma_fila) > 0)
 
     num_fracciones.append(If(addsum(suma_fila) > 0, 1, 0))
-    
-# Minimizar número de variables creadas
-# for exp in range(num_expresiones):
-#     solver.add_soft(Not(forma_grupo[exp]), 5, "min_vars")
 
 # Incrementalidad
 izq = 1
@@ -152,8 +148,6 @@ probados = []
 max_fracciones = (izq + dere) // 2
 
 while izq < dere and max_fracciones not in probados:
-
-    # print(f"Max fracciones {max_fracciones}")
     
     probados.append(max_fracciones)
 
