@@ -3,18 +3,18 @@ const init = z3s.init;
 const fs = require("fs");
 const path = require("path");
 
-function addsum(arr) {
-  if (arr.length === 0) return z3.Int.val(0);
-  let asum = arr[0];
-  for (let i = 1; i < arr.length; i++) {
-    asum = asum.add(arr[i]);
-  }
-  return asum;
-}
-
 async function main() {
   let { Context } = await init();
   let z3 = Context('main');
+
+  function addsum(arr) {
+    if (arr.length === 0) return z3.Int.val(0);
+    let asum = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+        asum = asum.add(arr[i]);
+    }
+    return asum;
+  }
 
   const solver = new z3.Optimize();
 
@@ -392,7 +392,7 @@ async function main() {
             if (grados_prod[prod] <= maxDeg) solver.add(Not(ocupa_v[variable]));
         }
 
-        for (let factor = 0; factor < num_factores_num; factor) {
+        for (let factor = 0; factor < num_factores_num; factor++) {
             let varBool = z3.Bool.const(`ocupapfn_${prod}_${hueco_num}_${factor}`);
             ocupa_f.push(varBool);
             if (grados_prod[prod] <= maxDeg) solver.add(Not(ocupa_f[factor]));
@@ -433,7 +433,7 @@ async function main() {
             for (let factor = 0; factor < num_factores_num; factor++) {
                 for (let hueco_sig = hueco_num + 1; hueco_sig < maxDeg; hueco_sig++) {
                     for (let var_anterior = 0; var_anterior < max_intermedias; var_anterior++) {
-                        solver.add(z3.Implies(ocupacion_huecos_prod_f_num[prod][hueco_num][factor], Not(ocupacion_huecos_prod_v_num[prod][hueco_sig][var_anterior])));
+                        solver.add(z3.Implies(ocupacion_huecos_prod_f_num[prod][hueco_num][factor], z3.Not(ocupacion_huecos_prod_v_num[prod][hueco_sig][var_anterior])));
                     }
 
                     for (let factores_anteriores = 0; factores_anteriores < factor; factores_anteriores++) {
@@ -467,7 +467,7 @@ async function main() {
                 suma_anterior.push(z3.If(ocupacion_huecos_prod_v_num[prod][hueco_num - 1][variable], 1, 0));
             }
 
-            for (let fact = 0; fact < num_factores_num; fact ++) {
+            for (let factor = 0; factor < num_factores_num; factor++) {
                 suma_actual.push(z3.If(ocupacion_huecos_prod_f_num[prod][hueco_num][factor], 1, 0));
                 suma_anterior.push(z3.If(ocupacion_huecos_prod_f_num[prod][hueco_num - 1][factor], 1, 0));
             }
@@ -475,11 +475,11 @@ async function main() {
             solver.add(z3.Implies(addsum(suma_actual).gt(0), addsum(suma_anterior).gt(0)));
         }
 
-        for (let hueco_den = 0; hueco_den < maxDeg; hueco_den++) {
+        for (let hueco_den = 1; hueco_den < maxDeg; hueco_den++) {
             let suma_actual = [];
             let suma_anterior = [];
 
-            for (let fact = 0; fact < num_factores_den; fact ++) {
+            for (let factor = 0; factor < num_factores_den; factor++) {
                 suma_actual.push(z3.If(ocupacion_huecos_prod_den[prod][hueco_den][factor], 1, 0));
                 suma_anterior.push(z3.If(ocupacion_huecos_prod_den[prod][hueco_den - 1][factor], 1, 0));
             }
@@ -499,7 +499,7 @@ async function main() {
             let activos_hueco = [];
             for (let variable = 0; variable < max_intermedias; variable++) {
                 de_cuantas_depende_num.push(z3.If(ocupacion_huecos_prod_v_num[prod][hueco_num][variable], 1, 0));
-                activos_hueco.push(If(ocupacion_huecos_prod_v_num[prod][hueco_num][variable], 1, 0));
+                activos_hueco.push(z3.If(ocupacion_huecos_prod_v_num[prod][hueco_num][variable], 1, 0));
             }
 
             solver.add(addsum(activos_hueco).le(1));
@@ -541,7 +541,6 @@ async function main() {
   }
 
   // restricciones_cuentan
-
   for (let variable = 0; variable < max_intermedias; variable++) {
     let huecos_ocupados = [];
 
@@ -551,13 +550,13 @@ async function main() {
         }
 
         for (let factor = 0; factor < num_factores_num; factor++) {
-            huecos_ocupados.push(z3.If(ocupacion_huecos_prod_f_num[variable][hueco_num][factor], 1, 0));
+            huecos_ocupados.push(z3.If(ocupacion_huecos_variables_f_num[variable][hueco_num][factor], 1, 0));
         }
     }
 
     for (let hueco_den = 0; hueco_den < maxDeg; hueco_den++) {
         for (let factor = 0; factor < num_factores_den; factor++) {
-            huecos_ocupados.push(z3.If(ocupacion_huecos_prod_den[variable][hueco_den][factor], 1, 0));
+            huecos_ocupados.push(z3.If(ocupacion_huecos_variables_den[variable][hueco_den][factor], 1, 0));
         }
     }
 
@@ -643,13 +642,13 @@ async function main() {
                     const val = model.eval(ocupacion_huecos_prod_v_num[prod][hueco_num][variable]).toString();
 
                     if (val === "true") {
-                        partes_num.push(`S_${factores_num[fact]}`);
-                        contenido = `S_${factores_num[fact]}`;
+                        partes_num.push(`VI_${variable}`);
+                        contenido = `VI_${variable}`;
                     }
                 }
 
                 for (let factor = 0; factor < num_factores_num; factor++) {
-                    const val = model.eval(ocupacion_huecos_prod_v_num[prod][hueco_num][variable]).toString();
+                    const val = model.eval(ocupacion_huecos_prod_f_num[prod][hueco_num][factor]).toString();
                     
                     if (val === "true") {
                         partes_num.push(`S_${factores_num[factor]}`);
