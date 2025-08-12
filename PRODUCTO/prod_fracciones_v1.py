@@ -31,8 +31,10 @@ productos = data["productos"]
 maxDeg = data["degree"]
 num_productos = len(productos)
 
-factores_num = []
-factores_den = []
+factores_num_signal = []
+factores_num_degree = []
+factores_den_signal = []
+factores_den_degree = []
 
 grados_prod = [] # Cada producto de fracciones qué grado tiene
 
@@ -60,11 +62,14 @@ for p in range(num_productos):
             cjto_variables.add(e["values"][0]["signals"])
             cjto_variables.add(e["values"][1]["signals"])
 
-            factores_num.append(e["values"][0]["signals"])
-            factores_den.append(e["values"][1]["signals"])
+            # e["values"][0]["degree"])
+            factores_num_signal.append(e["values"][0]["signals"])
+            factores_num_degree.append(1) 
+            factores_den_signal.append(e["values"][1]["signals"])
+            factores_den_degree.append(1)
 
-num_factores_num = len(factores_num)
-num_factores_den = len(factores_den)
+num_factores_num = len(factores_num_signal)
+num_factores_den = len(factores_den_signal)
 
 # Para cada producto, cuántas variables de cada contiene
 cjto_variables = sorted(list(cjto_variables))
@@ -89,7 +94,7 @@ print(list(cjto_variables))
 solver = Optimize()
 
 ##### PARAMETROS #####
-max_intermedias = 10
+max_intermedias = 2
 
 inicio = time.time()
 
@@ -148,7 +153,6 @@ def orden_huecos_variables(ocupacion_huecos_variables_v_num, ocupacion_huecos_va
                     for factores_anteriores in range(0, factor):
                             solver.add(Implies(ocupacion_huecos_variables_den[variable][hueco_den][factor], Not(ocupacion_huecos_variables_den[variable][hueco_sig][factores_anteriores])))
 
-
 # Se obliga a rellenar los huecos de arriba a abajo, si un hueco está vacío, todos los siguientes también
 def rellenar_huecos_variables_en_orden(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den, variable):
 
@@ -187,35 +191,17 @@ def restricciones_huecos_v(ocupacion_huecos_variables_v_num, ocupacion_huecos_va
     for variable in range(max_intermedias):
         cumple_grado_num = []
         cumple_grado_den = []
-        # huecos_ocupados = []
 
         for hueco_num in range(maxDeg):
-            # variables_activas_por_hueco = []
             for variable_anterior in range(0, variable):
                 cumple_grado_num.append(If(ocupacion_huecos_variables_v_num[variable][hueco_num][variable_anterior], 1, 0))
 
-                # variables_activas_por_hueco.append(If(ocupacion_huecos_variables_v_num[variable][hueco_num][variable_anterior], 1, 0))
-
             for factor in range(num_factores_num):
-                cumple_grado_num.append(If(ocupacion_huecos_variables_f_num[variable][hueco_num][factor], 1, 0))
-
-                # variables_activas_por_hueco.append(If(ocupacion_huecos_variables_f_num[variable][hueco_num][factor], 1, 0))
-
-            # Puede dejarse vacío o ocuparse por 1 único elemento, ya sea VI o factor
-            # solver.add(addsum(variables_activas_por_hueco) <= 1)
-            # huecos_ocupados.append(addsum(variables_activas_por_hueco))
+                cumple_grado_num.append(If(ocupacion_huecos_variables_f_num[variable][hueco_num][factor], factores_num_degree[factor], 0))
 
         for hueco_den in range(maxDeg):
-            # variables_activas_por_hueco = []
-
             for factor in range(num_factores_den):
-                cumple_grado_den.append(If(ocupacion_huecos_variables_den[variable][hueco_den][factor], 1, 0))
-
-                # variables_activas_por_hueco.append(If(ocupacion_huecos_variables_den[variable][hueco_den][factor], 1, 0))
-
-            # Puede dejarse vacío o ocuparse por 1 único elemento, ya sea VI o factor
-            # solver.add(addsum(variables_activas_por_hueco) <= 1)
-            # huecos_ocupados.append(addsum(variables_activas_por_hueco))
+                cumple_grado_den.append(If(ocupacion_huecos_variables_den[variable][hueco_den][factor], factores_den_degree[factor], 0))
 
         rellenar_huecos_variables_en_orden(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den, variable)
         
@@ -223,9 +209,7 @@ def restricciones_huecos_v(ocupacion_huecos_variables_v_num, ocupacion_huecos_va
         solver.add(addsum(cumple_grado_num) <= maxDeg)
         solver.add(addsum(cumple_grado_den) <= maxDeg)
 
-        # Eliminar variables que están formadas por una única variable intermedia/factor
-        # solver.add(And(addsum(huecos_ocupados) != 1))
-
+# Todas las variables, o están vacías, o mínimo tienen 2 huecos ocupados
 def variables_correctas(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den):
     for variable in range(max_intermedias):
         activos_primer_hueco = []
@@ -245,7 +229,7 @@ def variables_correctas(ocupacion_huecos_variables_v_num, ocupacion_huecos_varia
 
             solver.add(Implies(addsum(activos_primer_hueco) > 0, addsum(activos_segundo_hueco) > 0))
 
-
+# Cada hueco está ocupado únicamente por un elemento, ya sea variable o factor
 def una_por_hueco_v(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den):
     for variable in range(max_intermedias):
         for hueco_num in range(maxDeg):
@@ -289,7 +273,6 @@ def variables_en_orden(ocupacion_huecos_variables_v_num, ocupacion_huecos_variab
         
         solver.add(Implies(addsum(suma_actual) > 0, addsum(suma_anterior) > 0))
     
-
 # Cuántas variables originales cubre esta VI con los elementos que ocupan sus huecos
 def cubre_variables_v(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den, cuantas_variables):
 
@@ -308,13 +291,13 @@ def cubre_variables_v(ocupacion_huecos_variables_v_num, ocupacion_huecos_variabl
                     conteo_var.append(If(ocupacion_huecos_variables_v_num[elem][hueco_num][var], cuantas_variables[var][variable_original], 0))
 
                 for fact in range(num_factores_num):
-                    if cjto_variables[variable_original] == factores_num[fact]:
-                        conteo_var.append(If(ocupacion_huecos_variables_f_num[elem][hueco_num][fact], 1, 0))
+                    if cjto_variables[variable_original] == factores_num_signal[fact]:
+                        conteo_var.append(If(ocupacion_huecos_variables_f_num[elem][hueco_num][fact], factores_num_degree[fact], 0))
                         
             for hueco_den in range(maxDeg):
                 for fact in range(num_factores_den):
-                    if cjto_variables[variable_original] == factores_den[fact]:
-                        conteo_var.append(If(ocupacion_huecos_variables_den[elem][hueco_den][fact], 1, 0))
+                    if cjto_variables[variable_original] == factores_den_signal[fact]:
+                        conteo_var.append(If(ocupacion_huecos_variables_den[elem][hueco_den][fact], factores_den_degree[fact], 0))
 
             solver.add(cuantas_variables[elem][variable_original] == addsum(conteo_var))
 
@@ -342,7 +325,6 @@ def composicion_productos(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_n
         
         for hueco_den in range(maxDeg):
             ocupa_f = []
-
             for factor in range(num_factores_den):
                 ocupa_f.append(Bool("ocupapfd_" + str(prod) + "_" + str(hueco_den) + "_" + str(factor)))
                 if grados_prod[prod] <= maxDeg: solver.add(Not(ocupa_f[factor]))
@@ -356,8 +338,8 @@ def composicion_productos(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_n
 # Para todo hueco, los siguientes deben tener índice mayor. Todos los índices anteriores no deben estar activados
 def orden_huecos_productos(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_num, ocupacion_huecos_prod_den):
     for prod in range(num_productos):
-        for hueco_num in range(maxDeg):
-            if grados_prod[prod] > maxDeg: # Sino no habría que hacer nada
+        if grados_prod[prod] > maxDeg: # Sino no habría que hacer nada
+            for hueco_num in range(maxDeg):
                 for var in range(max_intermedias): 
                     for hueco_sig in range(hueco_num + 1, maxDeg):
                         for var_anterior in range(var):
@@ -371,11 +353,11 @@ def orden_huecos_productos(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_
                         for factores_anteriores in range(factor):
                             solver.add(Implies(ocupacion_huecos_prod_f_num[prod][hueco_num][factor], Not(ocupacion_huecos_prod_f_num[prod][hueco_sig][factores_anteriores])))
 
-        for hueco_den in range(maxDeg):
-            for factor in range(num_factores_den):
-                for hueco_sig in range(hueco_den + 1, maxDeg):
-                    for factores_anteriores in range(factor):
-                        solver.add(Implies(ocupacion_huecos_prod_den[prod][hueco_den][factor], Not(ocupacion_huecos_prod_den[prod][hueco_sig][factores_anteriores])))
+            for hueco_den in range(maxDeg):
+                for factor in range(num_factores_den):
+                    for hueco_sig in range(hueco_den + 1, maxDeg):
+                        for factores_anteriores in range(factor):
+                            solver.add(Implies(ocupacion_huecos_prod_den[prod][hueco_den][factor], Not(ocupacion_huecos_prod_den[prod][hueco_sig][factores_anteriores])))
 
 def rellenar_huecos_productos_en_orden(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_num, ocupacion_huecos_prod_den, prod):
 
@@ -417,25 +399,16 @@ def restricciones_huecos_p(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_
 
         if grados_prod[prod] > maxDeg:
             for hueco_num in range(maxDeg):
-                # activos_hueco = []
                 for variable in range(max_intermedias):
                     de_cuantas_depende_num.append(If(ocupacion_huecos_prod_v_num[prod][hueco_num][variable], 1, 0))
-                    # activos_hueco.append(If(ocupacion_huecos_prod_v_num[prod][hueco_num][variable], 1, 0))
 
                 for factor in range(num_factores_num):
-                    de_cuantas_depende_num.append(If(ocupacion_huecos_prod_f_num[prod][hueco_num][factor], 1, 0))
-                    # activos_hueco.append(If(ocupacion_huecos_prod_f_num[prod][hueco_num][factor], 1, 0))
+                    de_cuantas_depende_num.append(If(ocupacion_huecos_prod_f_num[prod][hueco_num][factor], factores_num_degree[factor], 0))
                 
-                # solver.add(addsum(activos_hueco) <= 1)
-
             for hueco_den in range(maxDeg):
-                activos_hueco = []
                 for factor in range(num_factores_den):
-                    de_cuantas_depende_den.append(If(ocupacion_huecos_prod_den[prod][hueco_den][factor], 1, 0))
-                    # activos_hueco.append(If(ocupacion_huecos_prod_den[prod][hueco_den][factor], 1, 0))
+                    de_cuantas_depende_den.append(If(ocupacion_huecos_prod_den[prod][hueco_den][factor], factores_den_degree[factor], 0))
                 
-                # solver.add(addsum(activos_hueco) <= 1)
-
             rellenar_huecos_productos_en_orden(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_num, ocupacion_huecos_prod_den, prod)
 
             solver.add(addsum(de_cuantas_depende_num) <= maxDeg)
@@ -443,22 +416,23 @@ def restricciones_huecos_p(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_
 
 def una_por_hueco_p(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_num, ocupacion_huecos_prod_den):
     for producto in range(num_productos):
-        for hueco_num in range(maxDeg):
-            for variable in range(max_intermedias):
-                for siguientes in range(variable + 1, max_intermedias):
-                    solver.add(Implies(ocupacion_huecos_prod_v_num[producto][hueco_num][variable], Not(ocupacion_huecos_prod_v_num[producto][hueco_num][siguientes])))
+        if grados_prod[producto] > maxDeg:
+            for hueco_num in range(maxDeg):
+                for variable in range(max_intermedias):
+                    for siguientes in range(variable + 1, max_intermedias):
+                        solver.add(Implies(ocupacion_huecos_prod_v_num[producto][hueco_num][variable], Not(ocupacion_huecos_prod_v_num[producto][hueco_num][siguientes])))
+
+                    for factor in range(num_factores_num):
+                        solver.add(Implies(ocupacion_huecos_prod_v_num[producto][hueco_num][variable], Not(ocupacion_huecos_prod_f_num[producto][hueco_num][factor])))
 
                 for factor in range(num_factores_num):
-                    solver.add(Implies(ocupacion_huecos_prod_v_num[producto][hueco_num][variable], Not(ocupacion_huecos_prod_f_num[producto][hueco_num][factor])))
+                    for factor_sig in range(factor + 1, num_factores_num):
+                        solver.add(Implies(ocupacion_huecos_prod_f_num[producto][hueco_num][factor], Not(ocupacion_huecos_prod_f_num[producto][hueco_num][factor_sig])))
 
-            for factor in range(num_factores_num):
-                for factor_sig in range(factor + 1, num_factores_num):
-                    solver.add(Implies(ocupacion_huecos_prod_f_num[producto][hueco_num][factor], Not(ocupacion_huecos_prod_f_num[producto][hueco_num][factor_sig])))
-
-        for hueco_den in range(maxDeg):
-            for factor in range(num_factores_den):
-                for factor_sig in range(factor + 1, num_factores_den):
-                    solver.add(Implies(ocupacion_huecos_prod_den[producto][hueco_den][factor], Not(ocupacion_huecos_prod_den[producto][hueco_den][factor_sig])))
+            for hueco_den in range(maxDeg):
+                for factor in range(num_factores_den):
+                    for factor_sig in range(factor + 1, num_factores_den):
+                        solver.add(Implies(ocupacion_huecos_prod_den[producto][hueco_den][factor], Not(ocupacion_huecos_prod_den[producto][hueco_den][factor_sig])))
 
 # Comprobación de que con los elementos que ocupan los huecos del monomio se cubren todas las variables originales que tenía en un inicio
 def cubre_variables_p(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_num, ocupacion_huecos_prod_den, cuantas_variables):
@@ -471,13 +445,13 @@ def cubre_variables_p(ocupacion_huecos_prod_v_num, ocupacion_huecos_prod_f_num, 
                         conteo_var.append(If(ocupacion_huecos_prod_v_num[prod][hueco_num][elem], cuantas_variables[elem][var], 0))
 
                     for fact in range(num_factores_num):
-                        if cjto_variables[var] == factores_num[fact]:
-                            conteo_var.append(If(ocupacion_huecos_prod_f_num[prod][hueco_num][fact], 1, 0))
+                        if cjto_variables[var] == factores_num_signal[fact]:
+                            conteo_var.append(If(ocupacion_huecos_prod_f_num[prod][hueco_num][fact], factores_num_degree[fact], 0))
 
                 for hueco_den in range(maxDeg):
                     for fact in range(num_factores_den):
-                        if cjto_variables[var] == factores_den[fact]:
-                            conteo_var.append(If(ocupacion_huecos_prod_den[prod][hueco_den][fact], 1, 0))
+                        if cjto_variables[var] == factores_den_signal[fact]:
+                            conteo_var.append(If(ocupacion_huecos_prod_den[prod][hueco_den][fact], factores_den_degree[fact], 0))
 
                 solver.add(addsum(conteo_var) == num_variables_por_producto[prod][var])
 
@@ -486,7 +460,7 @@ def restricciones_cuentan(ocupacion_huecos_variables_v_num, ocupacion_huecos_var
     for elem in range(max_intermedias):
         huecos_ocupados = []
         for hueco_num in range(maxDeg):
-            for aux in range(0, elem):
+            for aux in range(elem):
                 huecos_ocupados.append(If(ocupacion_huecos_variables_v_num[elem][hueco_num][aux], 1, 0))
 
             for fact in range(num_factores_num):
@@ -510,7 +484,6 @@ ocupacion_huecos_variables_den = []
 
 composicion_variables_intermedias(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den)
 orden_huecos_variables(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den)
-# orden_variables_nivel(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_v_num)
 
 restricciones_huecos_v(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den)
 variables_correctas(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den) 
@@ -555,16 +528,16 @@ if solver.check() == sat:
                     contenido = f"VI_{prev_var}"
             for fact in range(num_factores_num):
                 if m.eval(ocupacion_huecos_variables_f_num[var][hueco_num][fact]):
-                    partes_num.append(f"S_{str(factores_num[fact])}")
-                    contenido = f"S_{str(factores_num[fact])}"
+                    partes_num.append(f"S_{str(factores_num_signal[fact])}")
+                    contenido = f"S_{str(factores_num_signal[fact])}"
             huecos_num.append((hueco_num, contenido if contenido else "vacío"))
         
         for hueco_den in range(maxDeg):
             contenido = None
             for fact in range(num_factores_den):
                 if m.eval(ocupacion_huecos_variables_den[var][hueco_den][fact]):
-                    partes_den.append(f"S_{str(factores_den[fact])}")
-                    contenido = f"S_{str(factores_den[fact])}"
+                    partes_den.append(f"S_{str(factores_den_signal[fact])}")
+                    contenido = f"S_{str(factores_den_signal[fact])}"
             huecos_den.append((hueco_den, contenido if contenido else "vacío"))
         
         if partes_num or partes_den:
@@ -594,16 +567,16 @@ if solver.check() == sat:
                         contenido = f"VI_{var}"
                 for fact in range(num_factores_num):
                     if m.eval(ocupacion_huecos_prod_f_num[prod][hueco_num][fact]):
-                        partes_num.append(f"S_{str(factores_num[fact])}")
-                        contenido = f"S_{str(factores_num[fact])}"
+                        partes_num.append(f"S_{str(factores_num_signal[fact])}")
+                        contenido = f"S_{str(factores_num_signal[fact])}"
                 huecos_num.append((hueco_num, contenido if contenido else "vacío"))
 
             for hueco_den in range(maxDeg):
                 contenido = None
                 for fact in range(num_factores_den):
                     if m.eval(ocupacion_huecos_prod_den[prod][hueco_den][fact]):
-                        partes_den.append(f"S_{str(factores_den[fact])}")
-                        contenido = f"S_{str(factores_den[fact])}"
+                        partes_den.append(f"S_{str(factores_den_signal[fact])}")
+                        contenido = f"S_{str(factores_den_signal[fact])}"
                 huecos_den.append((hueco_den, contenido if contenido else "vacío"))
             
             if partes_num or partes_den:
