@@ -94,7 +94,7 @@ print(list(cjto_variables))
 solver = Optimize()
 
 ##### PARAMETROS #####
-max_intermedias = 2
+max_intermedias = 9
 
 inicio = time.time()
 
@@ -203,11 +203,11 @@ def restricciones_huecos_v(ocupacion_huecos_variables_v_num, ocupacion_huecos_va
             for factor in range(num_factores_den):
                 cumple_grado_den.append(If(ocupacion_huecos_variables_den[variable][hueco_den][factor], factores_den_degree[factor], 0))
 
-        rellenar_huecos_variables_en_orden(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den, variable)
-        
         # La suma del grado de todo lo que se utiliza para formar la variable debe ser menor o igual que el grado máximo
         solver.add(addsum(cumple_grado_num) <= maxDeg)
         solver.add(addsum(cumple_grado_den) <= maxDeg)
+        
+        rellenar_huecos_variables_en_orden(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den, variable)
 
 # Todas las variables, o están vacías, o mínimo tienen 2 huecos ocupados
 def variables_correctas(ocupacion_huecos_variables_v_num, ocupacion_huecos_variables_f_num, ocupacion_huecos_variables_den):

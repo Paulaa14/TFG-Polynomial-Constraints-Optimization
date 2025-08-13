@@ -1,6 +1,5 @@
 { 
-"productos": 
-[{"expressions":
+"expressions":
 [
     {"op": "frac","values": [{"signals": 1,"degree": 0}, {"signals": 16, "degree": 3}]},
     {"op": "frac","values": [{"signals": 2,"degree": 3}, {"signals": 17, "degree": 2}]},
@@ -22,6 +21,6 @@
     {"op": "frac","values": [{"signals": 33,"degree": 1}, {"signals": 40, "degree": 2}]},
     {"op": "frac","values": [{"signals": 34,"degree": 0}, {"signals": 41, "degree": 0}]},
     {"op": "frac","values": [{"signals": 35,"degree": 1}, {"signals": 42, "degree": 3}]}    
-]}],
+],
     "degree": 4
 }

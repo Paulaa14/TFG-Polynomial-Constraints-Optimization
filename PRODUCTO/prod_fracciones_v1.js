@@ -105,7 +105,7 @@ async function main() {
     num_variables_por_producto.push(counts);
   }
 
-  let max_intermedias = 2;
+  let max_intermedias = 9;
 
 
   let ocupacion_huecos_variables_v_num = [];

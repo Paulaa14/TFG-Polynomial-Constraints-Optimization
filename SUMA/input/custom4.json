@@ -1,0 +1,14 @@
+{ 
+"expressions":
+[
+    {"op": "frac","values": [{"signals": 1,"degree": 4}, {"signals": 9, "degree": 0}]},
+    {"op": "frac","values": [{"signals": 2,"degree": 2}, {"signals": 10, "degree": 3}]},
+    {"op": "frac","values": [{"signals": 3,"degree": 2}, {"signals": 11, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 4,"degree": 5}, {"signals": 12, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 5,"degree": 3}, {"signals": 13, "degree": 0}]},
+    {"op": "frac","values": [{"signals": 6,"degree": 2}, {"signals": 14, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 7,"degree": 2}, {"signals": 15, "degree": 2}]},
+    {"op": "frac","values": [{"signals": 8,"degree": 1}, {"signals": 16, "degree": 3}]}
+],
+    "degree": 4
+}
