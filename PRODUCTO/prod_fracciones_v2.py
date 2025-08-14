@@ -33,7 +33,7 @@ maxDeg = data["degree"]
 solver = Optimize()
 
 ##### PARAMETROS #####
-max_intermedias = 5
+max_intermedias = 8
 
 # Cada variable intermedia nueva que se crea, cuántas variables tiene en el numerador y cuántas en el denominador
 num_variables_num = []
@@ -73,6 +73,10 @@ for variable in range(max_intermedias):
 
         cuantas_num.append(If(And(variables_anteriores[variable][anterior], num_variables_num[anterior] == maxDeg), cuantas_variables_num[anterior], 0))
         cuantas_den.append(If(And(variables_anteriores[variable][anterior], num_variables_den[anterior] == maxDeg), cuantas_variables_den[anterior], 0))
+        
+        # Como no hay repetidos, cada VI solo puede utilizarse en una VI
+        for siguientes in range(variable + 1, max_intermedias):
+            solver.add(Implies(variables_anteriores[variable][anterior], Not(variables_anteriores[siguientes][anterior])))
 
     numero_anteriores_var_num.append(addsum(num))
     numero_anteriores_var_den.append(addsum(den))
@@ -88,34 +92,10 @@ for variable in range(max_intermedias):
     grado_den_var.append(num_variables_den[variable] + numero_anteriores_var_den[variable])
 
 # Dominio de las variables
-for variable in range(max_intermedias):
-    # solver.add(num_variables_num[variable] >= 0)
-    # solver.add(num_variables_den[variable] >= 0)
-    # solver.add(num_variables_num[variable] <= maxDeg)
-    # solver.add(num_variables_den[variable] <= maxDeg)
-    
+for variable in range(max_intermedias):    
     solver.add(Implies(grado_num_var[variable] == maxDeg, grado_den_var[variable] == maxDeg - 1))
     solver.add(Implies(grado_den_var[variable] == maxDeg, grado_num_var[variable] == maxDeg - 1))
-    solver.add(Or(And(grado_num_var[variable] == maxDeg, grado_den_var[variable] == maxDeg - 1), And(grado_den_var[variable] == maxDeg, grado_num_var[variable] == maxDeg - 1)))
-    # También permitir variables vacías
-
-
-    # for anterior in range(variable):
-    #     solver.add(variables_anteriores[variable][anterior] >= 0)
-    #     solver.add(variables_anteriores[variable][anterior] <= maxDeg)
-
-# for variable in range(max_intermedias):
-#     grado_num = []
-#     grado_den = []
-#     grado_num.append(num_variables_num[variable])
-#     grado_den.append(num_variables_den[variable])
-
-#     # for anterior in range(variable):
-#     #     grado_num.append(If(num_variables_num[anterior] == maxDeg, variables_anteriores[variable][anterior], 0))
-#     #     grado_den.append(If(num_variables_den[anterior] == maxDeg, variables_anteriores[variable][anterior], 0))
-
-#     solver.add(addsum(grado_num) <= maxDeg)
-#     solver.add(addsum(grado_den) <= maxDeg)
+    solver.add(Or(And(grado_num_var[variable] == maxDeg, grado_den_var[variable] == maxDeg - 1), And(grado_den_var[variable] == maxDeg, grado_num_var[variable] == maxDeg - 1), And(grado_den_var[variable] == 0, grado_num_var[variable] == 0)))
 
 # El producto final, utiliza la variable nueva iésima o no
 producto_final_vars_num = []
@@ -152,39 +132,44 @@ cubre_den = []
 
 for variable in range(max_intermedias):
     cubre_num.append(If(producto_final_vars_num[variable], cuantas_variables_num[variable], 0))
+    cubre_num.append(If(producto_final_vars_den[variable], cuantas_variables_num[variable], 0))
+    cubre_den.append(If(producto_final_vars_num[variable], cuantas_variables_den[variable], 0))
     cubre_den.append(If(producto_final_vars_den[variable], cuantas_variables_den[variable], 0))
 
 solver.add(addsum(cubre_num) + producto_final_ini_num == degree_num)
 solver.add(addsum(cubre_den) + producto_final_ini_den == degree_den)
 
 for variable in range(max_intermedias):
-    solver.add_soft(Not(Or(producto_final_vars_num[variable], producto_final_vars_den[variable])), 1, "min_vars")
-
+    solver.add_soft(And(cuantas_variables_num[variable] == 0, cuantas_variables_den[variable] == 0), 1, "min_vars")
 
 if solver.check() == sat:
     m = solver.model()
     print("Variables intermedias formadas:")
     for variable in range(max_intermedias):
-        num = m.eval(grado_num_var[variable], model_completion=True).as_long()
-        den = m.eval(grado_den_var[variable], model_completion=True).as_long()
-        print(f"VI_{variable}: Numerador = {num}, Denominador = {den}")
+        num = m.eval(num_variables_num[variable], model_completion=True).as_long()
+        den = m.eval(num_variables_den[variable], model_completion=True).as_long()
+        cubre_num = m.eval(cuantas_variables_num[variable], model_completion=True).as_long()
+        cubre_den = m.eval(cuantas_variables_den[variable], model_completion=True).as_long()
+        deps = []
+        for anterior in range(variable):
+            val = m.eval(variables_anteriores[variable][anterior], model_completion=True)
+            if is_true(val):
+                deps.append(f"VI_{anterior}")
+        dep_str = f", depende de: {', '.join(deps)}" if deps else ""
+        print(f"VI_{variable}: Numerador = {num}, Denominador = {den}, cubre {cubre_num} originales en num y {cubre_den} en den{dep_str}")
 
-    # print("\nVariables utilizadas en el producto final (numerador):")
     usadas_num = []
     for variable in range(max_intermedias):
         val = m.eval(producto_final_vars_num[variable], model_completion=True)
         if is_true(val):
-            num = m.eval(grado_num_var[variable], model_completion=True).as_long()
-            # print(f"VI_{variable}")
+            num = m.eval(num_variables_num[variable], model_completion=True).as_long()
             usadas_num.append(f"VI_{variable}")
 
-    # print("\nVariables utilizadas en el producto final (denominador):")
     usadas_den = []
     for variable in range(max_intermedias):
         val = m.eval(producto_final_vars_den[variable], model_completion=True)
         if is_true(val):
-            den = m.eval(grado_den_var[variable], model_completion=True).as_long()
-            # print(f"VI_{variable}")
+            den = m.eval(num_variables_den[variable], model_completion=True).as_long()
             usadas_den.append(f"VI_{variable}")
 
     ini_num = m.eval(producto_final_ini_num, model_completion=True).as_long()
