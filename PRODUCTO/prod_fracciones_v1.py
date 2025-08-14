@@ -94,7 +94,7 @@ print(list(cjto_variables))
 solver = Optimize()
 
 ##### PARAMETROS #####
-max_intermedias = 9
+max_intermedias = 5
 
 inicio = time.time()
 

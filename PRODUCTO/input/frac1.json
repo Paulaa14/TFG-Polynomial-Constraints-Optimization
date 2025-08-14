@@ -2,12 +2,28 @@
 "productos":
 [{"expressions":
 [
-    {"op": "frac","values": [{"signals": 1,"degree": 3}, {"signals": 7, "degree": 2}]}
-]},
-{"expressions":
-[
-    {"op": "frac","values": [{"signals": 2,"degree": 3}, {"signals": 8, "degree": 2}]}
-]}
-],
-    "degree": 2
+    {"op": "frac","values": [{"signals": 1,"degree": 1}, {"signals": 23, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 2,"degree": 1}, {"signals": 24, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 3,"degree": 1}, {"signals": 25, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 4,"degree": 1}, {"signals": 26, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 5,"degree": 1}, {"signals": 27, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 6,"degree": 1}, {"signals": 28, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 7,"degree": 1}, {"signals": 29, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 8,"degree": 1}, {"signals": 30, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 9,"degree": 1}, {"signals": 31, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 10,"degree": 1}, {"signals": 32, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 11,"degree": 1}, {"signals": 33, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 12,"degree": 1}, {"signals": 34, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 13,"degree": 1}, {"signals": 35, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 14,"degree": 1}, {"signals": 36, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 15,"degree": 1}, {"signals": 37, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 16,"degree": 1}, {"signals": 38, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 17,"degree": 1}, {"signals": 39, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 18,"degree": 1}, {"signals": 40, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 19,"degree": 1}, {"signals": 41, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 20,"degree": 1}, {"signals": 42, "degree": 1}]},
+    {"op": "frac","values": [{"signals": 21,"degree": 1}, {"signals": 43, "degree": 0}]},
+    {"op": "frac","values": [{"signals": 22,"degree": 1}, {"signals": 44, "degree": 0}]}
+]}],
+    "degree": 5
 }
