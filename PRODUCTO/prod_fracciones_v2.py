@@ -13,6 +13,8 @@ def addsum(a):
         for i in range(1,len(a)):
             asum = asum + a[i]
         return asum
+    
+# Meter variables que representan la fracción, cuántas variables se cogen en el numerador, y cuántas en el denominador
 
 parser = argparse.ArgumentParser()
 
@@ -58,6 +60,7 @@ for variable in range(max_intermedias):
         vars.append(Bool("var_anterior_" + str(anterior)))
     variables_anteriores.append(vars)
 
+# Cuántas variables de un nivel anterior, tiene en numerador y denominador
 numero_anteriores_var_num = []
 numero_anteriores_var_den = []
 
@@ -68,6 +71,7 @@ for variable in range(max_intermedias):
     cuantas_den = []
 
     for anterior in range(variable):
+        # Si se utiliza para crear "variable" y el grado de su numerador es n, entonces aporta grado 1 al numerador. Idem con el denominador.
         num.append(If(And(variables_anteriores[variable][anterior], num_variables_num[anterior] == maxDeg), 1, 0))
         den.append(If(And(variables_anteriores[variable][anterior], num_variables_den[anterior] == maxDeg), 1, 0))
 
@@ -81,17 +85,20 @@ for variable in range(max_intermedias):
     numero_anteriores_var_num.append(addsum(num))
     numero_anteriores_var_den.append(addsum(den))
 
+    # La nueva variable tiene todas las variables iniciales que contenga + las variables que contengan otras variables anteriores.
     solver.add(cuantas_variables_num[variable] == addsum(cuantas_num) + num_variables_num[variable])
     solver.add(cuantas_variables_den[variable] == addsum(cuantas_den) + num_variables_den[variable])
 
 grado_num_var = []
 grado_den_var = []
 
+# Válido porque solo se añaden las variables que se utilizan en numerador/denominador y que tienen grado n, en numerador/denominador, según corresponda
+# REVISAR, no sé si habría que contarlo siempre que se utilice, independientemente de si el numerador o el denominador tiene grado n, si se usa, aporta 1
 for variable in range(max_intermedias):
     grado_num_var.append(num_variables_num[variable] + numero_anteriores_var_num[variable])
     grado_den_var.append(num_variables_den[variable] + numero_anteriores_var_den[variable])
 
-# Dominio de las variables
+# Dominio de las variables REVISAR
 for variable in range(max_intermedias):    
     solver.add(Implies(grado_num_var[variable] == maxDeg, grado_den_var[variable] == maxDeg - 1))
     solver.add(Implies(grado_den_var[variable] == maxDeg, grado_num_var[variable] == maxDeg - 1))
@@ -105,9 +112,10 @@ for variable in range(max_intermedias):
     producto_final_vars_num.append(Bool("final_var_num_" + str(variable)))
     producto_final_vars_den.append(Bool("final_var_den_" + str(variable)))
 
-    # No pueden ser ambas ciertas a la vez
+    # No pueden ser ambas ciertas a la vez. O se usa en el numerador o se usa en el denominador
     solver.add(Not(And(producto_final_vars_num[variable], producto_final_vars_den[variable])))
 
+# De las variables iniciales, cuántas tiene en bruto el producto final, que no están en ninguna variable intermedia.
 producto_final_ini_num = Int("final_num")
 producto_final_ini_den = Int("final_den")
 
@@ -119,10 +127,12 @@ solver.add(producto_final_ini_den <= maxDeg)
 grado_final_num = []
 grado_final_den = []
 
+# Sólo la coges para sustituir donde tenga grado n
 for variable in range(max_intermedias):
     grado_final_num.append(If(And(grado_num_var[variable] == maxDeg, producto_final_vars_num[variable]), 1, 0))
     grado_final_den.append(If(And(grado_den_var[variable] == maxDeg, producto_final_vars_den[variable]), 1, 0))
 
+# Los grados obtenidos eligiendo todas las variables + el número de variables inicales debe ser menor que el grado máximo
 solver.add(addsum(grado_final_num) + producto_final_ini_num <= maxDeg)
 solver.add(addsum(grado_final_den) + producto_final_ini_den <= maxDeg)
 
@@ -131,14 +141,17 @@ cubre_num = []
 cubre_den = []
 
 for variable in range(max_intermedias):
+    # REVISAR si la variable se coge para numerador o denominador
     cubre_num.append(If(producto_final_vars_num[variable], cuantas_variables_num[variable], 0))
     cubre_num.append(If(producto_final_vars_den[variable], cuantas_variables_num[variable], 0))
     cubre_den.append(If(producto_final_vars_num[variable], cuantas_variables_den[variable], 0))
     cubre_den.append(If(producto_final_vars_den[variable], cuantas_variables_den[variable], 0))
 
+# No sobra porque la restricción que hay arriba de que las variables intermedias + las iniciales deben ser <= maxDeg, con esto garantizas que la suma se == maxDeg
 solver.add(addsum(cubre_num) + producto_final_ini_num == degree_num)
 solver.add(addsum(cubre_den) + producto_final_ini_den == degree_den)
 
+# Minimizar el número de variables
 for variable in range(max_intermedias):
     solver.add_soft(And(cuantas_variables_num[variable] == 0, cuantas_variables_den[variable] == 0), 1, "min_vars")
 
