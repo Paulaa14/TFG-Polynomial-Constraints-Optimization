@@ -38,10 +38,10 @@ maxDeg = data["degree"]
 solver = Optimize()
 
 ##### PARAMETROS #####
-max_intermedias = 8
+max_intermedias = 10
 
 # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
-# Las variables del numerador se colocaraán en el numerador de la nueva variable y las del denominador en el denominador
+# Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
 num_variables_originales_var_num = []
 num_variables_originales_var_den = []
 
@@ -71,6 +71,7 @@ for var in range(max_intermedias): # Se podría poner como rango 1 - max_interme
     usa_var_anterior_den.append(cuales_usa_d)
 
 # Para cada variable, cuántas variables originales realmente cubre teniendo en cuenta las originales que tiene de num_variables_originales_var + las que tiene cada variable anterior que contiene
+# Es decir, de las originales del numerador, cuántas contiene? Idem con denominador
 cuantas_variables_cubre_num = []
 cuantas_variables_cubre_den = []
 
@@ -82,29 +83,18 @@ for var in range(max_intermedias):
 
     # Si utiliza una variable anterior ahora cubre todas las que tuviera ella también + las suyas
     for anterior in range(var):
-        cuantas_n.append(If(usa_var_anterior_num[var][anterior], cuantas_variables_cubre_num[anterior] + cuantas_variables_cubre_den[anterior], 0))
-        cuantas_d.append(If(usa_var_anterior_den[var][anterior], cuantas_variables_cubre_num[anterior] + cuantas_variables_cubre_den[anterior], 0))
+        cuantas_n.append(If(Or(usa_var_anterior_num[var][anterior], usa_var_anterior_den[var][anterior]), cuantas_variables_cubre_num[anterior], 0))
+        cuantas_d.append(If(Or(usa_var_anterior_num[var][anterior], usa_var_anterior_den[var][anterior]), cuantas_variables_cubre_den[anterior], 0))
+        # cuantas_n.append(If(usa_var_anterior_num[var][anterior], cuantas_variables_cubre_num[anterior] + cuantas_variables_cubre_den[anterior], 0))
+        # cuantas_d.append(If(usa_var_anterior_den[var][anterior], cuantas_variables_cubre_num[anterior] + cuantas_variables_cubre_den[anterior], 0))
 
     cuantas_variables_cubre_num.append(addsum(cuantas_n))
     cuantas_variables_cubre_den.append(addsum(cuantas_d))
 
-# Solo puede ocurrir o que la variable esté fomarda por n/n-1, n-1/n o que esté vacía tanto en numerador como denominador
-for var in range(max_intermedias):
-    n_num = And(cuantas_variables_cubre_num[var] == maxDeg, cuantas_variables_cubre_den[var] == maxDeg - 1)
-    n_den = And(cuantas_variables_cubre_num[var] == maxDeg - 1, cuantas_variables_cubre_den[var] == maxDeg)
-    zero = And(cuantas_variables_cubre_num[var] == 0, cuantas_variables_cubre_den[var] == 0)
-
-    solver.add(Or(n_num, Or(n_den, zero)))
-
-# Si la variable es de la forma n/(n - 1) se utilizará en el numerador y si tiene la forma (n - 1)/n se utilizará en el denominador
-for var in range(max_intermedias):
-
-    for anterior in range(var):
-        solver.add(Implies(cuantas_variables_cubre_num[anterior] == maxDeg, Not(usa_var_anterior_den[var][anterior])))
-        solver.add(Implies(cuantas_variables_cubre_den[anterior] == maxDeg, Not(usa_var_anterior_num[var][anterior])))
-        solver.add(Implies(cuantas_variables_cubre_num[anterior] == 0, Not(Or(usa_var_anterior_num[var][anterior], usa_var_anterior_den[var][anterior]))))
-
 # Grado de cada variable: el máximo entre el grado del numerador y del denominador
+grado_num_variables = []
+grado_den_variables = []
+
 for var in range(max_intermedias):
     grado_num = []
     grado_den = []
@@ -117,16 +107,82 @@ for var in range(max_intermedias):
         grado_den.append(If(usa_var_anterior_den[var][anterior], 1, 0))
 
     solver.add(And(addsum(grado_num) <= maxDeg, addsum(grado_den) <= maxDeg))
+    
+    grado_num_variables.append(addsum(grado_num))
+    grado_den_variables.append(addsum(grado_den))
+
+# Solo puede ocurrir o que el grado de la variable sea n/n-1, n-1/n o que esté vacía tanto en numerador como denominador
+for var in range(max_intermedias):
+    n_num = And(grado_num_variables[var] == maxDeg, grado_den_variables[var] == maxDeg - 1)
+    n_den = And(grado_num_variables[var] == maxDeg - 1, grado_den_variables[var] == maxDeg)
+    zero = And(grado_num_variables[var] == 0, grado_den_variables[var] == 0)
+
+    solver.add(Or(n_num, Or(n_den, zero)))
+
+# Si la variable es de la forma n/(n - 1) se utilizará en el numerador, aportando grado 1 y si tiene la forma (n - 1)/n se utilizará en el denominador
+for var in range(max_intermedias):
+
+    for anterior in range(var):
+        # Si tiene n en el numerador, no puede usarse en el denominador de ninguna variable y viceversa
+        solver.add(Implies(grado_num_variables[anterior] == maxDeg, Not(usa_var_anterior_den[var][anterior])))
+        solver.add(Implies(grado_den_variables[anterior] == maxDeg, Not(usa_var_anterior_num[var][anterior])))
+        solver.add(Implies(grado_num_variables[anterior] == 0, Not(Or(usa_var_anterior_num[var][anterior], usa_var_anterior_den[var][anterior]))))
+
+# El producto final, qué variables intermedias utiliza
+producto_usa_var_en_num = []
+producto_usa_var_en_den = []
+
+for var in range(max_intermedias):
+    producto_usa_var_en_num.append(Bool("prodn_var_" + str(var)))
+    producto_usa_var_en_den.append(Bool("prodd_var_" + str(var)))
+
+# No puede usarse la misma variable para numerador y denominador
+for var in range(max_intermedias):
+    solver.add(Or(Not(producto_usa_var_en_num[var]), Not(producto_usa_var_en_den[var])))
+
+# De las variables iniciales, cuáles hay en el producto final directamente
+producto_usa_iniciales_en_num = Int("inic_prod_num")
+solver.add(And(producto_usa_iniciales_en_num >= 0, producto_usa_iniciales_en_num <= maxDeg))
+
+producto_usa_iniciales_en_den = Int("inic_prod_den")
+solver.add(And(producto_usa_iniciales_en_den >= 0, producto_usa_iniciales_en_den <= maxDeg))
 
 # Contar que se cubren todas las variables que había al inicio
+vars_inic_num = []
+vars_inic_num.append(producto_usa_iniciales_en_num)
+
+vars_inic_den = []
+vars_inic_den.append(producto_usa_iniciales_en_den)
+
+# Si utiliza una variable, ya sea en numerador o denominador, ahora cubre las variables que ella cubriera
+for var in range(max_intermedias):
+    vars_inic_num.append(If(Or(producto_usa_var_en_num[var], producto_usa_var_en_den[var]), cuantas_variables_cubre_num[var], 0))
+    vars_inic_den.append(If(Or(producto_usa_var_en_num[var], producto_usa_var_en_den[var]), cuantas_variables_cubre_den[var], 0))
+
+solver.add(And(addsum(vars_inic_num) == degree_num, addsum(vars_inic_den) == degree_den))
+
+# Comprobar que no te pasas de grado en el producto final
+grado_prod_n = []
+grado_prod_n.append(producto_usa_iniciales_en_num)
+
+grado_prod_d = []
+grado_prod_d.append(producto_usa_iniciales_en_den)
+
+for var in range(max_intermedias):
+    grado_prod_n.append(If(producto_usa_var_en_num[var], 1, 0))
+    grado_prod_d.append(If(producto_usa_var_en_den[var], 1, 0))
+
+solver.add(addsum(grado_prod_n) <= maxDeg, addsum(grado_prod_d) <= maxDeg)
 
 # Orden en variables, si esta está vacía, todas las demás tmb
 
+# Una misma variable no puede usarse en 2 variables intermedias, o en variable y producto
 
 # Minimizar el número de variables
-for var in range(max_intermedias):
-    solver.add_soft(And(cuantas_variables_cubre_num[var] == 0, cuantas_variables_cubre_den[var] == 0), 1, "min_vars")
+# for var in range(max_intermedias):
+#     solver.add_soft(And(cuantas_variables_cubre_num[var] == 0, cuantas_variables_cubre_den[var] == 0), 1, "min_vars")
 
+print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
 if solver.check() == sat:
     m = solver.model()
     print("Variables intermedias formadas:")
@@ -166,13 +222,16 @@ if solver.check() == sat:
     usadas_den = []
 
     for var in range(max_intermedias):
-        cubre_num = m.eval(cuantas_variables_cubre_num[var], model_completion=True).as_long()
-        cubre_den = m.eval(cuantas_variables_cubre_den[var], model_completion=True).as_long()
+        grado_num = m.eval(grado_num_variables[var], model_completion=True).as_long()
+        grado_den = m.eval(grado_den_variables[var], model_completion=True).as_long()
+
+        usa_num = m.eval(producto_usa_var_en_num[var], model_completion=True)
+        usa_den = m.eval(producto_usa_var_en_den[var], model_completion=True)
 
         # Suponemos que las del tipo n/(n-1) van al numerador, y (n-1)/n al denominador
-        if cubre_num == maxDeg and cubre_den == maxDeg - 1:
+        if grado_num == maxDeg and grado_den == maxDeg - 1 and (usa_num or usa_den):
             usadas_num.append(f"VI_{var}")
-        elif cubre_num == maxDeg - 1 and cubre_den == maxDeg:
+        elif grado_num == maxDeg - 1 and grado_den == maxDeg and (usa_num or usa_den):
             usadas_den.append(f"VI_{var}")
 
     # Mostrar producto final estimado
