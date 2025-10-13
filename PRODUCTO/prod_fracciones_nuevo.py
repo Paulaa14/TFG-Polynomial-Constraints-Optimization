@@ -38,7 +38,7 @@ maxDeg = data["degree"]
 solver = Optimize()
 
 ##### PARAMETROS #####
-max_intermedias = 8
+max_intermedias = 10
 
 # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
 # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
@@ -187,14 +187,36 @@ for var in range(max_intermedias):
 
     solver.add(addsum(usos) <= 1)
 
-# Orden en variables, primero aparezcan las variables de la forma n/n-1, luego las de n-1/n y luego las vacías
+# Orden en variables:
+
+# Primero aparezcan las variables de la forma n/n-1, luego las de n-1/n y luego las vacías
 for var in range(max_intermedias - 1):
-    solver.add(Implies(grado_num_variables[var] == maxDeg - 1, Or(grado_num_variables[var + 1] == maxDeg - 1, grado_num_variables[var + 1] == 0)))
-    solver.add(Implies(grado_num_variables[var] == 0, grado_num_variables[var + 1] == 0))
+    solver.add(grado_num_variables[var] >= grado_num_variables[var + 1])
+
+# Primero las variables que utilicen otras variables anteriores y luego las que no
+# Si una varibale utiliza una variable anterior, implica que o la siguiente tiene grado distinto en numerador, según el orden establecido antes
+# o bien, si tiene el mismo grado en numerador, esa variable también utiliza una variable anterior porque primero se tienen que crear las variables simples y luego las compuestas
+# Otra forma, mirarlo con si el grado es != del número de variables originales que utiliza implica que está utilizando una variable anterior
+for var in range(max_intermedias - 1):
+    depende_de_alguna_var = []
+    siguiente_var_depende = []
+
+    for anterior_a_var in range(var):
+        depende_de_alguna_var.append(If(Or(usa_var_anterior_num[var][anterior_a_var], usa_var_anterior_den[var][anterior_a_var]), 1, 0))
+
+    for anterior_a_sig in range(var + 1):
+        siguiente_var_depende.append(If(Or(usa_var_anterior_num[var + 1][anterior_a_sig], usa_var_anterior_den[var + 1][anterior_a_sig]), 1, 0))
+    
+    solver.add(Implies(addsum(depende_de_alguna_var) > 0, Or(grado_num_variables[var] != grado_num_variables[var + 1], addsum(siguiente_var_depende) > 0)))
+
+# Dentro de las variables que utilizan otras anteriores, deben aparecer primero aquellas que tengan un número de variables iniciales mayor
+for var in range(max_intermedias - 1):
+    solver.add(num_variables_originales_var_num[var] >= num_variables_originales_var_num[var + 1])
+    solver.add(Implies(num_variables_originales_var_num[var] == num_variables_originales_var_num[var + 1], num_variables_originales_var_den[var] >= num_variables_originales_var_den[var + 1]))
 
 # Minimizar el número de variables
-for var in range(max_intermedias):
-    solver.add_soft(And(grado_num_variables[var] == 0, grado_den_variables[var] == 0), 1, "min_vars")
+# for var in range(max_intermedias):
+#     solver.add_soft(And(grado_num_variables[var] == 0, grado_den_variables[var] == 0), 1, "min_vars")
 
 print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
 if solver.check() == sat:
