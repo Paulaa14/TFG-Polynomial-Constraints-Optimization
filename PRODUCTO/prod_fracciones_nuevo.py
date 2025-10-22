@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Conectar sumas con productos -> primero solucionar las que se pasan de grado y luego las sumas
+# Pasar a js conectado
+# Simetrías de variables
+# Otra opción: quién me usa: booleana de si es usada por intermedia o final o no, y quien la usa. Si una tiene a falso los 2, las siguientes tmb
+# Primero intermedias usadas por otras intermedias y luego las usadas por el final
+# Las variables llenas al principio y medio llenas después
+# Garantizar que no se pierden soluciones, cualquier cosa que quita repetidos, no elimina soluciones, solo evita que la misma solucion tenga varias representaciones
+# Ir apuntando todo
+
 import json
 from z3 import *
 import argparse
@@ -39,20 +48,18 @@ solver = Optimize()
 
 ##### PARAMETROS #####
 max_intermedias = 10
+# Usaremos variables intermedias vi_0, ... vi_{max_intermedias-1}
 
 # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
 # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
 num_variables_originales_var_num = []
 num_variables_originales_var_den = []
 
+#num_var_i : número de variables originales de numerador que va a agrupar vi_i
+#den_var_i : número de variables originales de denominador que va a agrupar vi_i
 for var in range(max_intermedias):
     num_variables_originales_var_num.append(Int("num_var_" + str(var)))
     num_variables_originales_var_den.append(Int("den_var_" + str(var)))
-
-# Rango de las variables
-for var in range(max_intermedias):
-    solver.add(And(num_variables_originales_var_num[var] >= 0, num_variables_originales_var_num[var] <= maxDeg))
-    solver.add(And(num_variables_originales_var_den[var] >= 0, num_variables_originales_var_den[var] <= maxDeg))
 
 # Cada una de las variables intermedias, utiliza alguna de las variables intermedias anteriores o no. 
 # La primera lógicamente no va a utilizar ninguna variable anterior, con el bucle interior ya se cubre ese caso
@@ -69,6 +76,32 @@ for var in range(max_intermedias): # Se podría poner como rango 1 - max_interme
 
     usa_var_anterior_num.append(cuales_usa_n)
     usa_var_anterior_den.append(cuales_usa_d)
+
+
+# El producto final, qué variables intermedias utiliza
+producto_usa_var_en_num = []
+producto_usa_var_en_den = []
+
+for var in range(max_intermedias):
+    producto_usa_var_en_num.append(Bool("prodn_var_" + str(var)))
+    producto_usa_var_en_den.append(Bool("prodd_var_" + str(var)))
+
+# No puede usarse la misma variable para numerador y denominador
+for var in range(max_intermedias):
+    solver.add(Or(Not(producto_usa_var_en_num[var]), Not(producto_usa_var_en_den[var])))
+
+# De las variables iniciales, cuáles hay en el producto final directamente
+producto_usa_iniciales_en_num = Int("inic_prod_num")
+solver.add(And(producto_usa_iniciales_en_num >= 0, producto_usa_iniciales_en_num <= maxDeg))
+
+producto_usa_iniciales_en_den = Int("inic_prod_den")
+solver.add(And(producto_usa_iniciales_en_den >= 0, producto_usa_iniciales_en_den <= maxDeg))
+
+# Rango de las variables
+for var in range(max_intermedias):
+    solver.add(And(num_variables_originales_var_num[var] >= 0, num_variables_originales_var_num[var] <= maxDeg))
+    solver.add(And(num_variables_originales_var_den[var] >= 0, num_variables_originales_var_den[var] <= maxDeg))
+
 
 # Para cada variable, cuántas variables originales realmente cubre teniendo en cuenta las originales que tiene de num_variables_originales_var + las que tiene cada variable anterior que contiene
 # Es decir, de las originales del numerador, cuántas contiene? Idem con denominador
@@ -127,25 +160,6 @@ for var in range(max_intermedias):
         solver.add(Implies(grado_num_variables[anterior] == maxDeg, Not(usa_var_anterior_den[var][anterior])))
         solver.add(Implies(grado_den_variables[anterior] == maxDeg, Not(usa_var_anterior_num[var][anterior])))
         solver.add(Implies(grado_num_variables[anterior] == 0, Not(Or(usa_var_anterior_num[var][anterior], usa_var_anterior_den[var][anterior]))))
-
-# El producto final, qué variables intermedias utiliza
-producto_usa_var_en_num = []
-producto_usa_var_en_den = []
-
-for var in range(max_intermedias):
-    producto_usa_var_en_num.append(Bool("prodn_var_" + str(var)))
-    producto_usa_var_en_den.append(Bool("prodd_var_" + str(var)))
-
-# No puede usarse la misma variable para numerador y denominador
-for var in range(max_intermedias):
-    solver.add(Or(Not(producto_usa_var_en_num[var]), Not(producto_usa_var_en_den[var])))
-
-# De las variables iniciales, cuáles hay en el producto final directamente
-producto_usa_iniciales_en_num = Int("inic_prod_num")
-solver.add(And(producto_usa_iniciales_en_num >= 0, producto_usa_iniciales_en_num <= maxDeg))
-
-producto_usa_iniciales_en_den = Int("inic_prod_den")
-solver.add(And(producto_usa_iniciales_en_den >= 0, producto_usa_iniciales_en_den <= maxDeg))
 
 # Contar que se cubren todas las variables que había al inicio
 vars_inic_num = []
