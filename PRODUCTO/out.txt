@@ -1,0 +1,14 @@
+{
+    "op": "frac",
+    "values": [
+        {
+            "signals": "VI_3 * VI_4",
+            "degree": 2
+        },
+        {
+            "signals": "1",
+            "degree": 0
+        }
+    ],
+    "intermedias_usadas": 5
+}
