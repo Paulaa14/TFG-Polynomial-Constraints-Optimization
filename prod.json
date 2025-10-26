@@ -36,50 +36,6 @@
             "grado_num": 2,
             "grado_den": 3,
             "grado_total": 3
-        },
-        "VI_1": {
-            "formada_por": {
-                "num_originales": 0,
-                "den_originales": 0,
-                "num_depende_de": [],
-                "den_depende_de": []
-            },
-            "grado_num": 0,
-            "grado_den": 0,
-            "grado_total": 0
-        },
-        "VI_2": {
-            "formada_por": {
-                "num_originales": 0,
-                "den_originales": 0,
-                "num_depende_de": [],
-                "den_depende_de": []
-            },
-            "grado_num": 0,
-            "grado_den": 0,
-            "grado_total": 0
-        },
-        "VI_3": {
-            "formada_por": {
-                "num_originales": 0,
-                "den_originales": 0,
-                "num_depende_de": [],
-                "den_depende_de": []
-            },
-            "grado_num": 0,
-            "grado_den": 0,
-            "grado_total": 0
-        },
-        "VI_4": {
-            "formada_por": {
-                "num_originales": 0,
-                "den_originales": 0,
-                "num_depende_de": [],
-                "den_depende_de": []
-            },
-            "grado_num": 0,
-            "grado_den": 0,
-            "grado_total": 0
         }
     },
     "grado_numerador_total": 3,

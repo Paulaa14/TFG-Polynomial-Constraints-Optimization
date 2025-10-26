@@ -50,14 +50,6 @@ def addsum(a):
 
 #     # Minimiza el número de variables "originales"
 #     solver.add_soft(expando[exp], 5, "keeps")
-
-# # Si ya se pasa de grado no se va a poder unificar con nada
-# for exp in range(num_expresiones):
-#     grado_num_exp = expresiones[exp]["values"][0]["degree"]
-#     grado_den_exp = expresiones[exp]["values"][1]["degree"] 
-    
-#     if grado_num_exp > maxDeg or grado_den_exp > maxDeg:
-#         solver.add(Not(expando[exp]))
     
 def suma_fracciones(maxDeg, expresiones):
 
@@ -161,7 +153,7 @@ def suma_fracciones(maxDeg, expresiones):
         # s_fila = addsum(suma_fila)
         # s_col = addsum(suma_col)
 
-        # Cada fracción unicamente está unificada 1 vez
+        # Cada fracción únicamente está unificada 1 vez
         # solver.add(Implies(s_fila > 0, s_col == 0))
         # solver.add(Implies(s_col > 0, s_fila == 0))
         # solver.add(s_col <= 1)
@@ -197,7 +189,9 @@ def suma_fracciones(maxDeg, expresiones):
                 
                 numV += 1
 
-        print(f"\nNúmero de variables finales: {numV - 1}")
+        # print(f"\nNúmero de variables finales: {numV - 1}")
+        return numV - 1
 
     else:
         print("No se encontró una solución válida bajo las restricciones dadas.")
+        return 0
