@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Simetrías de variables
-# Otra opción: quién me usa: booleana de si es usada por intermedia o final o no, y quien la usa. Si una tiene a falso los 2, las siguientes tmb
+# Otra opción: quién me usa: booleana de si es usada por intermedia/final o no, y quien la usa. Si una tiene a falso los 2, las siguientes también
 # Primero intermedias usadas por otras intermedias y luego las usadas por el final
 # Las variables llenas al principio y medio llenas después
 # Garantizar que no se pierden soluciones, cualquier cosa que quita repetidos, no elimina soluciones, solo evita que la misma solucion tenga varias representaciones --> Demostrar
@@ -24,36 +24,17 @@ def addsum(a):
     
 # Meter variables que representan la fracción, cuántas variables se cogen en el numerador, y cuántas en el denominador
 
-# parser = argparse.ArgumentParser()
-
-# parser.add_argument("filein", type=str)
-# parser.add_argument("fileout", type=str)
-
-# args=parser.parse_args()
-
-# f = open(args.filein)
-# data = json.load(f)
-
-# file = open(args.fileout, "w")
-
-# # Grado del numerador original
-# degree_num = data["degree_num"]
-
-# # Grado del denominador original
-# degree_den = data["degree_den"]
-# maxDeg = data["degree"]
-
-# solver = Optimize()
-
 ##### PARAMETROS #####
 # Usaremos variables intermedias vi_0, ... vi_{max_intermedias-1}
 # max_intermedias = 5
 
-###### DECLARACIÓN DE VARIABLES ######
+def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
 
-def reducir_grado_producto(max_intermedias, maxDeg, degree_num, degree_den):
+    ###### DECLARACIÓN DE VARIABLES ######
 
     solver = Optimize()
+
+    max_intermedias = (max(degree_num, degree_den) // maxDeg) + 1 # DEMOSTRAR
 
     # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
     # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
@@ -241,6 +222,10 @@ def reducir_grado_producto(max_intermedias, maxDeg, degree_num, degree_den):
     for var in range(max_intermedias):
         solver.add_soft(And(grado_num_variables[var] == 0, grado_den_variables[var] == 0), 1, "min_vars")
 
+    # Minimizar grado final --> Maximizar las variables que si tienen elementos en numerador, tengan también en denominador y viceversa
+    for var in range(max_intermedias):
+        solver.add_soft(And(grado_num_variables[var] > 0, grado_den_variables[var] > 0), 1, "min_grado_final")
+
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
         m = solver.model()
@@ -278,7 +263,6 @@ def reducir_grado_producto(max_intermedias, maxDeg, degree_num, degree_den):
 
             print(f"VI_{var}: num = {num}, den = {den}, cubre {cubre_num} en num y {cubre_den} en den{dep_str}")
 
-            # Registrar dependencias
             dependencias[f"VI_{var}"] = {"num": deps_num, "den": deps_den}
 
         # Identificar variables usadas en el producto final
@@ -297,21 +281,12 @@ def reducir_grado_producto(max_intermedias, maxDeg, degree_num, degree_den):
         inic_den = m.eval(producto_usa_iniciales_en_den, model_completion=True).as_long()
 
         # Mostrar producto final estimado
-        producto_str = " * ".join(usadas_num) if usadas_num else "1"
+        producto_str_num = " * ".join(usadas_num) if usadas_num else "1"
         producto_str_den = " * ".join(usadas_den) if usadas_den else "1"
 
-        print(f"\nProducto final: ({producto_str}) / ({producto_str_den}). Usa {inic_num} iniciales en numerador y {inic_den} iniciales en denominador")
+        print(f"\nProducto final: ({producto_str_num}) / ({producto_str_den}). Usa {inic_num} iniciales en numerador y {inic_den} iniciales en denominador")
 
-        # --- Generar JSON de salida completo (solo variables originales directas) ---
-
-        def obtener_dependencias(var):
-            deps_n = dependencias[var]["num"]
-            deps_d = dependencias[var]["den"]
-            todas = set(deps_n + deps_d)
-            for dep in todas.copy():
-                if dep in dependencias:
-                    todas |= obtener_dependencias(dep)
-            return todas
+        # --- Generar JSON de salida ---
 
         # Construir detalles de cada VI
         vi_detalles = {}
@@ -373,6 +348,8 @@ def reducir_grado_producto(max_intermedias, maxDeg, degree_num, degree_den):
             "grado_numerador_total": numerador_detalle["grado_total"],
             "grado_denominador_total": denominador_detalle["grado_total"]
         }
+
+        print(output_data)
 
         with open("prod.json", "w") as fout:
             json.dump(output_data, fout, indent=4)

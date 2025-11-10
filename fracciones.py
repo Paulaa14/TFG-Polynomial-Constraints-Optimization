@@ -23,7 +23,7 @@ def addsum(a):
         return asum
 
 def ejecutar_producto(grado_num, grado_den, maxDeg, max_intermedias):
-    prod_fracciones_nuevo.reducir_grado_producto(max_intermedias, maxDeg, grado_num, grado_den)
+    prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den) # max_intermedias
 
     with open("prod.json", "r") as f:
         prod_reducido = json.load(f)
@@ -46,7 +46,7 @@ def construir_signals(componentes, num_originales):
 def adaptar_a_suma(prod_reducido, maxDeg):
     """
     Convierte la salida del producto (prod.json) en un formato compatible
-    con suma_fracciones_v1_2.suma_fracciones.
+    con suma_fracciones_v1_2.suma_fracciones
     """
 
     grado_num = prod_reducido["grado_numerador_total"]
@@ -61,7 +61,7 @@ def adaptar_a_suma(prod_reducido, maxDeg):
     signals_num = construir_signals(num_comps, num_vars_orig)
     signals_den = construir_signals(den_comps, den_vars_orig)
 
-    # Crear estructura compatible con suma_fracciones
+    # Crear entrada para suma_fracciones
     fraccion_equivalente = {
         "op": "frac",
         "values": [
@@ -70,7 +70,6 @@ def adaptar_a_suma(prod_reducido, maxDeg):
         ]
     }
 
-    # Empaquetar en estructura de entrada válida
     entrada_suma = {
         "expressions": [fraccion_equivalente],
         "degree": maxDeg
@@ -97,24 +96,21 @@ for idx, frac in enumerate(expresiones):
     grado_den = frac["values"][1]["degree"]
 
     if grado_num > maxDeg or grado_den > maxDeg:
-        print(f"Ejecutando producto sobre la fracción {idx} ({grado_num}/{grado_den})...")
+        print(f"Ejecutando producto sobre la fracción {idx}...")
         prod_reducido = ejecutar_producto(grado_num, grado_den, maxDeg, max_intermedias)
 
         vi_utilizadas += len(prod_reducido["variables_intermedias"])
 
-        # Adaptar la salida del producto al formato esperado por suma_fracciones
-        print("Adaptando salida del producto a formato suma_fracciones...")
+        # Adaptar la salida del producto a la entrada de suma_fracciones
         fraccion_adaptada = adaptar_a_suma(prod_reducido, maxDeg)
 
         # Extraer la fracción equivalente (solo la primera, porque es una sola en expressions)
         fracciones.append(fraccion_adaptada["expressions"][0])
-        print("Fracción reducida adaptada correctamente.\n")
 
     else:
         fracciones.append(frac)
 
-
-print("Ejecutando suma_fracciones_v1_2 sobre las fracciones finales...\n")
+print("Ejecutando suma_fracciones_v1_2...\n")
 vi_utilizadas += suma_fracciones_v1_2.suma_fracciones(maxDeg, fracciones)
 
 print(f"\nEn total se han utilizado {vi_utilizadas} variables intermedias")

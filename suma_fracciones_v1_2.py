@@ -60,6 +60,7 @@ def suma_fracciones(maxDeg, expresiones):
     # Booleano que indica si se junta o no con la expresión i-ésima
     juntar = []
 
+    # juntar_i_j : la expresión original i se junta o no con la expresión original j para formar una nueva expresión. Con j perteneciente a [exp, num_expresiones)
     for exp in range(num_expresiones):
         juntar_exp = []
         for e in range(exp, num_expresiones):
