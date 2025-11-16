@@ -1,0 +1,105 @@
+{
+    "variables_intermedias": [
+        {
+            "VI_0_0": {
+                "formada_por": {
+                    "num_originales": 3,
+                    "den_originales": 0,
+                    "num_depende_de": [],
+                    "den_depende_de": []
+                },
+                "grado_num": 3,
+                "grado_den": 0,
+                "grado_total": 3
+            }
+        },
+        {
+            "VI_3_0": {
+                "formada_por": {
+                    "num_originales": 2,
+                    "den_originales": 3,
+                    "num_depende_de": [],
+                    "den_depende_de": []
+                },
+                "grado_num": 2,
+                "grado_den": 3,
+                "grado_total": 3
+            }
+        }
+    ],
+    "fracciones_producto": [
+        {
+            "fraccion": 0,
+            "numerador": [
+                "VI_0_0",
+                "orig_0_0_1"
+            ],
+            "denominador": [
+                "orig_0_1_2"
+            ]
+        },
+        {
+            "fraccion": 1,
+            "numerador": "orig_1_0_3",
+            "denominador": "orig_1_1_1"
+        },
+        {
+            "fraccion": 2,
+            "numerador": "orig_2_0_2",
+            "denominador": "orig_2_1_2"
+        },
+        {
+            "fraccion": 3,
+            "numerador": [
+                "orig_3_0_3"
+            ],
+            "denominador": [
+                "VI_3_0"
+            ]
+        },
+        {
+            "fraccion": 4,
+            "numerador": "orig_4_0_1",
+            "denominador": "orig_4_1_1"
+        },
+        {
+            "fraccion": 5,
+            "numerador": "orig_5_0_3",
+            "denominador": "orig_5_1_2"
+        }
+    ],
+    "sumas": [
+        {
+            "suma": 1,
+            "fracciones": [
+                0,
+                4
+            ]
+        },
+        {
+            "suma": 2,
+            "fracciones": [
+                1
+            ]
+        },
+        {
+            "suma": 3,
+            "fracciones": [
+                2
+            ]
+        },
+        {
+            "suma": 4,
+            "fracciones": [
+                3
+            ]
+        },
+        {
+            "suma": 5,
+            "fracciones": [
+                5
+            ]
+        }
+    ],
+    "total_vi_creadas": 3
+}

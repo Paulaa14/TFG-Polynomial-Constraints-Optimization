@@ -3,11 +3,12 @@
 
 # Simetrías de variables
 # Otra opción: quién me usa: booleana de si es usada por intermedia/final o no, y quien la usa. Si una tiene a falso los 2, las siguientes también
-# Primero intermedias usadas por otras intermedias y luego las usadas por el final. DEntro de las que se usan en intermedias, que se utilicen en orden
+# Primero intermedias usadas por otras intermedias y luego las usadas por el final
 # Las variables llenas al principio y medio llenas después
 # Garantizar que no se pierden soluciones, cualquier cosa que quita repetidos, no elimina soluciones, solo evita que la misma solucion tenga varias representaciones --> Demostrar
 # Ir apuntando todo
-# Determinar máximo de max_intermedias
+# Determinar máximo de max_intermedias como: máximo grado de la fraccion ((max(num, den)) / maxDeg) + 1 --> Demostrar
+
 
 import json
 from z3 import *
@@ -24,6 +25,7 @@ def addsum(a):
 # Meter variables que representan la fracción, cuántas variables se cogen en el numerador, y cuántas en el denominador
 
 ##### PARAMETROS #####
+# Usaremos variables intermedias vi_0, ... vi_{max_intermedias-1}
 # max_intermedias = 5
 
 def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
@@ -31,10 +33,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
     ###### DECLARACIÓN DE VARIABLES ######
     solver = Optimize()
 
-    # Usaremos variables intermedias vi_0, ... vi_{max_intermedias-1}
-    max_intermedias = max(degree_num, degree_den) // 2 # maxDeg) + 1 # DEMOSTRAR
-
-    print(f"Max intermedias: {max_intermedias} ")
+    max_intermedias = (max(degree_num, degree_den) // maxDeg) + 1 # DEMOSTRAR
 
     # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
     # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
@@ -223,12 +222,8 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
         solver.add_soft(And(grado_num_variables[var] == 0, grado_den_variables[var] == 0), 1, "min_vars")
 
     # Minimizar grado final --> Maximizar las variables que si tienen elementos en numerador, tengan también en denominador y viceversa
-    # for var in range(max_intermedias):
-    #     solver.add_soft(And(grado_num_variables[var] > 0, grado_den_variables[var] > 0), 1, "min_grado_final")
-
-    # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n
-    # for var in range(max_intermedias):
-    #     solver.add_soft(grado_num_variables[var] == maxDeg, 1, "min_vars_den")
+    for var in range(max_intermedias):
+        solver.add_soft(And(grado_num_variables[var] > 0, grado_den_variables[var] > 0), 1, "min_grado_final")
 
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
@@ -316,37 +311,19 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
         inic_num_val = m.eval(producto_usa_iniciales_en_num, model_completion=True).as_long()
         inic_den_val = m.eval(producto_usa_iniciales_en_den, model_completion=True).as_long()
 
-        # def componentes_detalle_VI(lista_vars):
-        #     comp = []
-        #     for v in lista_vars:
-        #         if v in vi_detalles:
-        #             vi_info = vi_detalles[v]
-        #             comp.append({
-        #                 "nombre": v,
-        #                 "formada_por": vi_info["formada_por"],
-        #                 "grado_num": vi_info["grado_num"],
-        #                 "grado_den": vi_info["grado_den"],
-        #                 "grado_total": vi_info["grado_total"]
-        #             })
-        #     return comp
-        
         def componentes_detalle(lista_vars):
             comp = []
             for v in lista_vars:
-                comp.append({"nombre": v})
+                if v in vi_detalles:
+                    vi_info = vi_detalles[v]
+                    comp.append({
+                        "nombre": v,
+                        "formada_por": vi_info["formada_por"],
+                        "grado_num": vi_info["grado_num"],
+                        "grado_den": vi_info["grado_den"],
+                        "grado_total": vi_info["grado_total"]
+                    })
             return comp
-
-        # numerador_detalle_VI = {
-        #     "componentes": componentes_detalle_VI(usadas_num),
-        #     "variables_originales": inic_num_val,
-        #     "grado_total": int(m.eval(addsum(grado_prod_n), model_completion=True).as_long())
-        # }
-
-        # denominador_detalle_VI = {
-        #     "componentes": componentes_detalle_VI(usadas_den),
-        #     "variables_originales": inic_den_val, 
-        #     "grado_total": int(m.eval(addsum(grado_prod_d), model_completion=True).as_long())
-        # }
 
         numerador_detalle = {
             "componentes": componentes_detalle(usadas_num),
@@ -378,9 +355,9 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
 
         print(f"\nResultado exportado en {"prod.json"}")
 
+
+
     else:
         print("No hay solución.")
         with open("prod.json", "w") as fout:
             json.dump({}, fout)
-    
-# reducir_grado_producto(5, 22, 20)

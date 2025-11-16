@@ -61,7 +61,6 @@ def adaptar_a_suma(prod_reducido, maxDeg):
     signals_num = construir_signals(num_comps, num_vars_orig)
     signals_den = construir_signals(den_comps, den_vars_orig)
 
-    # Crear entrada para suma_fracciones
     fraccion_equivalente = {
         "op": "frac",
         "values": [
@@ -89,28 +88,123 @@ maxDeg = data["degree"]
 max_intermedias = 5
 
 fracciones = []
-vi_utilizadas = 0
+vi_utilizadas_total = 0
+variables_intermedias = []
+fracciones_producto = []
 
 for idx, frac in enumerate(expresiones):
     grado_num = frac["values"][0]["degree"]
     grado_den = frac["values"][1]["degree"]
 
+    # ------------------------------------
+    # CASO 1: se pasa de grado → usar prod.json
+    # ------------------------------------
     if grado_num > maxDeg or grado_den > maxDeg:
+
         print(f"Ejecutando producto sobre la fracción {idx}...")
         prod_reducido = ejecutar_producto(grado_num, grado_den, maxDeg, max_intermedias)
 
-        vi_utilizadas += len(prod_reducido["variables_intermedias"])
+        vi_dict = prod_reducido["variables_intermedias"]
+        vi_utilizadas_total += len(vi_dict)
 
-        # Adaptar la salida del producto a la entrada de suma_fracciones
+        # --- identificar VI del numerador y denominador ---
+        vi_num = [comp["nombre"] for comp in prod_reducido["producto"]["numerador"]["componentes"]]
+        vi_den = [comp["nombre"] for comp in prod_reducido["producto"]["denominador"]["componentes"]]
+
+        # --- asignar nombres correctos ---
+        vi_num_mapeadas = []
+        for j, nombre_vi in enumerate(vi_num):
+            vi_global = f"VI_{idx}_{j}"
+            variables_intermedias.append({vi_global: vi_dict[nombre_vi]})
+            vi_num_mapeadas.append(vi_global)
+
+        vi_den_mapeadas = []
+        for j, nombre_vi in enumerate(vi_den):
+            vi_global = f"VI_{idx}_{j + len(vi_num)}"   # continúan después del numerador
+            variables_intermedias.append({vi_global: vi_dict[nombre_vi]})
+            vi_den_mapeadas.append(vi_global)
+
+        # --- variables originales con nuevo sistema ---
+        num_orig_count = prod_reducido["producto"]["numerador"].get("variables_originales", 0)
+        den_orig_count = prod_reducido["producto"]["denominador"].get("variables_originales", 0)
+
+        orig_num = f"orig_{idx}_0_{num_orig_count}"
+        orig_den = f"orig_{idx}_1_{den_orig_count}"
+
+        # --- composición final de la fracción ---
+        comp_num = vi_num_mapeadas
+        comp_den = vi_den_mapeadas
+
+        if num_orig_count > 0: comp_num.append(orig_num)
+        if den_orig_count > 0: comp_den.append(orig_den)
+
+        fracciones_producto.append({
+            "fraccion": idx,
+            "numerador": comp_num,
+            "denominador": comp_den
+        })
+
+        # --- adaptar para suma_fracciones ---
         fraccion_adaptada = adaptar_a_suma(prod_reducido, maxDeg)
-
-        # Extraer la fracción equivalente (solo la primera, porque es una sola en expressions)
         fracciones.append(fraccion_adaptada["expressions"][0])
 
+    # ------------------------------------
+    # CASO 2: NO se pasa de grado → queda como está
+    # ------------------------------------
     else:
         fracciones.append(frac)
 
-print("Ejecutando suma_fracciones_v1_2...\n")
-vi_utilizadas += suma_fracciones_v1_2.suma_fracciones(maxDeg, fracciones)
+        # señales originales
+        num_signals = grado_num
+        den_signals = grado_den
 
-print(f"\nEn total se han utilizado {vi_utilizadas} variables intermedias")
+        # generar numeración orig_idx_lado_k
+        orig_num = f"orig_{idx}_0_{num_signals}"
+        orig_den = f"orig_{idx}_1_{den_signals}"
+
+        fracciones_producto.append({
+            "fraccion": idx,
+            "numerador": orig_num,
+            "denominador": orig_den
+        })
+
+
+print("Ejecutando suma_fracciones_v1_2...\n")
+
+# Ejecuta la suma y obtiene los grupos
+grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, fracciones)
+# grupos = [ { "suma": k, "fracciones": [i,j,...] }, ... ]
+
+# -------------------------------
+# Calcular cuántas VI se necesitan realmente
+# -------------------------------
+total_vi_creadas = 0
+for g in grupos:
+    if len(g["fracciones"]) >= 2:   # solo cuentan sumas reales
+        total_vi_creadas += 1
+
+print("\n--- Resultado de sumas ---")
+for g in grupos:
+    frs = g["fracciones"]
+    cadena = " + ".join(f"fracción {f}" for f in frs)
+    print(f"suma{g['suma']} = {cadena}")
+
+print("\nTotal de VI creadas en la suma =", total_vi_creadas)
+vi_utilizadas_total += total_vi_creadas
+print("\nTotal de VI creadas =", vi_utilizadas_total)
+
+# -------------------------------------
+# Construir JSON FINAL
+# -------------------------------------
+resultado = {
+    "variables_intermedias": variables_intermedias,
+    "fracciones_producto": fracciones_producto,
+    "sumas": grupos,
+    "total_vi_creadas": vi_utilizadas_total
+}
+
+# Guardarlo
+with open("resultado_final.json", "w") as fout:
+    json.dump(resultado, fout, indent=4)
+
+print("\nArchivo 'resultado_final.json' generado correctamente.")

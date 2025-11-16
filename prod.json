@@ -9,16 +9,7 @@
         "denominador": {
             "componentes": [
                 {
-                    "nombre": "VI_0",
-                    "formada_por": {
-                        "num_originales": 2,
-                        "den_originales": 3,
-                        "num_depende_de": [],
-                        "den_depende_de": []
-                    },
-                    "grado_num": 2,
-                    "grado_den": 3,
-                    "grado_total": 3
+                    "nombre": "VI_0"
                 }
             ],
             "variables_originales": 0,

@@ -168,30 +168,27 @@ def suma_fracciones(maxDeg, expresiones):
         modelo = solver.model()
         print("Solución encontrada:\n")
 
-        numV = 1
+        grupos = []
+        sum_id = 1
+        usados = set()  # Para no repetir fracciones
+
         for i in range(num_expresiones):
-            activos = []
-            for j in range(i, num_expresiones):
-                if modelo.evaluate(juntar[i][j - i]) == True:
-                    activos.append(j)
-            
-            if len(activos) > 0:
-                print(f"→ Fracción {numV}:")
-                
-                if modelo.evaluate(juntar[i][0] == False):
-                    num = expresiones[i]["values"][0]["signals"]
-                    den = expresiones[i]["values"][1]["signals"]
-                    print(f"      · Exp {i}: ({num}) \\ ({den})")
+            if i in usados:
+                continue
 
-                for j in activos:
-                    num = expresiones[j]["values"][0]["signals"]
-                    den = expresiones[j]["values"][1]["signals"]
-                    print(f"      · Exp {j}: ({num}) \\ ({den})")
-                
-                numV += 1
+            # Construimos la lista de fracciones que se suman en este grupo
+            grupo_actual = [i]
+            usados.add(i)
 
-        # print(f"\nNúmero de variables finales: {numV - 1}")
-        return numV - 1
+            for j in range(i+1, num_expresiones):
+                if modelo.evaluate(juntar[i][j - i]):
+                    grupo_actual.append(j)
+                    usados.add(j)
+
+            grupos.append({"suma": sum_id, "fracciones": grupo_actual})
+            sum_id += 1
+
+        return grupos
 
     else:
         print("No se encontró una solución válida bajo las restricciones dadas.")
