@@ -26,7 +26,7 @@ def addsum(a):
 ##### PARAMETROS #####
 # max_intermedias = 5
 
-def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
+def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedias
 
     ###### DECLARACIÓN DE VARIABLES ######
     solver = Optimize()
@@ -223,8 +223,8 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
         solver.add_soft(And(grado_num_variables[var] == 0, grado_den_variables[var] == 0), 1, "min_vars")
 
     # Minimizar grado final --> Maximizar las variables que si tienen elementos en numerador, tengan también en denominador y viceversa
-    # for var in range(max_intermedias):
-    #     solver.add_soft(And(grado_num_variables[var] > 0, grado_den_variables[var] > 0), 1, "min_grado_final")
+    for var in range(max_intermedias):
+        solver.add_soft(And(grado_num_variables[var] > 0, grado_den_variables[var] > 0), 1, "min_grado_final")
 
     # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n
     # for var in range(max_intermedias):
@@ -250,9 +250,9 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
                 val_num = m.eval(usa_var_anterior_num[var][anterior], model_completion=True)
                 val_den = m.eval(usa_var_anterior_den[var][anterior], model_completion=True)
                 if is_true(val_num):
-                    deps_num.append(f"VI_{anterior}")
+                    deps_num.append(f"VI_{id}_{anterior}")
                 if is_true(val_den):
-                    deps_den.append(f"VI_{anterior}")
+                    deps_den.append(f"VI_{id}_{anterior}")
 
             dep_str = ""
             if deps_num or deps_den:
@@ -265,9 +265,9 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
                     dep_str += f"den depende de: {', '.join(deps_den)}"
                 dep_str += ")"
 
-            print(f"VI_{var}: num = {num}, den = {den}, cubre {cubre_num} en num y {cubre_den} en den{dep_str}")
+            print(f"VI_{id}_{var}: num = {num}, den = {den}, cubre {cubre_num} en num y {cubre_den} en den{dep_str}")
 
-            dependencias[f"VI_{var}"] = {"num": deps_num, "den": deps_den}
+            dependencias[f"VI_{id}_{var}"] = {"num": deps_num, "den": deps_den}
 
         # Identificar variables usadas en el producto final
         usadas_num = []
@@ -277,9 +277,9 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
             usa_num = m.eval(producto_usa_var_en_num[var], model_completion=True)
             usa_den = m.eval(producto_usa_var_en_den[var], model_completion=True)
             if is_true(usa_num):
-                usadas_num.append(f"VI_{var}")
+                usadas_num.append(f"VI_{id}_{var}")
             elif is_true(usa_den):
-                usadas_den.append(f"VI_{var}")
+                usadas_den.append(f"VI_{id}_{var}")
 
         inic_num = m.eval(producto_usa_iniciales_en_num, model_completion=True).as_long()
         inic_den = m.eval(producto_usa_iniciales_en_den, model_completion=True).as_long()
@@ -295,11 +295,11 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
         # Construir detalles de cada VI
         vi_detalles = {}
         for var in range(max_intermedias):
-            vi_name = f"VI_{var}"
+            vi_name = f"VI_{id}_{var}"
             gr_num = int(m.eval(grado_num_variables[var], model_completion=True).as_long())
             gr_den = int(m.eval(grado_den_variables[var], model_completion=True).as_long())
 
-            # Solo meter las VI que se utilizan, como se está minimizando, son solo las que son != 0 tanto num como den
+            # Solo meter las VI que se utilizan, como se está minimizando, son solo las que son != 0 num o den
             if gr_num > 0 or gr_den > 0:
                 vi_detalles[vi_name] = {
                     "formada_por": {
@@ -316,20 +316,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
         inic_num_val = m.eval(producto_usa_iniciales_en_num, model_completion=True).as_long()
         inic_den_val = m.eval(producto_usa_iniciales_en_den, model_completion=True).as_long()
 
-        # def componentes_detalle_VI(lista_vars):
-        #     comp = []
-        #     for v in lista_vars:
-        #         if v in vi_detalles:
-        #             vi_info = vi_detalles[v]
-        #             comp.append({
-        #                 "nombre": v,
-        #                 "formada_por": vi_info["formada_por"],
-        #                 "grado_num": vi_info["grado_num"],
-        #                 "grado_den": vi_info["grado_den"],
-        #                 "grado_total": vi_info["grado_total"]
-        #             })
-        #     return comp
-        
         def componentes_detalle(lista_vars):
             comp = []
             for v in lista_vars:
@@ -383,4 +369,4 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermedias
         with open("prod.json", "w") as fout:
             json.dump({}, fout)
     
-# reducir_grado_producto(5, 22, 20)
+# reducir_grado_producto(3, 14, 10)

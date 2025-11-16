@@ -10,8 +10,8 @@
         {
             "op": "frac",
             "values": [
-                {"signals": 2, "degree": 3},
-                {"signals": 8, "degree": 1}
+                {"signals": 2, "degree": 14},
+                {"signals": 8, "degree": 10}
             ]
         },
         {

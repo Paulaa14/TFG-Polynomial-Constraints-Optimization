@@ -9,7 +9,7 @@
         "denominador": {
             "componentes": [
                 {
-                    "nombre": "VI_0"
+                    "nombre": "VI_3_0"
                 }
             ],
             "variables_originales": 0,
@@ -17,7 +17,7 @@
         }
     },
     "variables_intermedias": {
-        "VI_0": {
+        "VI_3_0": {
             "formada_por": {
                 "num_originales": 2,
                 "den_originales": 3,

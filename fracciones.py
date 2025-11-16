@@ -22,8 +22,8 @@ def addsum(a):
             asum = asum + a[i]
         return asum
 
-def ejecutar_producto(grado_num, grado_den, maxDeg, max_intermedias):
-    prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den) # max_intermedias
+def ejecutar_producto(grado_num, grado_den, maxDeg, id):
+    prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den, id) # max_intermedias
 
     with open("prod.json", "r") as f:
         prod_reducido = json.load(f)
@@ -85,7 +85,6 @@ with open(args.filein) as f:
 
 expresiones = data["expressions"]
 maxDeg = data["degree"]
-max_intermedias = 5
 
 fracciones = []
 vi_utilizadas_total = 0
@@ -102,41 +101,35 @@ for idx, frac in enumerate(expresiones):
     if grado_num > maxDeg or grado_den > maxDeg:
 
         print(f"Ejecutando producto sobre la fracción {idx}...")
-        prod_reducido = ejecutar_producto(grado_num, grado_den, maxDeg, max_intermedias)
+        prod_reducido = ejecutar_producto(grado_num, grado_den, maxDeg, idx)
 
         vi_dict = prod_reducido["variables_intermedias"]
         vi_utilizadas_total += len(vi_dict)
 
-        # --- identificar VI del numerador y denominador ---
-        vi_num = [comp["nombre"] for comp in prod_reducido["producto"]["numerador"]["componentes"]]
-        vi_den = [comp["nombre"] for comp in prod_reducido["producto"]["denominador"]["componentes"]]
+        # --- mapear todas las VI a nombres globales ---
+        vi_global_map = {}  # map local_name -> global_name
+        for k, vi_local in enumerate(vi_dict.keys()):
+            vi_global = f"VI_{idx}_{k}"
+            variables_intermedias.append({vi_global: vi_dict[vi_local]})
+            vi_global_map[vi_local] = vi_global
 
-        # --- asignar nombres correctos ---
-        vi_num_mapeadas = []
-        for j, nombre_vi in enumerate(vi_num):
-            vi_global = f"VI_{idx}_{j}"
-            variables_intermedias.append({vi_global: vi_dict[nombre_vi]})
-            vi_num_mapeadas.append(vi_global)
-
-        vi_den_mapeadas = []
-        for j, nombre_vi in enumerate(vi_den):
-            vi_global = f"VI_{idx}_{j + len(vi_num)}"   # continúan después del numerador
-            variables_intermedias.append({vi_global: vi_dict[nombre_vi]})
-            vi_den_mapeadas.append(vi_global)
-
-        # --- variables originales con nuevo sistema ---
+        # --- producto numerador y denominador solo con VI que se usan ---
+        numerador_componentes = [vi_global_map[comp["nombre"]] 
+                         for comp in prod_reducido["producto"]["numerador"]["componentes"]]
+        denominador_componentes = [vi_global_map[comp["nombre"]] 
+                           for comp in prod_reducido["producto"]["denominador"]["componentes"]]
+        # --- variables originales ---
         num_orig_count = prod_reducido["producto"]["numerador"].get("variables_originales", 0)
         den_orig_count = prod_reducido["producto"]["denominador"].get("variables_originales", 0)
 
-        orig_num = f"orig_{idx}_0_{num_orig_count}"
-        orig_den = f"orig_{idx}_1_{den_orig_count}"
+        orig_num = f"orig_{idx}_0_{num_orig_count}" if num_orig_count > 0 else []
+        orig_den = f"orig_{idx}_1_{den_orig_count}" if den_orig_count > 0 else []
 
-        # --- composición final de la fracción ---
-        comp_num = vi_num_mapeadas
-        comp_den = vi_den_mapeadas
+        if num_orig_count > 0: numerador_componentes.append(orig_num)
+        if den_orig_count > 0: denominador_componentes.append(orig_den)
 
-        if num_orig_count > 0: comp_num.append(orig_num)
-        if den_orig_count > 0: comp_den.append(orig_den)
+        comp_num = numerador_componentes  # ahora lista plana de strings
+        comp_den = denominador_componentes
 
         fracciones_producto.append({
             "fraccion": idx,
@@ -179,15 +172,23 @@ grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, fracciones)
 # Calcular cuántas VI se necesitan realmente
 # -------------------------------
 total_vi_creadas = 0
-for g in grupos:
-    if len(g["fracciones"]) >= 2:   # solo cuentan sumas reales
-        total_vi_creadas += 1
 
 print("\n--- Resultado de sumas ---")
 for g in grupos:
     frs = g["fracciones"]
     cadena = " + ".join(f"fracción {f}" for f in frs)
     print(f"suma{g['suma']} = {cadena}")
+
+    nombre_vi = f"VI_S_{total_vi_creadas}"
+
+    variables_intermedias.append({
+        nombre_vi: {
+            "tipo": "suma",
+            "fracciones": frs
+        }
+    })
+
+    total_vi_creadas += 1
 
 print("\nTotal de VI creadas en la suma =", total_vi_creadas)
 vi_utilizadas_total += total_vi_creadas
@@ -199,7 +200,7 @@ print("\nTotal de VI creadas =", vi_utilizadas_total)
 resultado = {
     "variables_intermedias": variables_intermedias,
     "fracciones_producto": fracciones_producto,
-    "sumas": grupos,
+    "resultado_final": [f"VI_S_{i}" for i in range(len(grupos))],
     "total_vi_creadas": vi_utilizadas_total
 }
 
