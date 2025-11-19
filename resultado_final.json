@@ -1,116 +1,87 @@
 {
+    "total_vi_creadas": 11,
     "variables_intermedias": [
         {
             "VI_0_0": {
-                "formada_por": {
-                    "num_originales": 3,
-                    "den_originales": 2,
-                    "num_depende_de": [],
-                    "den_depende_de": []
-                },
-                "grado_num": 3,
-                "grado_den": 2,
-                "grado_total": 3
+                "numerador": [
+                    "orig_0_0_3"
+                ],
+                "denominador": [
+                    "orig_0_1_2"
+                ]
             }
         },
         {
-            "VI_1_0": {
-                "formada_por": {
-                    "num_originales": 3,
-                    "den_originales": 2,
-                    "num_depende_de": [],
-                    "den_depende_de": []
-                },
-                "grado_num": 3,
-                "grado_den": 2,
-                "grado_total": 3
+            "VI_2_0": {
+                "numerador": [
+                    "orig_2_0_3"
+                ],
+                "denominador": [
+                    "orig_2_1_2"
+                ]
             }
         },
         {
-            "VI_1_1": {
-                "formada_por": {
-                    "num_originales": 3,
-                    "den_originales": 0,
-                    "num_depende_de": [],
-                    "den_depende_de": []
-                },
-                "grado_num": 3,
-                "grado_den": 0,
-                "grado_total": 3
+            "VI_2_1": {
+                "numerador": [
+                    "orig_2_0_3"
+                ],
+                "denominador": []
             }
         },
         {
-            "VI_1_2": {
-                "formada_por": {
-                    "num_originales": 2,
-                    "den_originales": 2,
-                    "num_depende_de": [
-                        "VI_1_0"
-                    ],
-                    "den_depende_de": []
-                },
-                "grado_num": 3,
-                "grado_den": 2,
-                "grado_total": 3
+            "VI_2_2": {
+                "numerador": [
+                    "VI_2_0",
+                    "orig_2_0_2"
+                ],
+                "denominador": [
+                    "orig_2_1_2"
+                ]
             }
         },
         {
-            "VI_1_3": {
-                "formada_por": {
-                    "num_originales": 2,
-                    "den_originales": 2,
-                    "num_depende_de": [
-                        "VI_1_2"
-                    ],
-                    "den_depende_de": []
-                },
-                "grado_num": 3,
-                "grado_den": 2,
-                "grado_total": 3
+            "VI_2_3": {
+                "numerador": [
+                    "VI_2_2",
+                    "orig_2_0_2"
+                ],
+                "denominador": [
+                    "orig_2_1_2"
+                ]
             }
         },
         {
-            "VI_1_4": {
-                "formada_por": {
-                    "num_originales": 2,
-                    "den_originales": 2,
-                    "num_depende_de": [
-                        "VI_1_1"
-                    ],
-                    "den_depende_de": []
-                },
-                "grado_num": 3,
-                "grado_den": 2,
-                "grado_total": 3
+            "VI_2_4": {
+                "numerador": [
+                    "VI_2_1",
+                    "orig_2_0_2"
+                ],
+                "denominador": [
+                    "orig_2_1_2"
+                ]
             }
         },
         {
-            "VI_1_5": {
-                "formada_por": {
-                    "num_originales": 1,
-                    "den_originales": 2,
-                    "num_depende_de": [
-                        "VI_1_3",
-                        "VI_1_4"
-                    ],
-                    "den_depende_de": []
-                },
-                "grado_num": 3,
-                "grado_den": 2,
-                "grado_total": 3
+            "VI_2_5": {
+                "numerador": [
+                    "VI_2_3",
+                    "VI_2_4",
+                    "orig_2_0_1"
+                ],
+                "denominador": [
+                    "orig_2_1_2"
+                ]
             }
         },
         {
             "VI_3_0": {
-                "formada_por": {
-                    "num_originales": 2,
-                    "den_originales": 3,
-                    "num_depende_de": [],
-                    "den_depende_de": []
-                },
-                "grado_num": 2,
-                "grado_den": 3,
-                "grado_total": 3
+                "numerador": [
+                    "orig_3_1_3"
+                ],
+                "denominador": [
+                    "orig_3_0_2"
+                ]
             }
         },
         {
@@ -118,7 +89,7 @@
                 "tipo": "suma",
                 "fracciones": [
                     0,
-                    1,
+                    2,
                     3
                 ]
             }
@@ -127,7 +98,7 @@
             "VI_S_1": {
                 "tipo": "suma",
                 "fracciones": [
-                    2,
+                    1,
                     4
                 ]
             }
@@ -152,16 +123,16 @@
         },
         {
             "fraccion": 1,
-            "numerador": [
-                "VI_1_5",
-                "orig_1_0_1"
-            ],
-            "denominador": []
+            "numerador": "orig_1_0_2",
+            "denominador": "orig_1_1_2"
         },
         {
             "fraccion": 2,
-            "numerador": "orig_2_0_2",
-            "denominador": "orig_2_1_2"
+            "numerador": [
+                "VI_2_5",
+                "orig_2_0_1"
+            ],
+            "denominador": []
         },
         {
             "fraccion": 3,
@@ -187,6 +158,5 @@
         "VI_S_0",
         "VI_S_1",
         "VI_S_2"
-    ],
-    "total_vi_creadas": 11
+    ]
 }

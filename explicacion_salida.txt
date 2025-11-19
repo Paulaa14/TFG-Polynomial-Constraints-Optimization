@@ -1,0 +1,36 @@
+Originalmente se tiene una suma de N fracciones de las cuales hay algunas que superan el grado máximo. Dichas fracciones inicialmente pasan por una fase de reducción del producto en la que 
+se crean VI frescas que permiten reducir el grado de dicha fracción. Una vez todas las fracciones cumplen el grado, se pasa a la fase de la suma, que lo que hace es crear variables que 
+agrupan fracciones tales que su suma no supere el grado máximo. La solución final será la suma de estas nuevas variables que representan las agrupaciones de fracciones. 
+
+La entrada está formada por el grado máximo permitido y una lista de expresiones que simplemente indica qué fracciones se quieren sumar. Para cada fracción se muestra el grado del numerador 
+y del denominador.
+
+La salida está formada por un contador con el número total de VI que se han creado tras las fases de reducción del producto y suma, y por 3 listas:
+
+1. Variables intermedias: 
+
+    - Contiene una lista de todas las variables que ha sido necesario introducir, tanto en la fase de reducción del producto, como en la parte de agrupar sumas de fracciones.
+
+    - Cada variable formada en el producto se llama VI_i_j donde i es la fracción a la que pertenece y j es el número que indica qué VI es, de las creadas para la fracción i.
+
+    - Las variables formadas en el producto muestran el contenido tanto del numerador como del denominador. Pueden contener otras VI anteriores creadas en la reducción de la misma fracción, es decir, 
+    con la misma i o variables originales que no se han metido en ninguna VI anterior. Las variables originales siguen la siguiente numeración:
+        - orig_i_0_j: se han utilizado j variables originales del numerador(0) de la fracción i.
+        - orig_i_1_j: se han utilizado j variables originales del denominador(1) de la fracción i.
+
+    - Las VI que se utilicen en el denominador, ya sea de otra VI o del producto final reducido, tienen invertido el numerador y el denominador, para que se pueda hacer bien el conteo de las 
+    variables originales al sustituir en las fracciones.
+    
+    - Las variables formadas en la fase de agrupar sumas de fracciones sin que se pasen de grado se llaman VI_S_i que es la variable i-ésima creada en dicha fase. Se indica por qué fracciones está formada
+    como una lista. Es decir, fracciones: [1, 2, 3] indica que se han sumado las fracciones 1, 2 y 3 para formar una nueva variable sin superar el grado. 
+
+2. Fracciones producto:
+
+    - Este array indica, para cada fracción que se tenía en un inicio, cuál es su contenido tras pasar por la fase de reducción del producto. Si inicialmente no superaban el grado, el contenido será
+    el mismo que tenían originalmente. Si superaban el grado, estarán formadas tanto por VI frescas como por variables originales de dicha fracción que no se hayan introducido en ninguna de las VI.
+
+    - Tienen la misma estructura que las variables de la lista de variables intermedias (quién forma numerador y denominador).
+    
+3. Resultado final:
+
+    - Es simplemente la representación final, que es la suma de todas las VI_S que hay en el array de variables intermedias.
