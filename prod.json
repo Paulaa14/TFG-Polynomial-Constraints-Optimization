@@ -2,27 +2,27 @@
     "op": "frac",
     "producto": {
         "numerador": {
-            "componentes": [],
-            "variables_originales": 3,
-            "grado_total": 3
-        },
-        "denominador": {
             "componentes": [
                 {
                     "nombre": "VI_3_0"
                 }
             ],
-            "variables_originales": 0,
+            "variables_originales": 2,
+            "grado_total": 3
+        },
+        "denominador": {
+            "componentes": [],
+            "variables_originales": 1,
             "grado_total": 1
         }
     },
     "variables_intermedias": {
         "VI_3_0": {
             "numerador": [
-                "orig_3_1_3"
+                "orig_3_0_3"
             ],
             "denominador": [
-                "orig_3_0_2"
+                "orig_3_1_2"
             ]
         }
     },

@@ -3,7 +3,8 @@
 
 # Simetrías de variables
 # Otra opción: quién me usa: booleana de si es usada por intermedia/final o no, y quien la usa. Si una tiene a falso los 2, las siguientes también
-# Primero intermedias usadas por otras intermedias y luego las usadas por el final. DEntro de las que se usan en intermedias, que se utilicen en orden
+# Primero intermedias usadas por otras intermedias y luego las usadas por el final (hecho). 
+# DEntro de las que se usan en intermedias, que se utilicen en orden
 # Las variables llenas al principio y medio llenas después
 # Garantizar que no se pierden soluciones, cualquier cosa que quita repetidos, no elimina soluciones, solo evita que la misma solucion tenga varias representaciones --> Demostrar
 # Ir apuntando todo
@@ -196,6 +197,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
     # Primero aparezcan las variables de la forma n/n-1, luego las de n-1/n y luego las vacías
     for var in range(max_intermedias - 1):
         solver.add(grado_num_variables[var] >= grado_num_variables[var + 1])
+        solver.add(Implies(grado_num_variables[var] == grado_num_variables[var + 1], grado_den_variables[var] >= grado_den_variables[var + 1]))
 
     # Primero las variables que utilicen otras variables anteriores y luego las que no
     # Si una varibale utiliza una variable anterior, implica que o la siguiente tiene grado distinto en numerador, según el orden establecido antes
@@ -213,20 +215,43 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         
         solver.add(Implies(addsum(depende_de_alguna_var) > 0, Or(grado_num_variables[var] != grado_num_variables[var + 1], addsum(siguiente_var_depende) > 0)))
 
+        producto_usa_var = Or(producto_usa_var_en_num[var], producto_usa_var_en_den[var])
+        producto_usa_var_sig = Or(producto_usa_var_en_num[var + 1], producto_usa_var_en_den[var + 1])
+        var_sig_vacia = And(grado_num_variables[var + 1] == 0, grado_den_variables[var + 1] == 0)
+
+        # Si var es utilizada por el producto, var + 1 tambien
+        solver.add(Implies(producto_usa_var, Or(producto_usa_var_sig, var_sig_vacia)))
+
     # Dentro de las variables que utilizan otras anteriores, deben aparecer primero aquellas que tengan un número de variables iniciales mayor
     for var in range(max_intermedias - 1):
         solver.add(num_variables_originales_var_num[var] >= num_variables_originales_var_num[var + 1])
         solver.add(Implies(num_variables_originales_var_num[var] == num_variables_originales_var_num[var + 1], num_variables_originales_var_den[var] >= num_variables_originales_var_den[var + 1]))
 
+    # Dentro de las que se usan en intermedias, que se utilicen en orden
+    for var in range(max_intermedias):
+
+        for anterior_usada in range(var):
+            for anterior in range(anterior_usada):
+                for siguiente_a_var in range(var + 1, max_intermedias):
+                    var_usa_anterior_usada = Or(usa_var_anterior_num[var][anterior_usada], usa_var_anterior_den[var][anterior_usada])
+                    siguiente_usa_anterior_a_usada = Or(usa_var_anterior_num[siguiente_a_var][anterior], usa_var_anterior_den[siguiente_a_var][anterior])
+
+                    # Si una variable utiliza una anterior, las siguientes variables no pueden utilizar las variables anteriores a la usada
+                    solver.add(Implies(var_usa_anterior_usada, Not(siguiente_usa_anterior_a_usada)))
+
+    # Las variables llenas al principio y medio llenas después
+
+
     # Minimizar el número de variables
     for var in range(max_intermedias):
         solver.add_soft(And(grado_num_variables[var] == 0, grado_den_variables[var] == 0), 1, "min_vars")
 
-    # Minimizar grado final --> Maximizar las variables que si tienen elementos en numerador, tengan también en denominador y viceversa
+    # Minimizar grado final --> Maximizar las variables que si tienen elementos en numerador, tengan también en denominador y viceversa 
+    # --> Ralentiza mucho pero reduce bastante el número de VI finales tras la suma
     for var in range(max_intermedias):
         solver.add_soft(And(grado_num_variables[var] > 0, grado_den_variables[var] > 0), 1, "min_grado_final")
 
-    # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n
+    # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n --> Ralentiza algo menos que la anterior pero tmb
     # for var in range(max_intermedias):
     #     solver.add_soft(grado_num_variables[var] == maxDeg, 1, "min_vars_den")
 
@@ -367,6 +392,5 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         print("No hay solución.")
         with open("prod.json", "w") as fout:
             json.dump({}, fout)
-
     
-# reducir_grado_producto(3, 14, 10)
+# reducir_grado_producto(3, 14, 10, 0)

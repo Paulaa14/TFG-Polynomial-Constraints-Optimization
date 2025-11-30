@@ -12,75 +12,75 @@
             }
         },
         {
-            "VI_2_0": {
+            "VI_1_0": {
                 "numerador": [
-                    "orig_2_0_3"
+                    "orig_1_0_3"
                 ],
                 "denominador": [
-                    "orig_2_1_2"
+                    "orig_1_1_2"
                 ]
             }
         },
         {
-            "VI_2_1": {
+            "VI_1_1": {
                 "numerador": [
-                    "orig_2_0_3"
+                    "VI_1_0",
+                    "orig_1_0_2"
+                ],
+                "denominador": [
+                    "orig_1_1_2"
+                ]
+            }
+        },
+        {
+            "VI_1_2": {
+                "numerador": [
+                    "VI_1_1",
+                    "orig_1_0_2"
+                ],
+                "denominador": [
+                    "orig_1_1_2"
+                ]
+            }
+        },
+        {
+            "VI_1_3": {
+                "numerador": [
+                    "VI_1_2",
+                    "orig_1_0_2"
+                ],
+                "denominador": [
+                    "orig_1_1_2"
+                ]
+            }
+        },
+        {
+            "VI_1_4": {
+                "numerador": [
+                    "VI_1_3",
+                    "orig_1_0_2"
+                ],
+                "denominador": [
+                    "orig_1_1_2"
+                ]
+            }
+        },
+        {
+            "VI_1_5": {
+                "numerador": [
+                    "VI_1_4",
+                    "orig_1_0_2"
                 ],
                 "denominador": []
             }
         },
         {
-            "VI_2_2": {
-                "numerador": [
-                    "VI_2_0",
-                    "orig_2_0_2"
-                ],
-                "denominador": [
-                    "orig_2_1_2"
-                ]
-            }
-        },
-        {
-            "VI_2_3": {
-                "numerador": [
-                    "VI_2_2",
-                    "orig_2_0_2"
-                ],
-                "denominador": [
-                    "orig_2_1_2"
-                ]
-            }
-        },
-        {
-            "VI_2_4": {
-                "numerador": [
-                    "VI_2_1",
-                    "orig_2_0_2"
-                ],
-                "denominador": [
-                    "orig_2_1_2"
-                ]
-            }
-        },
-        {
-            "VI_2_5": {
-                "numerador": [
-                    "VI_2_3",
-                    "VI_2_4",
-                    "orig_2_0_1"
-                ],
-                "denominador": [
-                    "orig_2_1_2"
-                ]
-            }
-        },
-        {
             "VI_3_0": {
                 "numerador": [
-                    "orig_3_1_3"
+                    "orig_3_0_3"
                 ],
                 "denominador": [
-                    "orig_3_0_2"
+                    "orig_3_1_2"
                 ]
             }
         },
@@ -89,7 +89,7 @@
                 "tipo": "suma",
                 "fracciones": [
                     0,
-                    2,
+                    1,
                     3
                 ]
             }
@@ -98,7 +98,7 @@
             "VI_S_1": {
                 "tipo": "suma",
                 "fracciones": [
-                    1,
+                    2,
                     4
                 ]
             }
@@ -123,24 +123,25 @@
         },
         {
             "fraccion": 1,
-            "numerador": "orig_1_0_2",
-            "denominador": "orig_1_1_2"
-        },
-        {
-            "fraccion": 2,
             "numerador": [
-                "VI_2_5",
-                "orig_2_0_1"
+                "VI_1_5",
+                "orig_1_0_1"
             ],
             "denominador": []
         },
         {
+            "fraccion": 2,
+            "numerador": "orig_2_0_2",
+            "denominador": "orig_2_1_2"
+        },
+        {
             "fraccion": 3,
             "numerador": [
-                "orig_3_0_3"
+                "VI_3_0",
+                "orig_3_0_2"
             ],
             "denominador": [
-                "VI_3_0"
+                "orig_3_1_1"
             ]
         },
         {

@@ -88,7 +88,7 @@ for idx, frac in enumerate(expresiones):
     grado_num = frac["values"][0]["degree"]
     grado_den = frac["values"][1]["degree"]
 
-    # CASO 1: se pasa de grado → usar prod.json
+    # CASO 1: se pasa de grado --> usar prod.json
     if grado_num > maxDeg or grado_den > maxDeg:
 
         print(f"Ejecutando producto sobre la fracción {idx}...")
@@ -130,7 +130,7 @@ for idx, frac in enumerate(expresiones):
         fraccion_adaptada = adaptar_a_suma(prod_reducido, maxDeg)
         fracciones.append(fraccion_adaptada["expressions"][0])
 
-    # CASO 2: NO se pasa de grado → queda como está
+    # CASO 2: NO se pasa de grado --> queda como está
     else:
         fracciones.append(frac)
 
@@ -145,7 +145,6 @@ for idx, frac in enumerate(expresiones):
             "numerador": orig_num,
             "denominador": orig_den
         })
-
 
 print("Ejecutando suma_fracciones_v1_2...\n")
 
