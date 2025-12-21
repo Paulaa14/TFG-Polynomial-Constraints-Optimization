@@ -148,8 +148,9 @@ for idx, frac in enumerate(expresiones):
 
 print("Ejecutando suma_fracciones_v1_2...\n")
 
-# Ejecuta la suma y obtiene los grupos
-grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, fracciones)
+# Ejecuta la suma y obtiene los grupos. El grado del numerador puede ser maxDeg pero el grado del denominador tiene que ser menor que maxDeg para que
+# al pasar mutiplicando al otro lado no te pases de grado
+grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones)
 
 # Calcular cuántas VI se necesitan realmente
 total_vi_creadas = 0
@@ -174,6 +175,57 @@ for g in grupos:
 print("\nTotal de VI creadas en la suma =", total_vi_creadas)
 vi_utilizadas_total += total_vi_creadas
 print("\nTotal de VI creadas =", vi_utilizadas_total)
+
+resultado_final = [f"VI_S_{i}" for i in range(len(grupos))]
+
+# Creación de ecuaciones finales
+ecuaciones_izq = []
+ecuaciones_dere = []
+
+vi_sumas = variables_intermedias[-total_vi_creadas:]
+
+for suma in range(total_vi_creadas):
+    nombre_vi, contenido = list(vi_sumas[suma].items())[0]
+    fracciones = contenido["fracciones"] # Fracciones por las que está formada la nueva variable de suma
+
+    lado_dere = []
+    comun_denominador = []
+    
+    # De cada fracción, añadir a una lista cada elemento de numerador y denominador y luego según vas procesando las siguientes fracciones añades lo que haga falta a dichas listas
+    for i, frac in enumerate(fracciones):
+        # numerador_frac = set()
+        # numerador_frac.add(fracciones_producto[frac]["numerador"])
+        lado_dere.append(fracciones_producto[frac]["numerador"])
+
+        comun_denominador.append(fracciones_producto[frac]["denominador"])
+
+    for j, f in enumerate(fracciones):
+        if j != i: lado_dere.append(fracciones_producto[f]["denominador"])
+
+    lado_izq = []
+    lado_izq.append(frac)
+    lado_izq.append(comun_denominador)
+
+    ecuaciones_izq.append(lado_izq)
+    ecuaciones_dere.append(lado_dere)
+    
+# Mostrar salida terminal
+for suma in range(total_vi_creadas):
+    for e in range(len(ecuaciones_izq[suma])):
+        print(f"{ecuaciones_izq[suma][e]} * ")
+
+    print(" V_S_{suma} = ")
+
+    for s in range(len(ecuaciones_dere[suma])):
+
+        for e in range(len(ecuaciones_dere[suma][s])):
+            if e < len(ecuaciones_dere[suma][s]) - 1: print(f"{ecuaciones_dere[suma][s][e]} * ")
+            else: print(f"{ecuaciones_dere[suma][s][e]}")
+
+        if s < len(ecuaciones_dere[suma]) - 1: print(" + ")
+    
+    print("\n")
+
 
 # Construir JSON FINAL
 resultado = {

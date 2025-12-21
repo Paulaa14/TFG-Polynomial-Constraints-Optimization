@@ -242,7 +242,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
     # Las variables llenas al principio y medio llenas después
 
 
-    # Minimizar el número de variables
+    # Minimizar el número de variables --> Orden lexicografico
     for var in range(max_intermedias):
         solver.add_soft(And(grado_num_variables[var] == 0, grado_den_variables[var] == 0), 1, "min_vars")
 

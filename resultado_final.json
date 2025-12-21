@@ -1,5 +1,5 @@
 {
-    "total_vi_creadas": 11,
+    "total_vi_creadas": 12,
     "variables_intermedias": [
         {
             "VI_0_0": {
@@ -89,8 +89,7 @@
                 "tipo": "suma",
                 "fracciones": [
                     0,
-                    1,
-                    3
+                    4
                 ]
             }
         },
@@ -98,13 +97,21 @@
             "VI_S_1": {
                 "tipo": "suma",
                 "fracciones": [
-                    2,
-                    4
+                    1,
+                    3
                 ]
             }
         },
         {
             "VI_S_2": {
+                "tipo": "suma",
+                "fracciones": [
+                    2
+                ]
+            }
+        },
+        {
+            "VI_S_3": {
                 "tipo": "suma",
                 "fracciones": [
                     5
@@ -158,6 +165,7 @@
     "resultado_final": [
         "VI_S_0",
         "VI_S_1",
-        "VI_S_2"
+        "VI_S_2",
+        "VI_S_3"
     ]
 }

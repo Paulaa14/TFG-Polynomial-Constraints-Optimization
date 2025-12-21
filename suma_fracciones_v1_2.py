@@ -23,35 +23,8 @@ def addsum(a):
         for i in range(1,len(a)):
             asum = asum + a[i]
         return asum
-
-# parser = argparse.ArgumentParser()
-
-# parser.add_argument("filein", type=str)
-# # parser.add_argument("fileout")
-
-# args=parser.parse_args()
-
-# f = open(args.filein)
-# data = json.load(f)
-
-# # file = open(args.fileout, "w")
-
-# expresiones = data["expressions"]
-# maxDeg = data["degree"]
-# num_expresiones = len(expresiones)
-
-# solver = Optimize()
-
-# Para cada expresión, me la quedo tal cual o la expando. Si me la quedo significa que va a ser una "VI" final
-# expando = []
-
-# for exp in range(num_expresiones):
-#     expando.append(Bool("exp_" + str(exp)))
-
-#     # Minimiza el número de variables "originales"
-#     solver.add_soft(expando[exp], 5, "keeps")
     
-def suma_fracciones(maxDeg, expresiones):
+def suma_fracciones(maxDegNum, maxDegDen, expresiones):
 
     solver = Optimize()
 
@@ -103,12 +76,12 @@ def suma_fracciones(maxDeg, expresiones):
             grado_den_e = expresiones[e]["values"][1]["degree"]
 
             # Si se juntan se pasa de grado
-            if grado_num_exp + grado_den_e > maxDeg or grado_num_e + grado_den_exp > maxDeg or grado_den_exp + grado_den_e > maxDeg:
+            if grado_num_exp + grado_den_e > maxDegNum or grado_num_e + grado_den_exp > maxDegNum or grado_den_exp + grado_den_e > maxDegDen:
                 solver.add(Not(juntar[exp][e - exp]))
 
         # Si la expresión se pasa de grado obligatoriamente tiene que ir sola
-        if grado_num_exp > maxDeg or grado_den_exp > maxDeg:
-            solver.add(juntar[exp][0]) 
+        # if grado_num_exp > maxDeg or grado_den_exp > maxDeg:
+        #     solver.add(juntar[exp][0]) 
         
     # Comprobar que las expresiones que se forman no superan el grado
     for exp in range(num_expresiones):
@@ -132,9 +105,11 @@ def suma_fracciones(maxDeg, expresiones):
             grado_num.append(nuevo_grado_num)
             grado_den.append(nuevo_grado_den)
 
-        grado_total = If(grado_num[-1] > grado_den[-1], grado_num[-1], grado_den[-1])
+        # grado_total = If(grado_num[-1] > grado_den[-1], grado_num[-1], grado_den[-1])
+        # solver.add(grado_total <= maxDeg)
 
-        solver.add(grado_total <= maxDeg)
+        solver.add(grado_num[-1] <= maxDegNum)
+        solver.add(grado_den[-1] <= maxDegDen)
 
     # Si se expande una expresión, obligatoriamente se tiene que unificar con otra. Variables que realmente cuentan
     for exp in range(num_expresiones):
