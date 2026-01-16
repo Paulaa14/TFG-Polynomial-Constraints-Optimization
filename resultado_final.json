@@ -2,91 +2,148 @@
     "total_vi_creadas": 12,
     "variables_intermedias": [
         {
-            "VI_0_0": {
-                "numerador": [
-                    "orig_0_0_3"
-                ],
-                "denominador": [
-                    "orig_0_1_2"
-                ]
+            "fraccion": 0,
+            "vi": 0,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [],
+                    "orig_num": 3,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 2
+                }
             }
         },
         {
-            "VI_1_0": {
-                "numerador": [
-                    "orig_1_0_3"
-                ],
-                "denominador": [
-                    "orig_1_1_2"
-                ]
+            "fraccion": 1,
+            "vi": 0,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [],
+                    "orig_num": 3,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 2
+                }
             }
         },
         {
-            "VI_1_1": {
-                "numerador": [
-                    "VI_1_0",
-                    "orig_1_0_2"
-                ],
-                "denominador": [
-                    "orig_1_1_2"
-                ]
+            "fraccion": 1,
+            "vi": 1,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [
+                        1
+                    ],
+                    "orig_num": 2,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 2
+                }
             }
         },
         {
-            "VI_1_2": {
-                "numerador": [
-                    "VI_1_1",
-                    "orig_1_0_2"
-                ],
-                "denominador": [
-                    "orig_1_1_2"
-                ]
+            "fraccion": 1,
+            "vi": 2,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [
+                        2
+                    ],
+                    "orig_num": 2,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 2
+                }
             }
         },
         {
-            "VI_1_3": {
-                "numerador": [
-                    "VI_1_2",
-                    "orig_1_0_2"
-                ],
-                "denominador": [
-                    "orig_1_1_2"
-                ]
+            "fraccion": 1,
+            "vi": 3,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [
+                        3
+                    ],
+                    "orig_num": 2,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 2
+                }
             }
         },
         {
-            "VI_1_4": {
-                "numerador": [
-                    "VI_1_3",
-                    "orig_1_0_2"
-                ],
-                "denominador": [
-                    "orig_1_1_2"
-                ]
+            "fraccion": 1,
+            "vi": 4,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [
+                        4
+                    ],
+                    "orig_num": 2,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 2
+                }
             }
         },
         {
-            "VI_1_5": {
-                "numerador": [
-                    "VI_1_4",
-                    "orig_1_0_2"
-                ],
-                "denominador": []
+            "fraccion": 1,
+            "vi": 5,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [
+                        5
+                    ],
+                    "orig_num": 2,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 0
+                }
             }
         },
         {
-            "VI_3_0": {
-                "numerador": [
-                    "orig_3_0_3"
-                ],
-                "denominador": [
-                    "orig_3_1_2"
-                ]
+            "fraccion": 3,
+            "vi": 0,
+            "contenido": {
+                "numerador": {
+                    "intermedias": [],
+                    "orig_num": 3,
+                    "orig_den": 0
+                },
+                "denominador": {
+                    "intermedias": [],
+                    "orig_num": 0,
+                    "orig_den": 2
+                }
             }
         },
         {
-            "VI_S_0": {
-                "tipo": "suma",
+            "fraccion": null,
+            "vi": 0,
+            "tipo": "suma",
+            "contenido": {
                 "fracciones": [
                     0,
                     4
@@ -94,8 +151,10 @@
             }
         },
         {
-            "VI_S_1": {
-                "tipo": "suma",
+            "fraccion": null,
+            "vi": 1,
+            "tipo": "suma",
+            "contenido": {
                 "fracciones": [
                     1,
                     3
@@ -103,69 +162,198 @@
             }
         },
         {
-            "VI_S_2": {
-                "tipo": "suma",
+            "fraccion": null,
+            "vi": 2,
+            "tipo": "suma",
+            "contenido": {
                 "fracciones": [
                     2
                 ]
             }
         },
         {
-            "VI_S_3": {
-                "tipo": "suma",
+            "fraccion": null,
+            "vi": 3,
+            "tipo": "suma",
+            "contenido": {
                 "fracciones": [
                     5
                 ]
             }
         }
     ],
-    "fracciones_producto": [
+    "sumas": [
         {
-            "fraccion": 0,
-            "numerador": [
-                "VI_0_0",
-                "orig_0_0_1"
-            ],
-            "denominador": []
+            "id": 0,
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "intermedias": [
+                    8
+                ],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 4,
+                        "cantidad": 1
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
+                    {
+                        "tipo": "prod",
+                        "intermedias": [
+                            0
+                        ],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 0,
+                                "cantidad": 1
+                            },
+                            {
+                                "origen": "denominador",
+                                "fraccion": 4,
+                                "cantidad": 1
+                            }
+                        ]
+                    },
+                    {
+                        "tipo": "prod",
+                        "intermedias": [],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 4,
+                                "cantidad": 1
+                            }
+                        ]
+                    }
+                ]
+            }
         },
         {
-            "fraccion": 1,
-            "numerador": [
-                "VI_1_5",
-                "orig_1_0_1"
-            ],
-            "denominador": []
+            "id": 1,
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "intermedias": [
+                    9
+                ],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 3,
+                        "cantidad": 1
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
+                    {
+                        "tipo": "prod",
+                        "intermedias": [
+                            5
+                        ],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 1,
+                                "cantidad": 1
+                            },
+                            {
+                                "origen": "denominador",
+                                "fraccion": 3,
+                                "cantidad": 1
+                            }
+                        ]
+                    },
+                    {
+                        "tipo": "prod",
+                        "intermedias": [
+                            0
+                        ],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 3,
+                                "cantidad": 2
+                            }
+                        ]
+                    }
+                ]
+            }
         },
         {
-            "fraccion": 2,
-            "numerador": "orig_2_0_2",
-            "denominador": "orig_2_1_2"
+            "id": 2,
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "intermedias": [
+                    10
+                ],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 2,
+                        "cantidad": 2
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
+                    {
+                        "tipo": "prod",
+                        "intermedias": [],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 2,
+                                "cantidad": 2
+                            }
+                        ]
+                    }
+                ]
+            }
         },
         {
-            "fraccion": 3,
-            "numerador": [
-                "VI_3_0",
-                "orig_3_0_2"
-            ],
-            "denominador": [
-                "orig_3_1_1"
-            ]
-        },
-        {
-            "fraccion": 4,
-            "numerador": "orig_4_0_1",
-            "denominador": "orig_4_1_1"
-        },
-        {
-            "fraccion": 5,
-            "numerador": "orig_5_0_3",
-            "denominador": "orig_5_1_2"
+            "id": 3,
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "intermedias": [
+                    11
+                ],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 5,
+                        "cantidad": 2
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
+                    {
+                        "tipo": "prod",
+                        "intermedias": [],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 5,
+                                "cantidad": 3
+                            }
+                        ]
+                    }
+                ]
+            }
         }
     ],
     "resultado_final": [
-        "VI_S_0",
-        "VI_S_1",
-        "VI_S_2",
-        "VI_S_3"
+        8,
+        9,
+        10,
+        11
     ]
 }

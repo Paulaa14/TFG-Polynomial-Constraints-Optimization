@@ -2,30 +2,32 @@
     "op": "frac",
     "producto": {
         "numerador": {
-            "componentes": [
-                {
-                    "nombre": "VI_3_0"
-                }
+            "intermedias": [
+                0
             ],
-            "variables_originales": 2,
-            "grado_total": 3
+            "orig_num": 2,
+            "orig_den": 0
         },
         "denominador": {
-            "componentes": [],
-            "variables_originales": 1,
-            "grado_total": 1
+            "intermedias": [],
+            "orig_num": 0,
+            "orig_den": 1
         }
     },
     "variables_intermedias": {
         "VI_3_0": {
-            "numerador": [
-                "orig_3_0_3"
-            ],
-            "denominador": [
-                "orig_3_1_2"
-            ]
+            "numerador": {
+                "intermedias": [],
+                "orig_num": 3,
+                "orig_den": 0
+            },
+            "denominador": {
+                "intermedias": [],
+                "orig_num": 0,
+                "orig_den": 2
+            }
         }
     },
-    "grado_numerador_total": 3,
-    "grado_denominador_total": 1
+    "grado_numerador": 3,
+    "grado_denominador": 1
 }
