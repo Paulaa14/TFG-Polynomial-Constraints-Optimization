@@ -14,8 +14,8 @@
             "orig_den": 1
         }
     },
-    "variables_intermedias": {
-        "VI_3_0": {
+    "variables_intermedias": [
+        {
             "numerador": {
                 "intermedias": [],
                 "orig_num": 3,
@@ -27,7 +27,7 @@
                 "orig_den": 2
             }
         }
-    },
+    ],
     "grado_numerador": 3,
     "grado_denominador": 1
 }

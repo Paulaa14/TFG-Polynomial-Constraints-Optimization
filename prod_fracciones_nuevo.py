@@ -305,7 +305,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         # print(f"\nProducto final: ({producto_str_num} * forig_{id}_n_{inic_num}) / ({producto_str_den} * forig_{id}_d_{inic_den})")
 
         # Construir JSON final
-        vi_detalles = {}
+        vi_detalles = []
         for var in range(max_intermedias):
 
             vi_name = f"VI_{id}_{var}"
@@ -360,10 +360,10 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
                     "orig_den": 0
                 }
 
-            vi_detalles[vi_name] = {
+            vi_detalles.append({
                 "numerador": detalles_num,
                 "denominador": detalles_den
-            }
+            })
 
         inic_num_val = m.eval(producto_usa_iniciales_en_num, model_completion=True).as_long()
         inic_den_val = m.eval(producto_usa_iniciales_en_den, model_completion=True).as_long()

@@ -8,19 +8,9 @@
 # -*- coding: utf-8 -*-
 
 import json
-from z3 import *
 import argparse
 import prod_fracciones_nuevo
 import suma_fracciones_v1_2
-
-def addsum(a):
-    if len(a) == 0:
-        return IntVal(0)
-    else:
-        asum = a[0]
-        for i in range(1, len(a)):
-            asum = asum + a[i]
-        return asum
     
 def ref_vi(fraccion, vi):
     return {
@@ -107,52 +97,60 @@ for idx, frac in enumerate(expresiones):
         print(f"Ejecutando producto sobre la fracción {idx}...")
         prod_reducido = ejecutar_producto(grado_num, grado_den, maxDeg, idx)
 
-        vi_dict = prod_reducido["variables_intermedias"]
+        lista_vi = prod_reducido["variables_intermedias"]
 
         vi_global_map = {}
-        for k, vi_local in enumerate(vi_dict.keys()):
+        for k in range(len(lista_vi)):
 
-            int_n = vi_dict[vi_local]["numerador"]["intermedias"]
+            int_n = lista_vi[k]["numerador"]["intermedias"]
             for i in range(len(int_n)):
                 int_n[i] += vi_utilizadas_total
 
-            int_d = vi_dict[vi_local]["denominador"]["intermedias"]
+            int_d = lista_vi[k]["denominador"]["intermedias"]
             for i in range(len(int_d)):
                 int_d[i] += vi_utilizadas_total
 
             numerador = {
                 "intermedias": int_n,
-                "orig_num": vi_dict[vi_local]["numerador"]["orig_num"],
-                "orig_den": vi_dict[vi_local]["numerador"]["orig_den"]
+                "orig_num": lista_vi[k]["numerador"]["orig_num"],
+                "orig_den": lista_vi[k]["numerador"]["orig_den"]
             }
 
             denominador = {
                 "intermedias": int_d,
-                "orig_num": vi_dict[vi_local]["denominador"]["orig_num"],
-                "orig_den": vi_dict[vi_local]["denominador"]["orig_den"]
+                "orig_num": lista_vi[k]["denominador"]["orig_num"],
+                "orig_den": lista_vi[k]["denominador"]["orig_den"]
             }
 
-            contenido = {
-                "numerador": numerador,
-                "denominador": denominador
-            }
+            # contenido = {
+            #     "numerador": numerador,
+            #     "denominador": denominador
+            # }
 
             variables_intermedias.append({
                 "fraccion": idx,
                 "vi": k,
-                "contenido": contenido
+                # "contenido": contenido
+                "numerador": numerador,
+                "denominador": denominador
             })
-
-        vi_utilizadas_total += len(vi_dict)
 
         comp_num = prod_reducido["producto"]["numerador"]
         comp_den = prod_reducido["producto"]["denominador"]
+
+        for i in range(len(comp_num["intermedias"])):
+            comp_num["intermedias"][i] += vi_utilizadas_total
+
+        for i in range(len(comp_den["intermedias"])):
+            comp_den["intermedias"][i] += vi_utilizadas_total
 
         fracciones_producto.append({
             "fraccion": idx,
             "numerador": comp_num,
             "denominador": comp_den
         })
+
+        vi_utilizadas_total += len(lista_vi)
 
         # Adaptar formato a entrada de suma
         fraccion_adaptada = adaptar_a_suma(prod_reducido, maxDeg)
@@ -192,19 +190,19 @@ grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones)
 # Calcular cuántas VI se necesitan realmente
 total_vi_creadas = 0
 
+sumas = []
+
 print("\n--- Resultado de sumas ---")
 for g in grupos:
     frs = g["fracciones"]
     cadena = " + ".join(f"fracción {f}" for f in frs)
     print(f"suma{g['suma']} = {cadena}")
 
-    variables_intermedias.append({
-        "fraccion": None,
-        "vi": total_vi_creadas,
-        "tipo": "suma",
-        "contenido": {
-            "fracciones": frs
-        }
+    sumas.append({
+        # "fraccion": None,
+        # "vi": total_vi_creadas,
+        # "tipo": "suma",
+        "fracciones": frs
     })
 
     total_vi_creadas += 1
@@ -215,7 +213,7 @@ print("\nTotal de VI creadas =", vi_utilizadas_total)
 
 resultado_final = [f"VI_S_{i}" for i in range(len(grupos))]
 
-lista_sumas = []
+lista_ecuaciones = []
 
 for suma_id, g in enumerate(grupos):
 
@@ -225,7 +223,7 @@ for suma_id, g in enumerate(grupos):
     vis_izq = []
 
     # V_S_id
-    vis_izq.append(vi_utilizadas_total - total_vi_creadas + suma_id)
+    # vis_izq.append(vi_utilizadas_total - total_vi_creadas + suma_id)
     
     factores_izq = []
 
@@ -240,6 +238,7 @@ for suma_id, g in enumerate(grupos):
 
     lado_izquierdo = {
         "tipo": "prod",
+        "suma": suma_id,
         "intermedias": vis_izq,
         "factores_originales": factores_izq
     }
@@ -283,8 +282,8 @@ for suma_id, g in enumerate(grupos):
         "terminos": terminos
     }
 
-    lista_sumas.append({
-        "id": suma_id,
+    lista_ecuaciones.append({
+        # "id": suma_id,
         "lado_izquierdo": lado_izquierdo,
         "lado_derecho": lado_derecho
     })
@@ -298,9 +297,10 @@ for idx in range(total_vi_creadas):
 resultado = {
     "total_vi_creadas": vi_utilizadas_total,
     "variables_intermedias": variables_intermedias,
-    # "fracciones_producto": fracciones_producto,
-    "sumas": lista_sumas,
-    "resultado_final": resultado_final
+    "sumas": sumas,
+    "fracciones_producto": fracciones_producto,
+    "ecuaciones": lista_ecuaciones
+    # "resultado_final": resultado_final
 }
 
 with open("resultado_final.json", "w") as fout:
