@@ -297,8 +297,8 @@ for idx in range(total_vi_creadas):
 resultado = {
     "total_vi_creadas": vi_utilizadas_total,
     "variables_intermedias": variables_intermedias,
-    "sumas": sumas,
-    "fracciones_producto": fracciones_producto,
+    # "sumas": sumas,
+    # "fracciones_producto": fracciones_producto,
     "ecuaciones": lista_ecuaciones
     # "resultado_final": resultado_final
 }

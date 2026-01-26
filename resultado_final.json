@@ -1,5 +1,5 @@
 {
-    "total_vi_creadas": 11,
+    "total_vi_creadas": 12,
     "variables_intermedias": [
         {
             "fraccion": 0,
@@ -124,112 +124,6 @@
             }
         }
     ],
-    "sumas": [
-        {
-            "fracciones": [
-                0,
-                1,
-                3
-            ]
-        },
-        {
-            "fracciones": [
-                2,
-                4
-            ]
-        },
-        {
-            "fracciones": [
-                5
-            ]
-        }
-    ],
-    "fracciones_producto": [
-        {
-            "fraccion": 0,
-            "numerador": {
-                "intermedias": [
-                    0
-                ],
-                "orig_num": 1,
-                "orig_den": 0
-            },
-            "denominador": {
-                "intermedias": [],
-                "orig_num": 0,
-                "orig_den": 0
-            }
-        },
-        {
-            "fraccion": 1,
-            "numerador": {
-                "intermedias": [
-                    6
-                ],
-                "orig_num": 1,
-                "orig_den": 0
-            },
-            "denominador": {
-                "intermedias": [],
-                "orig_num": 0,
-                "orig_den": 0
-            }
-        },
-        {
-            "fraccion": 2,
-            "numerador": {
-                "intermedias": [],
-                "orig_num": 2,
-                "orig_den": 0
-            },
-            "denominador": {
-                "intermedias": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        },
-        {
-            "fraccion": 3,
-            "numerador": {
-                "intermedias": [
-                    7
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            },
-            "denominador": {
-                "intermedias": [],
-                "orig_num": 0,
-                "orig_den": 1
-            }
-        },
-        {
-            "fraccion": 4,
-            "numerador": {
-                "intermedias": [],
-                "orig_num": 1,
-                "orig_den": 0
-            },
-            "denominador": {
-                "intermedias": [],
-                "orig_num": 0,
-                "orig_den": 1
-            }
-        },
-        {
-            "fraccion": 5,
-            "numerador": {
-                "intermedias": [],
-                "orig_num": 3,
-                "orig_den": 0
-            },
-            "denominador": {
-                "intermedias": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        }
-    ],
     "ecuaciones": [
         {
             "lado_izquierdo": {
@@ -239,7 +133,7 @@
                 "factores_originales": [
                     {
                         "origen": "denominador",
-                        "fraccion": 3,
+                        "fraccion": 4,
                         "cantidad": 1
                     }
                 ]
@@ -260,11 +154,41 @@
                             },
                             {
                                 "origen": "denominador",
-                                "fraccion": 3,
+                                "fraccion": 4,
                                 "cantidad": 1
                             }
                         ]
                     },
+                    {
+                        "tipo": "prod",
+                        "intermedias": [],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 4,
+                                "cantidad": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "suma": 1,
+                "intermedias": [],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 3,
+                        "cantidad": 1
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
                     {
                         "tipo": "prod",
                         "intermedias": [
@@ -302,18 +226,13 @@
         {
             "lado_izquierdo": {
                 "tipo": "prod",
-                "suma": 1,
+                "suma": 2,
                 "intermedias": [],
                 "factores_originales": [
                     {
                         "origen": "denominador",
                         "fraccion": 2,
                         "cantidad": 2
-                    },
-                    {
-                        "origen": "denominador",
-                        "fraccion": 4,
-                        "cantidad": 1
                     }
                 ]
             },
@@ -328,27 +247,6 @@
                                 "origen": "numerador",
                                 "fraccion": 2,
                                 "cantidad": 2
-                            },
-                            {
-                                "origen": "denominador",
-                                "fraccion": 4,
-                                "cantidad": 1
-                            }
-                        ]
-                    },
-                    {
-                        "tipo": "prod",
-                        "intermedias": [],
-                        "factores_originales": [
-                            {
-                                "origen": "numerador",
-                                "fraccion": 4,
-                                "cantidad": 1
-                            },
-                            {
-                                "origen": "denominador",
-                                "fraccion": 2,
-                                "cantidad": 2
                             }
                         ]
                     }
@@ -358,7 +256,7 @@
         {
             "lado_izquierdo": {
                 "tipo": "prod",
-                "suma": 2,
+                "suma": 3,
                 "intermedias": [],
                 "factores_originales": [
                     {
