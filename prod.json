@@ -2,29 +2,29 @@
     "op": "frac",
     "producto": {
         "numerador": {
-            "intermedias": [
-                0
-            ],
-            "orig_num": 2,
+            "intermedias": [],
+            "orig_num": 3,
             "orig_den": 0
         },
         "denominador": {
-            "intermedias": [],
+            "intermedias": [
+                0
+            ],
             "orig_num": 0,
-            "orig_den": 1
+            "orig_den": 0
         }
     },
     "variables_intermedias": [
         {
             "numerador": {
                 "intermedias": [],
-                "orig_num": 3,
-                "orig_den": 0
+                "orig_num": 0,
+                "orig_den": 3
             },
             "denominador": {
                 "intermedias": [],
-                "orig_num": 0,
-                "orig_den": 2
+                "orig_num": 2,
+                "orig_den": 0
             }
         }
     ],

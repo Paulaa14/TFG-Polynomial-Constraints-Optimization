@@ -10,36 +10,8 @@
         {
             "op": "frac",
             "values": [
-                {"signals": 2, "degree": 14},
-                {"signals": 8, "degree": 10}
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {"signals": 3, "degree": 2},
-                {"signals": 9, "degree": 2}
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
                 {"signals": 4, "degree": 5},
                 {"signals": 10, "degree": 3}
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {"signals": 5, "degree": 1},
-                {"signals": 11, "degree": 1}
-            ]
-        },
-        {
-            "op": "frac",
-            "values": [
-                {"signals": 6, "degree": 3},
-                {"signals": 12, "degree": 2}
             ]
         }
     ],

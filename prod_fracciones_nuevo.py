@@ -282,7 +282,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
 
             print(f"VI_{id}_{var}: num = {num}, den = {den}, cubre {cubre_num} en num y {cubre_den} en den")
 
-            dependencias[f"VI_{id}_{var}"] = {"num": deps_num, "den": deps_den}
+            dependencias[var] = {"num": deps_num, "den": deps_den}
 
         # Variables usadas en el producto final
         usadas_num = []
@@ -308,15 +308,14 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         vi_detalles = []
         for var in range(max_intermedias):
 
-            vi_name = f"VI_{id}_{var}"
             gr_num = int(m.eval(grado_num_variables[var], model_completion=True).as_long())
             gr_den = int(m.eval(grado_den_variables[var], model_completion=True).as_long())
 
             if gr_num == 0 and gr_den == 0:
                 continue
 
-            deps_num = dependencias[vi_name]["num"]
-            deps_den = dependencias[vi_name]["den"]
+            deps_num = dependencias[var]["num"]
+            deps_den = dependencias[var]["den"]
 
             num_orig = int(m.eval(num_variables_originales_var_num[var], model_completion=True).as_long())
             den_orig = int(m.eval(num_variables_originales_var_den[var], model_completion=True).as_long())
@@ -332,32 +331,39 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
             # if den_orig > 0:
             #     comp_den.append(f"forig_{id}_d_{den_orig}")
 
+            usada_en_otra_var = False
+
+            for sig in range(var + 1, max_intermedias):
+                if var in dependencias[sig]["num"] or var in dependencias[sig]["den"]: usada_en_otra_var = True
+
             # si esta VI aparece en el denominador final hay que invertir
-            if vi_name not in usadas_den:
+            if var in usadas_den or usada_en_otra_var:
 
                 detalles_num = {
+                    "intermedias": deps_den,
+                    "orig_num": 0,
+                    "orig_den": den_orig
+                }
+
+                detalles_den = {
                     "intermedias": deps_num,
                     "orig_num": num_orig,
                     "orig_den": 0
                 }
 
-                detalles_den = {
-                    "intermedias": deps_den,
-                    "orig_num": 0,
-                    "orig_den": den_orig
-                }
                 # comp_num, comp_den = comp_den, comp_num
             else:
-                detalles_num = {
-                    "intermedias": deps_den,
-                    "orig_num": 0,
-                    "orig_den": den_orig
-                }
 
-                detalles_den = {
+                detalles_num = {
                     "intermedias": deps_num,
                     "orig_num": num_orig,
                     "orig_den": 0
+                }
+
+                detalles_den = {
+                    "intermedias": deps_den,
+                    "orig_num": 0,
+                    "orig_den": den_orig
                 }
 
             vi_detalles.append({
