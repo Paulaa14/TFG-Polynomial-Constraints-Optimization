@@ -1,5 +1,5 @@
 {
-    "total_vi_creadas": 3,
+    "total_vi_creadas": 12,
     "variables_intermedias": [
         {
             "fraccion": 0,
@@ -21,12 +21,106 @@
             "numerador": {
                 "intermedias": [],
                 "orig_num": 0,
-                "orig_den": 3
+                "orig_den": 2
             },
             "denominador": {
                 "intermedias": [],
+                "orig_num": 3,
+                "orig_den": 0
+            }
+        },
+        {
+            "fraccion": 1,
+            "vi": 1,
+            "numerador": {
+                "intermedias": [],
+                "orig_num": 0,
+                "orig_den": 2
+            },
+            "denominador": {
+                "intermedias": [
+                    1
+                ],
                 "orig_num": 2,
                 "orig_den": 0
+            }
+        },
+        {
+            "fraccion": 1,
+            "vi": 2,
+            "numerador": {
+                "intermedias": [],
+                "orig_num": 0,
+                "orig_den": 2
+            },
+            "denominador": {
+                "intermedias": [
+                    2
+                ],
+                "orig_num": 2,
+                "orig_den": 0
+            }
+        },
+        {
+            "fraccion": 1,
+            "vi": 3,
+            "numerador": {
+                "intermedias": [],
+                "orig_num": 0,
+                "orig_den": 2
+            },
+            "denominador": {
+                "intermedias": [
+                    3
+                ],
+                "orig_num": 2,
+                "orig_den": 0
+            }
+        },
+        {
+            "fraccion": 1,
+            "vi": 4,
+            "numerador": {
+                "intermedias": [],
+                "orig_num": 0,
+                "orig_den": 2
+            },
+            "denominador": {
+                "intermedias": [
+                    4
+                ],
+                "orig_num": 2,
+                "orig_den": 0
+            }
+        },
+        {
+            "fraccion": 1,
+            "vi": 5,
+            "numerador": {
+                "intermedias": [
+                    5
+                ],
+                "orig_num": 2,
+                "orig_den": 0
+            },
+            "denominador": {
+                "intermedias": [],
+                "orig_num": 0,
+                "orig_den": 0
+            }
+        },
+        {
+            "fraccion": 3,
+            "vi": 0,
+            "numerador": {
+                "intermedias": [],
+                "orig_num": 3,
+                "orig_den": 0
+            },
+            "denominador": {
+                "intermedias": [],
+                "orig_num": 0,
+                "orig_den": 2
             }
         }
     ],
@@ -35,10 +129,14 @@
             "lado_izquierdo": {
                 "tipo": "prod",
                 "suma": 0,
-                "intermedias": [
-                    1
-                ],
-                "factores_originales": []
+                "intermedias": [],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 4,
+                        "cantidad": 1
+                    }
+                ]
             },
             "lado_derecho": {
                 "tipo": "sum",
@@ -46,13 +144,17 @@
                     {
                         "tipo": "prod",
                         "intermedias": [
-                            0,
-                            1
+                            0
                         ],
                         "factores_originales": [
                             {
                                 "origen": "numerador",
                                 "fraccion": 0,
+                                "cantidad": 1
+                            },
+                            {
+                                "origen": "denominador",
+                                "fraccion": 4,
                                 "cantidad": 1
                             }
                         ]
@@ -63,7 +165,117 @@
                         "factores_originales": [
                             {
                                 "origen": "numerador",
+                                "fraccion": 4,
+                                "cantidad": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "suma": 1,
+                "intermedias": [],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 3,
+                        "cantidad": 1
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
+                    {
+                        "tipo": "prod",
+                        "intermedias": [
+                            6
+                        ],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
                                 "fraccion": 1,
+                                "cantidad": 1
+                            },
+                            {
+                                "origen": "denominador",
+                                "fraccion": 3,
+                                "cantidad": 1
+                            }
+                        ]
+                    },
+                    {
+                        "tipo": "prod",
+                        "intermedias": [
+                            7
+                        ],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 3,
+                                "cantidad": 2
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "suma": 2,
+                "intermedias": [],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 2,
+                        "cantidad": 2
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
+                    {
+                        "tipo": "prod",
+                        "intermedias": [],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 2,
+                                "cantidad": 2
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "lado_izquierdo": {
+                "tipo": "prod",
+                "suma": 3,
+                "intermedias": [],
+                "factores_originales": [
+                    {
+                        "origen": "denominador",
+                        "fraccion": 5,
+                        "cantidad": 2
+                    }
+                ]
+            },
+            "lado_derecho": {
+                "tipo": "sum",
+                "terminos": [
+                    {
+                        "tipo": "prod",
+                        "intermedias": [],
+                        "factores_originales": [
+                            {
+                                "origen": "numerador",
+                                "fraccion": 5,
                                 "cantidad": 3
                             }
                         ]

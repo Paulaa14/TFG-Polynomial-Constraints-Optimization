@@ -164,8 +164,9 @@ def checker(orig, final, maxDeg):
         # Lado derecho
         for term in f["lado_derecho"]["terminos"]:
             for intermedia in term["intermedias"]:
-                cantidad_por_frac[final["variables_intermedias"][intermedia]["fraccion"]][0] += check_intermedia_num(final, intermedia)
-                cantidad_por_frac[final["variables_intermedias"][intermedia]["fraccion"]][1] += check_intermedia_den(final, intermedia)
+                if intermedia not in f["lado_izquierdo"]["intermedias"]:
+                    cantidad_por_frac[final["variables_intermedias"][intermedia]["fraccion"]][0] += check_intermedia_num(final, intermedia)
+                    cantidad_por_frac[final["variables_intermedias"][intermedia]["fraccion"]][1] += check_intermedia_den(final, intermedia)
 
             for factor in term["factores_originales"]:
                 if factor["origen"] == "numerador":
@@ -173,7 +174,6 @@ def checker(orig, final, maxDeg):
             
                 # elif factor["origen"] == "denominador": # REVISAR CON EJEMPLOS DE DAR LA VUELTA POR COMÚN DENOMINADOR
                 #     cantidad_por_frac[factor["fraccion"]][1] += factor["cantidad"]
-
 
     for f in range(len(orig["expressions"])):
         if cantidad_por_frac[f][0] != orig["expressions"][f]["values"][0]["degree"]:
