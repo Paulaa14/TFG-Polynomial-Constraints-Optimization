@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Para practicas: primeras versiones en python y js relacionado con FAL, PL y algo de PR
+
 # Simetrías de variables
 # Otra opción: quién me usa: booleana de si es usada por intermedia/final o no, y quien la usa. Si una tiene a falso los 2, las siguientes también
 # Primero intermedias usadas por otras intermedias y luego las usadas por el final
@@ -32,7 +34,16 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermediate
     ###### DECLARACIÓN DE VARIABLES ######
     solver = Optimize()
 
-    max_intermediate = (max(degree_num, degree_den) // maxDeg) + 1 # DEMOSTRAR
+    max_intermediate = 1 # (max(degree_num, degree_den) // maxDeg) + 1 # DEMOSTRAR
+
+    # Sumar g_n/g + r dividiendo entre g todo el rato hasta que el grado sea menor que g e igual para denominador porque coges variables
+    # que solo tienen de uno de ambos
+
+    # Otra forma: el que tenga mayor grado coges g, iterar n/g y d/(g-1) o viceversa hasta que ambos queden menor de g. maximo de lo que salga en num y den
+    # Búsqueda incremental. Si pones un numero muy grande de variables escala mal
+
+    # Entre el maximo que se calcula con lo anterior y el que yo tenia puesto de // metes tantos pushes y en el bucle se va haciendo pop
+    # medir tiempos con cada vez más variables
 
     # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
     # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
@@ -49,7 +60,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermediate
     # La primera lógicamente no va a utilizar ninguna variable anterior, con el bucle interior ya se cubre ese caso
     var_uses_previous_num = []
     var_uses_previous_den = []
-
+    
     # var_i_usan_j : la variable vi_i utiliza o no vi_j en el numerador para formarse, con j perteneciente a [0, i) 
     # var_i_usad_j : la variable vi_i utiliza o no vi_j en el denominador para formarse, con j perteneciente a [0, i) 
     for var in range(max_intermediate): # Se podría poner como rango 1 - max_intermediate para ahorrar una vuelta
@@ -224,6 +235,10 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermediate
     for var in range(max_intermediate):
         solver.add_soft(And(degree_num_variables[var] > 0, degree_den_variables[var] > 0), 1, "min_grado_final")
 
+    solver.push()
+    solver.add(degree_num_variables[max_intermediate - 1] == 0)
+    solver.add(degree_den_variables[max_intermediate - 1] == 0)
+
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
         m = solver.model()
@@ -357,6 +372,10 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den): # max_intermediate
 
 
     else:
-        print("No hay solución.")
+        print("pop")
+        solver.pop()
+        if solver.check() == sat:
+            print("Hay solución.")
+        else: print("No hay solución.")
         with open("prod.json", "w") as fout:
             json.dump({}, fout)
