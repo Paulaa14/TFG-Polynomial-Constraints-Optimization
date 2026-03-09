@@ -141,7 +141,7 @@ def suma_fracciones(maxDegNum, maxDegDen, expresiones):
 
     if solver.check() == sat:
         modelo = solver.model()
-        print("Solución encontrada:\n")
+        print("Solution found:\n")
 
         grupos = []
         sum_id = 1
@@ -160,7 +160,7 @@ def suma_fracciones(maxDegNum, maxDegDen, expresiones):
                     grupo_actual.append(j)
                     usados.add(j)
 
-            grupos.append({"suma": sum_id, "fracciones": grupo_actual})
+            grupos.append({"sum": sum_id, "fractions": grupo_actual})
             sum_id += 1
 
         return grupos

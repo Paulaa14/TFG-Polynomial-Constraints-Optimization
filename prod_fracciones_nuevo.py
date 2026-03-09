@@ -32,20 +32,36 @@ def addsum(a):
             asum = asum + a[i]
         return asum
     
+def fun_max_intermediate(degree_num, degree_den, maxDeg): #Demostrar que no me quedo corta como para que peuda dar unsat
+    resto = 0
+    intermediate_num = 0
+
+    while degree_num > maxDeg:
+        intermediate_num += degree_num // maxDeg
+        resto = degree_num % maxDeg
+        degree_num = (degree_num // maxDeg) + resto
+
+    resto = 0
+    intermediate_den = 0
+
+    while degree_den > maxDeg:
+        intermediate_den += degree_den // maxDeg
+        resto = degree_den % maxDeg
+        degree_den = (degree_den // maxDeg) + resto
+
+    return max(intermediate_num, intermediate_den)
+
 # Meter variables que representan la fracción, cuántas variables se cogen en el numerador, y cuántas en el denominador
 
-##### PARAMETROS #####
-# max_intermediate = 5
-
-def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermediate
+def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
 
     ###### DECLARACIÓN DE VARIABLES ######
     solver = Optimize()
 
     # Usaremos variables intermedias vi_0, ... vi_{max_intermediate-1}
-    max_intermediate = max(degree_num, degree_den) // 2 # maxDeg) + 1 # DEMOSTRAR
+    max_intermediate = fun_max_intermediate(degree_num, degree_den, maxDeg) # max(degree_num, degree_den) // 2 # maxDeg) + 1 # DEMOSTRAR
 
-    print(f"Max intermedias: {max_intermediate} ")
+    print(f"Max intermediate: {max_intermediate} ")
 
     # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
     # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
@@ -103,7 +119,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
     variables_covered_num = []
     variables_covered_den = []
 
-    for var in range(max_intermediate):
+    for var in range(max_intermediate): # OK
         cuantas_n = []
         cuantas_d = []
         cuantas_n.append(num_original_variables_var_num[var])
@@ -121,32 +137,34 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
     degree_num_variables = []
     degree_den_variables = []
 
-    for var in range(max_intermediate):
-        degree_num = []
-        degree_den = []
-        degree_num.append(num_original_variables_var_num[var])
-        degree_den.append(num_original_variables_var_den[var])
+    for var in range(max_intermediate): # OK
+        degree_n = []
+        degree_d = []
+        degree_n.append(num_original_variables_var_num[var])
+        degree_d.append(num_original_variables_var_den[var])
 
         for previous in range(var):
             # Si utiliza una variable previous, aporta grado 1
-            degree_num.append(If(var_uses_previous_num[var][previous], 1, 0))
-            degree_den.append(If(var_uses_previous_den[var][previous], 1, 0))
+            degree_n.append(If(var_uses_previous_num[var][previous], 1, 0))
+            degree_d.append(If(var_uses_previous_den[var][previous], 1, 0))
 
-        solver.add(And(addsum(degree_num) <= maxDeg, addsum(degree_den) <= maxDeg))
+        solver.add(And(addsum(degree_n) <= maxDeg, addsum(degree_d) <= maxDeg))
         
-        degree_num_variables.append(addsum(degree_num))
-        degree_den_variables.append(addsum(degree_den))
+        degree_num_variables.append(addsum(degree_n))
+        degree_den_variables.append(addsum(degree_d))
 
     # Solo puede ocurrir o que el grado de la variable sea n/n-1, n-1/n o que esté vacía tanto en numerador como denominador
-    for var in range(max_intermediate):
+    for var in range(max_intermediate): # OK
         n_num = And(degree_num_variables[var] == maxDeg, Or(degree_den_variables[var] == 0, degree_den_variables[var] == maxDeg - 1))
         n_den = And(Or(degree_num_variables[var] == 0, degree_num_variables[var] == maxDeg - 1), degree_den_variables[var] == maxDeg)
+        # n_num = And(degree_num_variables[var] == maxDeg, degree_den_variables[var] == (maxDeg - 1))
+        # n_den = And(degree_num_variables[var] == (maxDeg - 1), degree_den_variables[var] == maxDeg)
         zero = And(degree_num_variables[var] == 0, degree_den_variables[var] == 0)
 
         solver.add(Or(n_num, Or(n_den, zero)))
 
     # Si la variable es de la forma n/(n - 1) se utilizará en el numerador, aportando grado 1 y si tiene la forma (n - 1)/n se utilizará en el denominador
-    for var in range(max_intermediate):
+    for var in range(max_intermediate): # OK
         for previous in range(var):
             # Si tiene n en el numerador, no puede usarse en el denominador de ninguna variable y viceversa
             solver.add(Implies(degree_num_variables[previous] == maxDeg, Not(var_uses_previous_den[var][previous])))
@@ -157,8 +175,8 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
     solver.add(And(product_uses_initials_in_den >= 0, product_uses_initials_in_den <= maxDeg))
 
     # No puede usarse la misma variable para numerador y denominador
-    for var in range(max_intermediate):
-        solver.add(Or(Not(product_uses_var_in_num[var]), Not(product_uses_var_in_den[var])))
+    # for var in range(max_intermediate):
+    #     solver.add(Or(Not(product_uses_var_in_num[var]), Not(product_uses_var_in_den[var])))
 
     # Contar que se cubren todas las variables que había al inicio
     vars_inic_num = []
@@ -172,14 +190,14 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
     solver.add(And(addsum(vars_inic_num) + product_uses_initials_in_num == degree_num, addsum(vars_inic_den) + product_uses_initials_in_den == degree_den))
 
     # Si la variable es de la forma n/(n - 1) se utilizará en el numerador, aportando grado 1 y si tiene la forma (n - 1)/n se utilizará en el denominador
-    for var in range(max_intermediate):
+    for var in range(max_intermediate): # OK
         # Si tiene n en el numerador, no puede usarse en el denominador de ninguna variable y viceversa
         solver.add(Implies(degree_num_variables[var] == maxDeg, Not(product_uses_var_in_den[var])))
         solver.add(Implies(degree_den_variables[var] == maxDeg, Not(product_uses_var_in_num[var])))
         solver.add(Implies(And(degree_num_variables[var] == 0, degree_den_variables[var] == 0), And(Not(product_uses_var_in_num[var]), Not(product_uses_var_in_den[var]))))
 
     # Comprobar que no te pasas de grado en el producto final
-    degree_prod_num = []
+    degree_prod_num = [] # OK
     degree_prod_den = []
 
     degree_prod_num.append(product_uses_initials_in_num)
@@ -192,20 +210,21 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
     solver.add(And(addsum(degree_prod_num) <= maxDeg, addsum(degree_prod_den) <= maxDeg))
 
     # Una misma variable no puede usarse en 2 variables intermedias, o en variable y producto. La suma de veces que es utilizada es <= 1. Se puede reformular con not de ors
-    for var in range(max_intermediate):
+    for var in range(max_intermediate): # OK
         uses = []
 
-        for siguiente in range(var + 1, max_intermediate):
-            uses.append(If(Or(var_uses_previous_num[siguiente][var], var_uses_previous_den[siguiente][var]), 1, 0))
+        for next in range(var + 1, max_intermediate):
+            uses.append(If(Or(var_uses_previous_num[next][var], var_uses_previous_den[next][var]), 1, 0))
 
-        uses.append(If(Or(product_uses_var_in_num[var], product_uses_var_in_den[var]), 1, 0))
+        uses.append(If(product_uses_var_in_num[var], 1, 0))
+        uses.append(If(product_uses_var_in_den[var], 1, 0))
 
         solver.add(addsum(uses) <= 1)
 
     ###### ORDEN VARIABLES ######
 
     # Primero aparezcan las variables de la forma n/n-1, luego las de n-1/n y luego las vacías
-    for var in range(max_intermediate - 1):
+    for var in range(max_intermediate - 1): # OK
         solver.add(degree_num_variables[var] >= degree_num_variables[var + 1])
         solver.add(Implies(degree_num_variables[var] == degree_num_variables[var + 1], degree_den_variables[var] >= degree_den_variables[var + 1]))
 
@@ -230,15 +249,15 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         var_sig_empty = And(degree_num_variables[var + 1] == 0, degree_den_variables[var + 1] == 0)
 
         # Si var es utilizada por el producto, var + 1 tambien
-        solver.add(Implies(product_uses_var, Or(product_uses_sig_var, var_sig_empty)))
+        solver.add(Implies(product_uses_var, Or(product_uses_sig_var, var_sig_empty))) #REVISAR NO SÉ SI PUEDE DAR UNSAT
 
     # Dentro de las variables que utilizan otras previouses, deben aparecer primero aquellas que tengan un número de variables iniciales mayor
-    for var in range(max_intermediate - 1):
+    for var in range(max_intermediate - 1): # OK
         solver.add(num_original_variables_var_num[var] >= num_original_variables_var_num[var + 1])
         solver.add(Implies(num_original_variables_var_num[var] == num_original_variables_var_num[var + 1], num_original_variables_var_den[var] >= num_original_variables_var_den[var + 1]))
 
     # Dentro de las que se usan en intermedias, que se utilicen en orden
-    for var in range(max_intermediate):
+    for var in range(max_intermediate): # OK
         for previous_used in range(var):
             for previous in range(previous_used):
                 for next_to_var in range(var + 1, max_intermediate):
@@ -252,21 +271,21 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
 
 
     # Minimizar el número de variables --> Orden lexicografico
-    for var in range(max_intermediate):
+    for var in range(max_intermediate): # OK
         solver.add_soft(And(degree_num_variables[var] == 0, degree_den_variables[var] == 0), 1, "min_vars")
 
     # Minimizar grado final --> Maximizar las variables que si tienen elementos en numerador, tengan también en denominador y viceversa 
-    # --> Ralentiza mucho pero reduce bastante el número de VI finales tras la suma
-    for var in range(max_intermediate):
+    # --> Ralentiza mucho pero reduce bastante el número de VI finales tras la suma #REVISAR si lo quito puede llegar a no dar solucion
+    for var in range(max_intermediate): 
         solver.add_soft(And(degree_num_variables[var] > 0, degree_den_variables[var] > 0), 1, "min_grado_final")
 
     # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n --> Ralentiza algo menos que la previous pero tmb
-    # for var in range(max_intermediate):
-    #     solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
+    for var in range(max_intermediate):
+        solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
     
-    solver.push()
-    solver.add(degree_num_variables[max_intermediate - 1] == 0)
-    solver.add(degree_den_variables[max_intermediate - 1] == 0)
+    # solver.push()
+    # solver.add(degree_num_variables[max_intermediate - 1] == 0)
+    # solver.add(degree_den_variables[max_intermediate - 1] == 0)
 
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
@@ -353,13 +372,13 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
             if var in usadas_den or usada_en_otra_var:
 
                 detalles_num = {
-                    "intermedias": deps_den,
+                    "intermediate": deps_den,
                     "orig_num": 0,
                     "orig_den": den_orig
                 }
 
                 detalles_den = {
-                    "intermedias": deps_num,
+                    "intermediate": deps_num,
                     "orig_num": num_orig,
                     "orig_den": 0
                 }
@@ -368,20 +387,20 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
             else:
 
                 detalles_num = {
-                    "intermedias": deps_num,
+                    "intermediate": deps_num,
                     "orig_num": num_orig,
                     "orig_den": 0
                 }
 
                 detalles_den = {
-                    "intermedias": deps_den,
+                    "intermediate": deps_den,
                     "orig_num": 0,
                     "orig_den": den_orig
                 }
 
             vi_detalles.append({
-                "numerador": detalles_num,
-                "denominador": detalles_den
+                "numerator": detalles_num,
+                "denominator": detalles_den
             })
 
         inic_num_val = m.eval(product_uses_initials_in_num, model_completion=True).as_long()
@@ -396,7 +415,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         # if inic_num_val > 0: numerador_detalle.append(f"forig_{id}_n_{inic_num_val}")
 
         numerador_detalle = {
-            "intermedias": vars_num,
+            "intermediate": vars_num,
             "orig_num": inic_num_val,
             "orig_den": 0
         }
@@ -410,7 +429,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         # if inic_den_val > 0: denominador_detalle.append(f"forig_{id}_d_{inic_den_val}")
 
         denominador_detalle = {
-            "intermedias": vars_den,
+            "intermediate": vars_den,
             "orig_num": 0,
             "orig_den": inic_den_val
         }
@@ -427,13 +446,13 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
 
         output_data = {
             "op": "frac",
-            "producto": {
-                "numerador": numerador_detalle,
-                "denominador": denominador_detalle
+            "product": {
+                "numerator": numerador_detalle,
+                "denominator": denominador_detalle
             },
-            "variables_intermedias": vi_detalles,
-            "degree_numerador": int(m.eval(addsum(degree_prod_num), model_completion=True).as_long()),
-            "degree_denominador": int(m.eval(addsum(degree_prod_den), model_completion=True).as_long())
+            "intermediate_variables": vi_detalles,
+            "degree_numerator": int(m.eval(addsum(degree_prod_num), model_completion=True).as_long()),
+            "degree_denominator": int(m.eval(addsum(degree_prod_den), model_completion=True).as_long())
         }
 
         print(output_data)
@@ -441,15 +460,15 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id): # max_intermedia
         with open("prod.json", "w") as fout:
             json.dump(output_data, fout, indent=4)
 
-        print("\nResultado exportado en prod.json")
+        print("\nResult exported to prod.json")
 
     else:
         print("pop")
         solver.pop()
-        if solver.check() == sat:
-            print("Hay solución.")
-        else: print("No hay solución.")
+        # if solver.check() == sat:
+        #     print("Hay solución.")
+        # else: print("No hay solución.")
         with open("prod.json", "w") as fout:
             json.dump({}, fout)
     
-reducir_grado_producto(2, 3, 2, 0)
+# reducir_grado_producto(2, 3, 2, 0)

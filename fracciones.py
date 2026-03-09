@@ -35,15 +35,15 @@ def ejecutar_producto(grado_num, grado_den, maxDeg, id):
 
 #  Adaptar salida del producto a formato suma_fracciones
 def adaptar_a_suma(prod_reducido, maxDeg):
-    grado_num = prod_reducido["grado_numerador"]
-    grado_den = prod_reducido["grado_denominador"]
+    grado_num = prod_reducido["degree_numerator"]
+    grado_den = prod_reducido["degree_denominator"]
 
-    num = prod_reducido["producto"]["numerador"]
-    den = prod_reducido["producto"]["denominador"]
+    num = prod_reducido["product"]["numerator"]
+    den = prod_reducido["product"]["denominator"]
 
     comps_num = []
 
-    for elem in num["intermedias"]:
+    for elem in num["intermediate"]:
         comps_num.append(elem)
 
     if num["orig_num"] > 0: comps_num.append(f"orig_n_{num["orig_num"]}")
@@ -51,7 +51,7 @@ def adaptar_a_suma(prod_reducido, maxDeg):
 
     comps_den = []
 
-    for elem in den["intermedias"]:
+    for elem in den["intermediate"]:
         comps_den.append(elem)
 
     if den["orig_num"] > 0: comps_den.append(f"orig_n_{den["orig_num"]}")
@@ -94,32 +94,32 @@ for idx, frac in enumerate(expresiones):
     # se pasa de grado --> reducir grado
     if grado_num > maxDeg or grado_den > maxDeg:
 
-        print(f"Ejecutando producto sobre la fracción {idx}...")
+        print(f"Executing product to fraction {idx}...")
         prod_reducido = ejecutar_producto(grado_num, grado_den, maxDeg, idx)
 
-        lista_vi = prod_reducido["variables_intermedias"]
+        lista_vi = prod_reducido["intermediate_variables"]
 
         vi_global_map = {}
         for k in range(len(lista_vi)):
 
-            int_n = lista_vi[k]["numerador"]["intermedias"]
+            int_n = lista_vi[k]["numerator"]["intermediate"]
             for i in range(len(int_n)):
                 int_n[i] += vi_utilizadas_total
 
-            int_d = lista_vi[k]["denominador"]["intermedias"]
+            int_d = lista_vi[k]["denominator"]["intermediate"]
             for i in range(len(int_d)):
                 int_d[i] += vi_utilizadas_total
 
             numerador = {
-                "intermedias": int_n,
-                "orig_num": lista_vi[k]["numerador"]["orig_num"],
-                "orig_den": lista_vi[k]["numerador"]["orig_den"]
+                "intermediate": int_n,
+                "orig_num": lista_vi[k]["numerator"]["orig_num"],
+                "orig_den": lista_vi[k]["numerator"]["orig_den"]
             }
 
             denominador = {
-                "intermedias": int_d,
-                "orig_num": lista_vi[k]["denominador"]["orig_num"],
-                "orig_den": lista_vi[k]["denominador"]["orig_den"]
+                "intermediate": int_d,
+                "orig_num": lista_vi[k]["denominator"]["orig_num"],
+                "orig_den": lista_vi[k]["denominator"]["orig_den"]
             }
 
             # contenido = {
@@ -128,26 +128,26 @@ for idx, frac in enumerate(expresiones):
             # }
 
             variables_intermedias.append({
-                "fraccion": idx,
-                "vi": k,
+                "fraction": idx,
+                "iv": k,
                 # "contenido": contenido
-                "numerador": numerador,
-                "denominador": denominador
+                "numerator": numerador,
+                "denominator": denominador
             })
 
-        comp_num = prod_reducido["producto"]["numerador"]
-        comp_den = prod_reducido["producto"]["denominador"]
+        comp_num = prod_reducido["product"]["numerator"]
+        comp_den = prod_reducido["product"]["denominator"]
 
-        for i in range(len(comp_num["intermedias"])):
-            comp_num["intermedias"][i] += vi_utilizadas_total
+        for i in range(len(comp_num["intermediate"])):
+            comp_num["intermediate"][i] += vi_utilizadas_total
 
-        for i in range(len(comp_den["intermedias"])):
-            comp_den["intermedias"][i] += vi_utilizadas_total
+        for i in range(len(comp_den["intermediate"])):
+            comp_den["intermediate"][i] += vi_utilizadas_total
 
         fracciones_producto.append({
-            "fraccion": idx,
-            "numerador": comp_num,
-            "denominador": comp_den
+            "fraction": idx,
+            "numerator": comp_num,
+            "denominator": comp_den
         })
 
         vi_utilizadas_total += len(lista_vi)
@@ -164,24 +164,24 @@ for idx, frac in enumerate(expresiones):
         den_signals = grado_den
 
         orig_num = {
-            "intermedias": [],
+            "intermediate": [],
             "orig_num": num_signals,
             "orig_den": 0
         }
         
         orig_den = {
-            "intermedias": [],
+            "intermediate": [],
             "orig_num": 0,
             "orig_den": den_signals
         }
         
         fracciones_producto.append({
-            "fraccion": idx,
-            "numerador": orig_num,
-            "denominador": orig_den
+            "fraction": idx,
+            "numerator": orig_num,
+            "denominator": orig_den
         })
 
-print("Ejecutando suma_fracciones_v1_2...\n")
+print("Executing suma_fracciones_v1_2...\n")
 
 # Ejecuta la suma y obtiene los grupos. El grado del numerador puede ser maxDeg pero el grado del denominador tiene que ser menor que maxDeg para que
 # al pasar mutiplicando al otro lado no te pases de grado
@@ -194,15 +194,15 @@ sumas = []
 
 print("\n--- Resultado de sumas ---")
 for g in grupos:
-    frs = g["fracciones"]
-    cadena = " + ".join(f"fracción {f}" for f in frs)
-    print(f"suma{g['suma']} = {cadena}")
+    frs = g["fractions"]
+    cadena = " + ".join(f"fraction {f}" for f in frs)
+    print(f"sum{g['sum']} = {cadena}")
 
     sumas.append({
         # "fraccion": None,
         # "vi": total_vi_creadas,
         # "tipo": "suma",
-        "fracciones": frs
+        "fractions": frs
     })
 
     total_vi_creadas += 1
@@ -217,7 +217,7 @@ lista_ecuaciones = []
 
 for suma_id, g in enumerate(grupos):
 
-    frs = g["fracciones"]
+    frs = g["fractions"]
 
     # -------- LADO IZQUIERDO --------
     vis_izq = []
@@ -229,18 +229,18 @@ for suma_id, g in enumerate(grupos):
 
     # denominadores
     for frac in frs:
-        den = fracciones_producto[frac]["denominador"]
+        den = fracciones_producto[frac]["denominator"]
         if den["orig_den"] > 0:
-            factores_izq.append(factor_original("denominador", frac, den["orig_den"]))
+            factores_izq.append(factor_original("denominator", frac, den["orig_den"]))
 
-        for elem in den["intermedias"]:
+        for elem in den["intermediate"]:
             vis_izq.append(elem)
 
     lado_izquierdo = {
-        "tipo": "prod",
-        "suma": suma_id,
-        "intermedias": vis_izq,
-        "factores_originales": factores_izq
+        "type": "prod",
+        "sum": suma_id,
+        "intermediate": vis_izq,
+        "original_factors": factores_izq
     }
 
     # -------- LADO DERECHO --------
@@ -251,41 +251,41 @@ for suma_id, g in enumerate(grupos):
         vis = []
         factores = []
 
-        num = fracciones_producto[frac]["numerador"]
+        num = fracciones_producto[frac]["numerator"]
 
         # VI del numerador
-        for vi_name in num["intermedias"]:
+        for vi_name in num["intermediate"]:
             vis.append(vi_name)
 
         # originales del numerador
         if num["orig_num"] > 0:
-            factores.append(factor_original("numerador", frac, num["orig_num"]))
+            factores.append(factor_original("numerator", frac, num["orig_num"]))
 
         # denominadores del resto
         for j in frs:
             if j != frac:
-                den_j = fracciones_producto[j]["denominador"]
+                den_j = fracciones_producto[j]["denominator"]
                 if den_j["orig_den"] > 0:
-                    factores.append(factor_original("denominador", j, den_j["orig_den"]))
+                    factores.append(factor_original("denominator", j, den_j["orig_den"]))
                 
-                for elem in den_j["intermedias"]:
+                for elem in den_j["intermediate"]:
                     vis.append(elem)
 
         terminos.append({
-            "tipo": "prod",
-            "intermedias": vis,
-            "factores_originales": factores
+            "type": "prod",
+            "intermediate": vis,
+            "original_factors": factores
         })
 
     lado_derecho = {
-        "tipo": "sum",
-        "terminos": terminos
+        "type": "sum",
+        "terms": terminos
     }
 
     lista_ecuaciones.append({
         # "id": suma_id,
-        "lado_izquierdo": lado_izquierdo,
-        "lado_derecho": lado_derecho
+        "left_side": lado_izquierdo,
+        "right_side": lado_derecho
     })
 
 resultado_final = []
@@ -295,15 +295,15 @@ for idx in range(total_vi_creadas):
 
 # Construir JSON FINAL
 resultado = {
-    "total_vi_creadas": vi_utilizadas_total,
-    "variables_intermedias": variables_intermedias,
+    "total_vi_created": vi_utilizadas_total,
+    "intermediate_variables": variables_intermedias,
     # "sumas": sumas,
     # "fracciones_producto": fracciones_producto,
-    "ecuaciones": lista_ecuaciones
+    "equations": lista_ecuaciones
     # "resultado_final": resultado_final
 }
 
 with open("resultado_final.json", "w") as fout:
     json.dump(resultado, fout, indent=4)
 
-print("\nArchivo 'resultado_final.json' generado correctamente.")
+print("\File 'resultado_final.json' generated correctly.")
