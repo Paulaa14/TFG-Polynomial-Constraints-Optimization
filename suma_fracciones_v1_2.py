@@ -34,7 +34,7 @@ def suma_fracciones(maxDegNum, maxDegDen, expresiones):
     juntar = []
 
     # juntar_i_j : la expresión original i se junta o no con la expresión original j para formar una nueva expresión. Con j perteneciente a [exp, num_expresiones)
-    for exp in range(num_expresiones):
+    for exp in range(num_expresiones): # Sólo se define el triángulo superior
         juntar_exp = []
         for e in range(exp, num_expresiones):
             juntar_exp.append(Bool("juntar_" + str(exp) + "_" + str(e)))
@@ -50,7 +50,7 @@ def suma_fracciones(maxDegNum, maxDegDen, expresiones):
             for col in range(e, num_expresiones):
                 solver.add(Implies(juntar[exp][e - exp], Not(juntar[e][col - e])))
 
-            # La columna de e, debe estar a false. Las filas anteriores, excluyendo exp, deben tenerlo a false
+            # La columna de e, debe estar a false si se junta exp con e. Las filas anteriores, excluyendo exp, deben tenerlo a false
             for fila in range(e):
                 if fila != exp:
                     solver.add(Implies(juntar[exp][e - exp], Not(juntar[fila][e - fila])))

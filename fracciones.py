@@ -10,6 +10,7 @@
 import json
 import argparse
 import prod_fracciones_nuevo
+import prod_fracciones_incremental
 import suma_fracciones_v1_2
     
 def ref_vi(fraccion, vi):
@@ -26,7 +27,8 @@ def factor_original(origen, fraccion, cantidad):
     }
 
 def ejecutar_producto(grado_num, grado_den, maxDeg, id):
-    prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
+    # prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
+    prod_fracciones_incremental.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
 
     with open("prod.json", "r") as f:
         prod_reducido = json.load(f)

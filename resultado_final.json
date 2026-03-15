@@ -1,25 +1,11 @@
 {
-    "total_vi_created": 12,
+    "total_vi_created": 7,
     "intermediate_variables": [
         {
             "fraction": 0,
             "iv": 0,
             "numerator": {
                 "intermediate": [],
-                "orig_num": 3,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        },
-        {
-            "fraction": 1,
-            "iv": 0,
-            "numerator": {
-                "intermediate": [],
                 "orig_num": 0,
                 "orig_den": 2
             },
@@ -30,7 +16,7 @@
             }
         },
         {
-            "fraction": 1,
+            "fraction": 0,
             "iv": 1,
             "numerator": {
                 "intermediate": [],
@@ -38,13 +24,15 @@
                 "orig_den": 2
             },
             "denominator": {
-                "intermediate": [],
-                "orig_num": 3,
+                "intermediate": [
+                    0
+                ],
+                "orig_num": 2,
                 "orig_den": 0
             }
         },
         {
-            "fraction": 1,
+            "fraction": 0,
             "iv": 2,
             "numerator": {
                 "intermediate": [],
@@ -60,12 +48,12 @@
             }
         },
         {
-            "fraction": 1,
+            "fraction": 0,
             "iv": 3,
             "numerator": {
                 "intermediate": [],
                 "orig_num": 0,
-                "orig_den": 2
+                "orig_den": 0
             },
             "denominator": {
                 "intermediate": [
@@ -76,23 +64,23 @@
             }
         },
         {
-            "fraction": 1,
+            "fraction": 0,
             "iv": 4,
             "numerator": {
+                "intermediate": [],
+                "orig_num": 0,
+                "orig_den": 0
+            },
+            "denominator": {
                 "intermediate": [
                     3
                 ],
                 "orig_num": 2,
                 "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
             }
         },
         {
-            "fraction": 1,
+            "fraction": 0,
             "iv": 5,
             "numerator": {
                 "intermediate": [
@@ -106,20 +94,6 @@
                 "orig_num": 0,
                 "orig_den": 0
             }
-        },
-        {
-            "fraction": 3,
-            "iv": 0,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 3,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
         }
     ],
     "equations": [
@@ -128,13 +102,7 @@
                 "type": "prod",
                 "sum": 0,
                 "intermediate": [],
-                "original_factors": [
-                    {
-                        "origen": "denominator",
-                        "fraccion": 3,
-                        "cantidad": 1
-                    }
-                ]
+                "original_factors": []
             },
             "right_side": {
                 "type": "sum",
@@ -142,135 +110,13 @@
                     {
                         "type": "prod",
                         "intermediate": [
-                            0
+                            5
                         ],
                         "original_factors": [
                             {
                                 "origen": "numerator",
                                 "fraccion": 0,
-                                "cantidad": 1
-                            },
-                            {
-                                "origen": "denominator",
-                                "fraccion": 3,
-                                "cantidad": 1
-                            }
-                        ]
-                    },
-                    {
-                        "type": "prod",
-                        "intermediate": [
-                            5,
-                            6
-                        ],
-                        "original_factors": [
-                            {
-                                "origen": "denominator",
-                                "fraccion": 3,
-                                "cantidad": 1
-                            }
-                        ]
-                    },
-                    {
-                        "type": "prod",
-                        "intermediate": [
-                            7
-                        ],
-                        "original_factors": [
-                            {
-                                "origen": "numerator",
-                                "fraccion": 3,
                                 "cantidad": 2
-                            }
-                        ]
-                    }
-                ]
-            }
-        },
-        {
-            "left_side": {
-                "type": "prod",
-                "sum": 1,
-                "intermediate": [],
-                "original_factors": [
-                    {
-                        "origen": "denominator",
-                        "fraccion": 2,
-                        "cantidad": 2
-                    }
-                ]
-            },
-            "right_side": {
-                "type": "sum",
-                "terms": [
-                    {
-                        "type": "prod",
-                        "intermediate": [],
-                        "original_factors": [
-                            {
-                                "origen": "numerator",
-                                "fraccion": 2,
-                                "cantidad": 2
-                            }
-                        ]
-                    }
-                ]
-            }
-        },
-        {
-            "left_side": {
-                "type": "prod",
-                "sum": 2,
-                "intermediate": [],
-                "original_factors": [
-                    {
-                        "origen": "denominator",
-                        "fraccion": 4,
-                        "cantidad": 1
-                    }
-                ]
-            },
-            "right_side": {
-                "type": "sum",
-                "terms": [
-                    {
-                        "type": "prod",
-                        "intermediate": [],
-                        "original_factors": [
-                            {
-                                "origen": "numerator",
-                                "fraccion": 4,
-                                "cantidad": 1
-                            }
-                        ]
-                    }
-                ]
-            }
-        },
-        {
-            "left_side": {
-                "type": "prod",
-                "sum": 3,
-                "intermediate": [],
-                "original_factors": [
-                    {
-                        "origen": "denominator",
-                        "fraccion": 5,
-                        "cantidad": 2
-                    }
-                ]
-            },
-            "right_side": {
-                "type": "sum",
-                "terms": [
-                    {
-                        "type": "prod",
-                        "intermediate": [],
-                        "original_factors": [
-                            {
-                                "origen": "numerator",
-                                "fraccion": 5,
-                                "cantidad": 3
                             }
                         ]
                     }

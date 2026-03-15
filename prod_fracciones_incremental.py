@@ -51,6 +51,181 @@ def fun_max_intermediate(degree_num, degree_den, maxDeg): #Demostrar que no me q
 
     return max(intermediate_num, intermediate_den)
 
+def print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
+    var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num, 
+    product_uses_initials_in_den, degree_prod_num, degree_prod_den):
+
+        dependencias = {}
+
+        # Variables intermedias
+        for var in range(max_intermediate):
+            num = m.eval(num_original_variables_var_num[var], model_completion=True).as_long()
+            den = m.eval(num_original_variables_var_den[var], model_completion=True).as_long()
+            cubre_num = m.eval(variables_covered_num[var], model_completion=True).as_long()
+            cubre_den = m.eval(variables_covered_den[var], model_completion=True).as_long()
+
+            deps_num = []
+            deps_den = []
+
+            for previous in range(var):
+                val_num = m.eval(var_uses_previous_num[var][previous], model_completion=True)
+                val_den = m.eval(var_uses_previous_den[var][previous], model_completion=True)
+                if is_true(val_num):
+                    deps_num.append(previous) # f"VI_{id}_{previous}")
+                if is_true(val_den):
+                    deps_den.append(previous) # f"VI_{id}_{previous}")
+
+            print(f"VI_{id}_{var}: num = {num}, den = {den}, cubre {cubre_num} en num y {cubre_den} en den")
+
+            dependencias[var] = {"num": deps_num, "den": deps_den}
+
+        # Variables usadas en el producto final
+        usadas_num = []
+        usadas_den = []
+
+        for var in range(max_intermediate):
+            usa_num = m.eval(product_uses_var_in_num[var], model_completion=True)
+            usa_den = m.eval(product_uses_var_in_den[var], model_completion=True)
+            if is_true(usa_num):
+                usadas_num.append(var) # f"VI_{id}_{var}")
+            elif is_true(usa_den):
+                usadas_den.append(var) # f"VI_{id}_{var}")
+
+        # inic_num = m.eval(product_uses_initials_in_num, model_completion=True).as_long()
+        # inic_den = m.eval(product_uses_initials_in_den, model_completion=True).as_long()
+
+        # producto_str_num = " * ".join(usadas_num) if usadas_num else "1"
+        # producto_str_den = " * ".join(usadas_den) if usadas_den else "1"
+
+        # print(f"\nProducto final: ({producto_str_num} * forig_{id}_n_{inic_num}) / ({producto_str_den} * forig_{id}_d_{inic_den})")
+
+        # Construir JSON final
+        vi_detalles = []
+        for var in range(max_intermediate):
+
+            gr_num = int(m.eval(degree_num_variables[var], model_completion=True).as_long())
+            gr_den = int(m.eval(degree_den_variables[var], model_completion=True).as_long())
+
+            if gr_num == 0 and gr_den == 0:
+                continue
+
+            deps_num = dependencias[var]["num"]
+            deps_den = dependencias[var]["den"]
+
+            num_orig = int(m.eval(num_original_variables_var_num[var], model_completion=True).as_long())
+            den_orig = int(m.eval(num_original_variables_var_den[var], model_completion=True).as_long())
+
+            # comp_num = []
+            # comp_den = []
+
+            # comp_num.extend(deps_num)
+            # comp_den.extend(deps_den)
+
+            # if num_orig > 0:
+            #     comp_num.append(f"forig_{id}_n_{num_orig}")
+            # if den_orig > 0:
+            #     comp_den.append(f"forig_{id}_d_{den_orig}")
+
+            usada_en_otra_var = False
+
+            for sig in range(var + 1, max_intermediate):
+                if var in dependencias[sig]["num"] or var in dependencias[sig]["den"]: usada_en_otra_var = True
+
+            # si esta VI aparece en el denominador final hay que invertir
+            if var in usadas_den or usada_en_otra_var:
+
+                detalles_num = {
+                    "intermediate": deps_den,
+                    "orig_num": 0,
+                    "orig_den": den_orig
+                }
+
+                detalles_den = {
+                    "intermediate": deps_num,
+                    "orig_num": num_orig,
+                    "orig_den": 0
+                }
+
+                # comp_num, comp_den = comp_den, comp_num
+            else:
+
+                detalles_num = {
+                    "intermediate": deps_num,
+                    "orig_num": num_orig,
+                    "orig_den": 0
+                }
+
+                detalles_den = {
+                    "intermediate": deps_den,
+                    "orig_num": 0,
+                    "orig_den": den_orig
+                }
+
+            vi_detalles.append({
+                "numerator": detalles_num,
+                "denominator": detalles_den
+            })
+
+        inic_num_val = m.eval(product_uses_initials_in_num, model_completion=True).as_long()
+        inic_den_val = m.eval(product_uses_initials_in_den, model_completion=True).as_long()
+
+        vars_num = []        
+
+        for v in usadas_num:
+            # numerador_detalle.append(v)
+            vars_num.append(v)
+
+        # if inic_num_val > 0: numerador_detalle.append(f"forig_{id}_n_{inic_num_val}")
+
+        numerador_detalle = {
+            "intermediate": vars_num,
+            "orig_num": inic_num_val,
+            "orig_den": 0
+        }
+
+        # denominador_detalle = []
+        vars_den = []
+
+        for v in usadas_den:
+            vars_den.append(v)
+
+        # if inic_den_val > 0: denominador_detalle.append(f"forig_{id}_d_{inic_den_val}")
+
+        denominador_detalle = {
+            "intermediate": vars_den,
+            "orig_num": 0,
+            "orig_den": inic_den_val
+        }
+
+        # numerador_detalle = {
+        #     "componentes": componentes_detalle(usadas_num),
+        #     "variables_originales": inic_num_val,
+        # }
+
+        # denominador_detalle = {
+        #     "componentes": componentes_detalle(usadas_den),
+        #     "variables_originales": inic_den_val,
+        # }
+
+        output_data = {
+            "op": "frac",
+            "product": {
+                "numerator": numerador_detalle,
+                "denominator": denominador_detalle
+            },
+            "intermediate_variables": vi_detalles,
+            "degree_numerator": int(m.eval(addsum(degree_prod_num), model_completion=True).as_long()),
+            "degree_denominator": int(m.eval(addsum(degree_prod_den), model_completion=True).as_long())
+        }
+
+        print(output_data)
+
+        with open("prod.json", "w") as fout:
+            json.dump(output_data, fout, indent=4)
+
+        print("\nResult exported to prod.json")
+
+
 # Meter variables que representan la fracción, cuántas variables se cogen en el numerador, y cuántas en el denominador
 def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
 
@@ -59,8 +234,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
 
     # Usaremos variables intermedias vi_0, ... vi_{max_intermediate-1}
     max_intermediate = fun_max_intermediate(degree_num, degree_den, maxDeg) # max(degree_num, degree_den) // 2 # maxDeg) + 1 # DEMOSTRAR
-
-    print(f"Max intermediate: {max_intermediate} ")
 
     # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
     # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador
@@ -282,6 +455,19 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     for var in range(max_intermediate):
         solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
     
+    # INCREMENTALIDAD
+
+    # Cota optimista con una aproximación mía
+    optimistic_intermediate = max(degree_num, degree_den) // maxDeg + 1
+    print(f"Max intermediate realistic: {max_intermediate} ")
+    print(f"Max intermediate optimistic: {optimistic_intermediate} ")
+
+    for var in range(max_intermediate - 1, optimistic_intermediate - 1, -1):
+        solver.push()
+        print("push")
+        solver.add(degree_num_variables[var] == 0)
+        solver.add(degree_den_variables[var] == 0)
+
     # solver.push()
     # solver.add(degree_num_variables[max_intermediate - 1] == 0)
     # solver.add(degree_den_variables[max_intermediate - 1] == 0)
@@ -291,183 +477,25 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         m = solver.model()
         print("Variables intermedias formadas:")
 
-        dependencias = {}
-
-        # Variables intermedias
-        for var in range(max_intermediate):
-            num = m.eval(num_original_variables_var_num[var], model_completion=True).as_long()
-            den = m.eval(num_original_variables_var_den[var], model_completion=True).as_long()
-            cubre_num = m.eval(variables_covered_num[var], model_completion=True).as_long()
-            cubre_den = m.eval(variables_covered_den[var], model_completion=True).as_long()
-
-            deps_num = []
-            deps_den = []
-
-            for previous in range(var):
-                val_num = m.eval(var_uses_previous_num[var][previous], model_completion=True)
-                val_den = m.eval(var_uses_previous_den[var][previous], model_completion=True)
-                if is_true(val_num):
-                    deps_num.append(previous) # f"VI_{id}_{previous}")
-                if is_true(val_den):
-                    deps_den.append(previous) # f"VI_{id}_{previous}")
-
-            print(f"VI_{id}_{var}: num = {num}, den = {den}, cubre {cubre_num} en num y {cubre_den} en den")
-
-            dependencias[var] = {"num": deps_num, "den": deps_den}
-
-        # Variables usadas en el producto final
-        usadas_num = []
-        usadas_den = []
-
-        for var in range(max_intermediate):
-            usa_num = m.eval(product_uses_var_in_num[var], model_completion=True)
-            usa_den = m.eval(product_uses_var_in_den[var], model_completion=True)
-            if is_true(usa_num):
-                usadas_num.append(var) # f"VI_{id}_{var}")
-            elif is_true(usa_den):
-                usadas_den.append(var) # f"VI_{id}_{var}")
-
-        # inic_num = m.eval(product_uses_initials_in_num, model_completion=True).as_long()
-        # inic_den = m.eval(product_uses_initials_in_den, model_completion=True).as_long()
-
-        # producto_str_num = " * ".join(usadas_num) if usadas_num else "1"
-        # producto_str_den = " * ".join(usadas_den) if usadas_den else "1"
-
-        # print(f"\nProducto final: ({producto_str_num} * forig_{id}_n_{inic_num}) / ({producto_str_den} * forig_{id}_d_{inic_den})")
-
-        # Construir JSON final
-        vi_detalles = []
-        for var in range(max_intermediate):
-
-            gr_num = int(m.eval(degree_num_variables[var], model_completion=True).as_long())
-            gr_den = int(m.eval(degree_den_variables[var], model_completion=True).as_long())
-
-            if gr_num == 0 and gr_den == 0:
-                continue
-
-            deps_num = dependencias[var]["num"]
-            deps_den = dependencias[var]["den"]
-
-            num_orig = int(m.eval(num_original_variables_var_num[var], model_completion=True).as_long())
-            den_orig = int(m.eval(num_original_variables_var_den[var], model_completion=True).as_long())
-
-            # comp_num = []
-            # comp_den = []
-
-            # comp_num.extend(deps_num)
-            # comp_den.extend(deps_den)
-
-            # if num_orig > 0:
-            #     comp_num.append(f"forig_{id}_n_{num_orig}")
-            # if den_orig > 0:
-            #     comp_den.append(f"forig_{id}_d_{den_orig}")
-
-            usada_en_otra_var = False
-
-            for sig in range(var + 1, max_intermediate):
-                if var in dependencias[sig]["num"] or var in dependencias[sig]["den"]: usada_en_otra_var = True
-
-            # si esta VI aparece en el denominador final hay que invertir
-            if var in usadas_den or usada_en_otra_var:
-
-                detalles_num = {
-                    "intermediate": deps_den,
-                    "orig_num": 0,
-                    "orig_den": den_orig
-                }
-
-                detalles_den = {
-                    "intermediate": deps_num,
-                    "orig_num": num_orig,
-                    "orig_den": 0
-                }
-
-                # comp_num, comp_den = comp_den, comp_num
-            else:
-
-                detalles_num = {
-                    "intermediate": deps_num,
-                    "orig_num": num_orig,
-                    "orig_den": 0
-                }
-
-                detalles_den = {
-                    "intermediate": deps_den,
-                    "orig_num": 0,
-                    "orig_den": den_orig
-                }
-
-            vi_detalles.append({
-                "numerator": detalles_num,
-                "denominator": detalles_den
-            })
-
-        inic_num_val = m.eval(product_uses_initials_in_num, model_completion=True).as_long()
-        inic_den_val = m.eval(product_uses_initials_in_den, model_completion=True).as_long()
-
-        vars_num = []        
-
-        for v in usadas_num:
-            # numerador_detalle.append(v)
-            vars_num.append(v)
-
-        # if inic_num_val > 0: numerador_detalle.append(f"forig_{id}_n_{inic_num_val}")
-
-        numerador_detalle = {
-            "intermediate": vars_num,
-            "orig_num": inic_num_val,
-            "orig_den": 0
-        }
-
-        # denominador_detalle = []
-        vars_den = []
-
-        for v in usadas_den:
-            vars_den.append(v)
-
-        # if inic_den_val > 0: denominador_detalle.append(f"forig_{id}_d_{inic_den_val}")
-
-        denominador_detalle = {
-            "intermediate": vars_den,
-            "orig_num": 0,
-            "orig_den": inic_den_val
-        }
-
-        # numerador_detalle = {
-        #     "componentes": componentes_detalle(usadas_num),
-        #     "variables_originales": inic_num_val,
-        # }
-
-        # denominador_detalle = {
-        #     "componentes": componentes_detalle(usadas_den),
-        #     "variables_originales": inic_den_val,
-        # }
-
-        output_data = {
-            "op": "frac",
-            "product": {
-                "numerator": numerador_detalle,
-                "denominator": denominador_detalle
-            },
-            "intermediate_variables": vi_detalles,
-            "degree_numerator": int(m.eval(addsum(degree_prod_num), model_completion=True).as_long()),
-            "degree_denominator": int(m.eval(addsum(degree_prod_den), model_completion=True).as_long())
-        }
-
-        print(output_data)
-
-        with open("prod.json", "w") as fout:
-            json.dump(output_data, fout, indent=4)
-
-        print("\nResult exported to prod.json")
+        print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+        var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
+        product_uses_initials_in_den, degree_prod_num, degree_prod_den)
 
     else:
-        print("pop")
-        solver.pop()
-        # if solver.check() == sat:
-        #     print("Hay solución.")
-        # else: print("No hay solución.")
-        with open("prod.json", "w") as fout:
-            json.dump({}, fout)
+        print(f"No existe solución con " + str(optimistic_intermediate) + " variables intermedias")
+
+        for var in range(optimistic_intermediate + 1, max_intermediate + 1):
+            solver.pop()
+            if solver.check() == sat:
+                m = solver.model()
+
+                print("Existe solución con " + str(var) + " variables intermedias.")
+                print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+                var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
+                product_uses_initials_in_den, degree_prod_num, degree_prod_den)
+            else: 
+                print("No hay solución con " + str(var) + " variables intermedias.")
+                with open("prod.json", "w") as fout:
+                    json.dump({}, fout)
     
 # reducir_grado_producto(2, 3, 2, 0)

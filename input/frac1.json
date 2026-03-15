@@ -1,7 +1,7 @@
 { 
 "expressions":
 [
-    {"op": "frac","values": [{"signals": 1,"degree": 3}, {"signals": 7, "degree": 2}]}
+    {"op": "frac","values": [{"signals": 1,"degree": 15}, {"signals": 7, "degree": 6}]}
 ],
-    "degree": 2
+    "degree": 3
 }
