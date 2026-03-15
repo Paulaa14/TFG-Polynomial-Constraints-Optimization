@@ -129,7 +129,7 @@ def print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_
             usada_en_otra_var = False
 
             for sig in range(var + 1, max_intermediate):
-                if var in dependencias[sig]["num"] or var in dependencias[sig]["den"]: usada_en_otra_var = True
+                if var in dependencias[sig]["den"]: usada_en_otra_var = True # var in dependencias[sig]["num"] or 
 
             # si esta VI aparece en el denominador final hay que invertir
             if var in usadas_den or usada_en_otra_var:
@@ -327,10 +327,13 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
 
     # Solo puede ocurrir o que el grado de la variable sea n/n-1, n-1/n o que esté vacía tanto en numerador como denominador
     for var in range(max_intermediate): # OK
-        n_num = And(degree_num_variables[var] == maxDeg, Or(degree_den_variables[var] == 0, degree_den_variables[var] == maxDeg - 1))
-        n_den = And(Or(degree_num_variables[var] == 0, degree_num_variables[var] == maxDeg - 1), degree_den_variables[var] == maxDeg)
+        # n_num = And(degree_num_variables[var] == maxDeg, Or(degree_den_variables[var] == 0, degree_den_variables[var] == maxDeg - 1))
+        # n_den = And(Or(degree_num_variables[var] == 0, degree_num_variables[var] == maxDeg - 1), degree_den_variables[var] == maxDeg)
         # n_num = And(degree_num_variables[var] == maxDeg, degree_den_variables[var] == (maxDeg - 1))
         # n_den = And(degree_num_variables[var] == (maxDeg - 1), degree_den_variables[var] == maxDeg)
+
+        n_num = degree_num_variables[var] == maxDeg
+        n_den = degree_den_variables[var] == maxDeg
         zero = And(degree_num_variables[var] == 0, degree_den_variables[var] == 0)
 
         solver.add(Or(n_num, Or(n_den, zero)))

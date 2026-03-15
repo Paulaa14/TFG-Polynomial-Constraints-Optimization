@@ -1,98 +1,34 @@
 {
-    "total_vi_created": 7,
+    "total_vi_created": 3,
     "intermediate_variables": [
         {
             "fraction": 0,
             "iv": 0,
             "numerator": {
                 "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
+                "orig_num": 3,
+                "orig_den": 0
             },
             "denominator": {
                 "intermediate": [],
-                "orig_num": 3,
-                "orig_den": 0
+                "orig_num": 0,
+                "orig_den": 2
             }
         },
         {
             "fraction": 0,
             "iv": 1,
             "numerator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            },
-            "denominator": {
                 "intermediate": [
                     0
                 ],
                 "orig_num": 2,
                 "orig_den": 0
-            }
-        },
-        {
-            "fraction": 0,
-            "iv": 2,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            },
-            "denominator": {
-                "intermediate": [
-                    1
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            }
-        },
-        {
-            "fraction": 0,
-            "iv": 3,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [
-                    2
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            }
-        },
-        {
-            "fraction": 0,
-            "iv": 4,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [
-                    3
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            }
-        },
-        {
-            "fraction": 0,
-            "iv": 5,
-            "numerator": {
-                "intermediate": [
-                    4
-                ],
-                "orig_num": 2,
-                "orig_den": 0
             },
             "denominator": {
                 "intermediate": [],
                 "orig_num": 0,
-                "orig_den": 0
+                "orig_den": 1
             }
         }
     ],
@@ -110,13 +46,13 @@
                     {
                         "type": "prod",
                         "intermediate": [
-                            5
+                            1
                         ],
                         "original_factors": [
                             {
                                 "origen": "numerator",
                                 "fraccion": 0,
-                                "cantidad": 2
+                                "cantidad": 1
                             }
                         ]
                     }
