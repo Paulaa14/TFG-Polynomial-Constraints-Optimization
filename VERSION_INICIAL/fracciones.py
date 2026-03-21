@@ -27,8 +27,8 @@ def factor_original(origen, fraccion, cantidad):
     }
 
 def ejecutar_producto(grado_num, grado_den, maxDeg, id):
-    # prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
-    prod_fracciones_incremental.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
+    prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
+    # prod_fracciones_incremental.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
 
     with open("prod.json", "r") as f:
         prod_reducido = json.load(f)
@@ -124,11 +124,6 @@ for idx, frac in enumerate(expresiones):
                 "orig_den": lista_vi[k]["denominator"]["orig_den"]
             }
 
-            # contenido = {
-            #     "numerador": numerador,
-            #     "denominador": denominador
-            # }
-
             variables_intermedias.append({
                 "fraction": idx,
                 "iv": k,
@@ -183,16 +178,42 @@ for idx, frac in enumerate(expresiones):
             "denominator": orig_den
         })
 
+# Preprocesado descartando las fracciones que no pueden combinarse por su grado con ninguna de las otras
+fracciones_combinables = []
+fracciones_que_forman_var = []
+indices_fracciones_que_forman_var = []
+indices_combinables_originales = []
+
+for id_f, f in enumerate(fracciones):
+    grado_num_f = f["values"][0]["degree"]
+    grado_den_f = f["values"][1]["degree"]
+
+    combinable = False
+    for id_g, g in enumerate(fracciones):
+        if id_g != id_f:
+            grado_num_g = g["values"][0]["degree"]
+            grado_den_g = g["values"][1]["degree"]
+
+            if (grado_num_f + grado_den_g <= maxDeg) and (grado_den_f + grado_num_g <= maxDeg) and (grado_den_f + grado_den_g < maxDeg):
+                combinable = True
+    
+    if combinable: 
+        fracciones_combinables.append(f)
+        indices_combinables_originales.append(id_f) 
+        print(f"Fracción {id_f} se puede combinar con alguna otra: grado num {grado_num_f}, grado den {grado_den_f}")
+    else: 
+        fracciones_que_forman_var.append(f)
+        indices_fracciones_que_forman_var.append(id_f)
+        print(f"Fracción {id_f} no se puede combinar con ninguna otra, formará una VI nueva: grado num {grado_num_f}, grado den {grado_den_f}")
+
 print("Executing suma_fracciones_v1_2...\n")
 
 # Ejecuta la suma y obtiene los grupos. El grado del numerador puede ser maxDeg pero el grado del denominador tiene que ser menor que maxDeg para que
 # al pasar mutiplicando al otro lado no te pases de grado
-grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones)
+grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
 
 # Calcular cuántas VI se necesitan realmente
 total_vi_creadas = 0
-
-sumas = []
 
 print("\n--- Resultado de sumas ---")
 for g in grupos:
@@ -200,14 +221,20 @@ for g in grupos:
     cadena = " + ".join(f"fraction {f}" for f in frs)
     print(f"sum{g['sum']} = {cadena}")
 
-    sumas.append({
-        # "fraccion": None,
-        # "vi": total_vi_creadas,
-        # "tipo": "suma",
-        "fractions": frs
-    })
-
     total_vi_creadas += 1
+
+# Cuentan como variables nuevas las que no se pueden combinar con otras y tienen forma de fracción, porque hace falta meterlas en una VI nueva
+for idx, f in enumerate(fracciones_que_forman_var):
+    grado_num_f = f["values"][0]["degree"]
+    grado_den_f = f["values"][1]["degree"]
+
+    if grado_num_f > 0 and grado_den_f > 0:
+        vi_utilizadas_total += 1
+    
+    grupos.append({
+        "sum": len(grupos),
+        "fractions": [indices_fracciones_que_forman_var[idx]]
+    })
 
 print("\nTotal de VI creadas en la suma =", total_vi_creadas)
 vi_utilizadas_total += total_vi_creadas
@@ -222,11 +249,7 @@ for suma_id, g in enumerate(grupos):
     frs = g["fractions"]
 
     # -------- LADO IZQUIERDO --------
-    vis_izq = []
-
-    # V_S_id
-    # vis_izq.append(vi_utilizadas_total - total_vi_creadas + suma_id)
-    
+    vis_izq = []    
     factores_izq = []
 
     # denominadores
@@ -285,7 +308,6 @@ for suma_id, g in enumerate(grupos):
     }
 
     lista_ecuaciones.append({
-        # "id": suma_id,
         "left_side": lado_izquierdo,
         "right_side": lado_derecho
     })
@@ -299,10 +321,7 @@ for idx in range(total_vi_creadas):
 resultado = {
     "total_vi_created": vi_utilizadas_total,
     "intermediate_variables": variables_intermedias,
-    # "sumas": sumas,
-    # "fracciones_producto": fracciones_producto,
     "equations": lista_ecuaciones
-    # "resultado_final": resultado_final
 }
 
 with open("resultado_final.json", "w") as fout:

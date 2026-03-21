@@ -24,7 +24,7 @@ def addsum(a):
             asum = asum + a[i]
         return asum
     
-def suma_fracciones(maxDegNum, maxDegDen, expressions):
+def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
 
     solver = Optimize()
 
@@ -177,12 +177,12 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions):
                 continue
 
             # Construimos la lista de fracciones que se suman en este grupo
-            grupo_actual = [i]
+            grupo_actual = [original_indices[i]]
             usados.add(i)
 
             for j in range(i+1, num_expressions):
                 if modelo.evaluate(join[i][j - i]):
-                    grupo_actual.append(j)
+                    grupo_actual.append(original_indices[j])
                     usados.add(j)
 
             grupos.append({"sum": sum_id, "fractions": grupo_actual})
@@ -201,4 +201,4 @@ args = parser.parse_args()
 with open(args.input, "r") as f:
     data = json.load(f)
 
-suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"])
+# suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"])
