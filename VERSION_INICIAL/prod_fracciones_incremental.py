@@ -233,7 +233,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     solver = Optimize()
 
     # Usaremos variables intermedias vi_0, ... vi_{max_intermediate-1}
-    max_intermediate = fun_max_intermediate(degree_num, degree_den, maxDeg) # max(degree_num, degree_den) // 2 # maxDeg) + 1 # DEMOSTRAR
+    max_intermediate = fun_max_intermediate(degree_num, degree_den, maxDeg) # DEMOSTRAR
 
     # Cada variable, cuántas variables de las originales tiene del numerador, y cuántas del denominador. Cada variables es un nivel.
     # Las variables del numerador se colocarán en el numerador de la nueva variable y las del denominador en el denominador pero para el recuento final, es necesario saber cuántas eran originalmente del numerador

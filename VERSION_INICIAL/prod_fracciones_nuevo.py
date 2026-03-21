@@ -32,7 +32,7 @@ def addsum(a):
             asum = asum + a[i]
         return asum
     
-def fun_max_intermediate(degree_num, degree_den, maxDeg): #Demostrar que no me quedo corta como para que peuda dar unsat
+def fun_max_intermediate(degree_num, degree_den, maxDeg): # Demostrar que no me quedo corta como para que peuda dar unsat
     resto = 0
     intermediate_num = 0
 
@@ -44,7 +44,7 @@ def fun_max_intermediate(degree_num, degree_den, maxDeg): #Demostrar que no me q
     resto = 0
     intermediate_den = 0
 
-    while degree_den > maxDeg:
+    while degree_den >= maxDeg:
         intermediate_den += degree_den // maxDeg
         resto = degree_den % maxDeg
         degree_den = (degree_den // maxDeg) + resto
@@ -58,7 +58,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     solver = Optimize()
 
     # Usaremos variables intermedias vi_0, ... vi_{max_intermediate-1}
-    max_intermediate = fun_max_intermediate(degree_num, degree_den, maxDeg) # max(degree_num, degree_den) // 2 # maxDeg) + 1 # DEMOSTRAR
+    max_intermediate = fun_max_intermediate(degree_num, degree_den, maxDeg) # DEMOSTRAR
 
     print(f"Max intermediate: {max_intermediate} ")
 
@@ -147,7 +147,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
             degree_n.append(If(var_uses_previous_num[var][previous], 1, 0))
             degree_d.append(If(var_uses_previous_den[var][previous], 1, 0))
 
-        solver.add(And(addsum(degree_n) <= maxDeg, addsum(degree_d) <= maxDeg))
+        solver.add(And(addsum(degree_n) <= maxDeg, addsum(degree_d) <= maxDeg)) # ******************************************
         
         degree_num_variables.append(addsum(degree_n))
         degree_den_variables.append(addsum(degree_d))
@@ -174,7 +174,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
             solver.add(Implies(And(degree_num_variables[previous] == 0, degree_den_variables[previous] == 0), And(Not(var_uses_previous_num[var][previous]), Not(var_uses_previous_den[var][previous]))))
 
     solver.add(And(product_uses_initials_in_num >= 0, product_uses_initials_in_num <= maxDeg))
-    solver.add(And(product_uses_initials_in_den >= 0, product_uses_initials_in_den <= maxDeg))
+    solver.add(And(product_uses_initials_in_den >= 0, product_uses_initials_in_den < maxDeg)) # *****************************
 
     # No puede usarse la misma variable para numerador y denominador
     # for var in range(max_intermediate):
@@ -209,7 +209,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         degree_prod_num.append(If(product_uses_var_in_num[var], 1, 0))
         degree_prod_den.append(If(product_uses_var_in_den[var], 1, 0))
 
-    solver.add(And(addsum(degree_prod_num) <= maxDeg, addsum(degree_prod_den) <= maxDeg))
+    solver.add(And(addsum(degree_prod_num) <= maxDeg, addsum(degree_prod_den) < maxDeg)) # *******************************
 
     # Una misma variable no puede usarse en 2 variables intermedias, o en variable y producto. La suma de veces que es utilizada es <= 1. Se puede reformular con not de ors
     for var in range(max_intermediate): # OK

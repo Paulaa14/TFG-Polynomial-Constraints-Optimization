@@ -94,7 +94,7 @@ for idx, frac in enumerate(expresiones):
     grado_den = frac["values"][1]["degree"]
 
     # se pasa de grado --> reducir grado
-    if grado_num > maxDeg or grado_den > maxDeg:
+    if grado_num > maxDeg or grado_den >= maxDeg: # ******************************************
 
         print(f"Executing product to fraction {idx}...")
         prod_reducido = ejecutar_producto(grado_num, grado_den, maxDeg, idx)
@@ -206,11 +206,9 @@ for id_f, f in enumerate(fracciones):
         indices_fracciones_que_forman_var.append(id_f)
         print(f"Fracción {id_f} no se puede combinar con ninguna otra, formará una VI nueva: grado num {grado_num_f}, grado den {grado_den_f}")
 
-print("Executing suma_fracciones_v1_2...\n")
-
-# Ejecuta la suma y obtiene los grupos. El grado del numerador puede ser maxDeg pero el grado del denominador tiene que ser menor que maxDeg para que
-# al pasar mutiplicando al otro lado no te pases de grado
-grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
+if len(fracciones_combinables) > 0:
+    print("Executing suma_fracciones_v1_2...\n")
+    grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
 
 # Calcular cuántas VI se necesitan realmente
 total_vi_creadas = 0
