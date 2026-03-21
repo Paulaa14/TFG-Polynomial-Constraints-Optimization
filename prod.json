@@ -3,15 +3,15 @@
     "product": {
         "numerator": {
             "intermediate": [
-                1
+                0
             ],
-            "orig_num": 1,
+            "orig_num": 2,
             "orig_den": 0
         },
         "denominator": {
             "intermediate": [],
             "orig_num": 0,
-            "orig_den": 0
+            "orig_den": 1
         }
     },
     "intermediate_variables": [
@@ -26,22 +26,8 @@
                 "orig_num": 0,
                 "orig_den": 2
             }
-        },
-        {
-            "numerator": {
-                "intermediate": [
-                    0
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 1
-            }
         }
     ],
-    "degree_numerator": 2,
-    "degree_denominator": 0
+    "degree_numerator": 3,
+    "degree_denominator": 1
 }

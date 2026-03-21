@@ -5,16 +5,6 @@ from z3 import *
 import json
 import argparse
 
-"""
-Para el caso particular de suma de fracciones
-
-El grado de una suma de fracciones es el máximo entre todos los productos de los numeradores por el mínimo común múltiplo de los denominadores
-
-Cuando se cambia por variables ya no son fracciones, el grado es el máximo grado de los operandos de la suma
-
-Versión sin controlar fracciones repetidas pero reduciendo el número de variables -> triángulo superior
-
-"""
 def addsum(a):
     if len(a) == 0:
         return IntVal(0)
@@ -24,7 +14,7 @@ def addsum(a):
             asum = asum + a[i]
         return asum
     
-def suma_fracciones(maxDegNum, maxDegDen, expressions):
+def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
 
     solver = Optimize()
 
@@ -40,6 +30,14 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions):
             join_exp.append(Bool("join_" + str(exp) + "_" + str(e)))
         
         join.append(join_exp) 
+
+    options = []
+    # Para cada expresion, qué opción se usa
+    for exp in range(num_expressions):
+        options.append(Int("used_option_in_exp_" + str(exp)))
+    
+    for exp in range(num_expressions):
+        solver.add(And(options[exp] >= 0, options[exp] < len(expressions[exp])))
 
     for exp in range(num_expressions):
         for e in range(exp + 1, num_expressions):     
@@ -67,73 +65,62 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions):
         # for e in range(exp):
         #     solver.add(Implies(join[exp][0], Not(join[e][exp - e])))
 
-    # Grados de numerador y denominador de las expresiones
+    # Grados de numerador y denominador de las expresiones y sus opciones (matriz)
     degrees_num = []
     degrees_den = []
 
     for exp in range(num_expressions):
-        degrees_num.append(expressions[exp]["values"][0]["degree"])
-        degrees_den.append(expressions[exp]["values"][1]["degree"])
+        degrees_num_exp = []
+        degrees_den_exp = []
+
+        # Opciones
+        for option in range(len(expressions[exp])):
+            degrees_num_exp.append(expressions[exp][option]["values"][0]["degree"])
+            degrees_den_exp.append(expressions[exp][option]["values"][1]["degree"])
+
+        degrees_num.append(degrees_num_exp)
+        degrees_den.append(degrees_den_exp)
 
     # Las variables que se juntan y pasan de grado obligatoriamente tienen que tener su join a false # OPTIMIZACIÓN DEL SOLVER
     for exp in range(num_expressions):
         for e in range(exp + 1, num_expressions):
             # Si se juntan se pasa de grado
-            if degrees_num[exp] + degrees_den[e] > maxDegNum or degrees_num[e] + degrees_den[exp] > maxDegNum or degrees_den[exp] + degrees_den[e] > maxDegDen:
-                solver.add(Not(join[exp][e - exp]))
+            for opc_exp in range(len(expressions[exp])):
+                for opc_e in range(len(expressions[e])):
+                    if degrees_num[exp][opc_exp] + degrees_den[e][opc_e] > maxDegNum or degrees_num[e][opc_e] + degrees_den[exp][opc_exp] > maxDegNum or degrees_den[exp][opc_exp] + degrees_den[e][opc_e] > maxDegDen:
+                        solver.add(Implies(And(options[exp] == opc_exp, options[e] == opc_e), Not(join[exp][e - exp])))
 
-                # for previous in range(exp): # AÑADIDO DESPUES
-                #     solver.add(Implies(join[previous][exp - previous], Not(join[previous][e - previous])))
+            # for previous in range(exp): # AÑADIDO DESPUES
+            #     solver.add(Implies(join[previous][exp - previous], Not(join[previous][e - previous])))
 
         # Si la expresión se pasa de grado obligatoriamente tiene que ir sola
         # if degree_num_exp > maxDeg or degree_den_exp > maxDeg:
         #     solver.add(join[exp][0]) 
         
     # Comprobar que las expressions que se forman no superan el grado
-    # for exp in range(num_expressions):
-    #     degree_num = [expressions[exp]["values"][0]["degree"]]
-    #     degree_den = [expressions[exp]["values"][1]["degree"]]
-
-    #     for e in range(exp + 1, num_expressions):
-    #         prev_degree_num = degree_num[-1]
-    #         prev_degree_den = degree_den[-1]
-
-    #         # max(numerador actual + denominador de e, numerador de e + denominador actual)
-    #         expr1 = prev_degree_num + expressions[e]["values"][1]["degree"]
-    #         expr2 = prev_degree_den + expressions[e]["values"][0]["degree"]
-
-    #         max_deg_exp = If(expr1 > expr2, expr1, expr2)
-    #         new_degree_num = If(join[exp][e - exp], max_deg_exp, prev_degree_num)
-    #         new_degree_den = If(join[exp][e - exp], prev_degree_den + expressions[e]["values"][1]["degree"], prev_degree_den)
-
-    #         # for sig in range(e, num_expressions):
-    #         #     solver.add(Implies(Or(new_degree_num > maxDeg, new_degree_den > maxDeg), Not(join[exp][sig - exp])))
-
-    #         degree_num.append(new_degree_num)
-    #         degree_den.append(new_degree_den)
-
-    #     # grado_total = If(degree_num[-1] > degree_den[-1], degree_num[-1], degree_den[-1])
-    #     # solver.add(grado_total <= maxDeg)
-
-    #     solver.add(degree_num[-1] <= maxDegNum)
-    #     solver.add(degree_den[-1] <= maxDegDen)
-
-    # Más eficiente que lo de arriba
     for exp in range(num_expressions):
-        curr_num = degrees_num[exp]
-        curr_den = degrees_den[exp]
 
-        for e in range(exp + 1, num_expressions):
-            expr1 = curr_num + degrees_den[e]
-            expr2 = curr_den + degrees_num[e]
+        for option_exp in range(len(expressions[exp])):
+            curr_num_exp = If(options[exp] == option_exp, degrees_num[exp][option_exp], 0)
+            curr_den_exp = If(options[exp] == option_exp, degrees_den[exp][option_exp], 0)
 
-            max_deg_exp = If(expr1 > expr2, expr1, expr2)
+            for e in range(exp + 1, num_expressions):
 
-            curr_num = If(join[exp][e - exp], max_deg_exp, curr_num)
-            curr_den = If(join[exp][e - exp], curr_den + degrees_den[e], curr_den)
+                for option_e in range(len(expressions[e])):
 
-        solver.add(curr_num <= maxDegNum)
-        solver.add(curr_den <= maxDegDen)
+                    curr_num_e = If(options[e] == option_e, degrees_num[e][option_e], 0)
+                    curr_den_e = If(options[e] == option_e, degrees_den[e][option_e], 0)
+
+                    expr1 = curr_num_exp + curr_den_e
+                    expr2 = curr_den_exp + curr_num_e
+
+                    max_deg_exp = If(expr1 > expr2, expr1, expr2)
+
+                    curr_num_exp = If(join[exp][e - exp], max_deg_exp, curr_num_exp)
+                    curr_den_exp = If(join[exp][e - exp], curr_den_exp + curr_den_e, curr_den_exp)
+
+            solver.add(curr_num_exp <= maxDegNum)
+            solver.add(curr_den_exp <= maxDegDen)
 
     # Variables que realmente cuentan
     for exp in range(num_expressions):
@@ -188,12 +175,38 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions):
             grupos.append({"sum": sum_id, "fractions": grupo_actual})
             sum_id += 1
 
-        return grupos
+        # Información de options y grados de numerador/denominador para cada expresión
+        options_info = []
+        for i in range(num_expressions):
+            opt = modelo.evaluate(options[i]).as_long()
+            grado_num = degrees_num[i][opt]
+            grado_den = degrees_den[i][opt]
+            options_info.append({
+                "expression": i,
+                "selected_option": opt,
+                "degree_num": grado_num,
+                "degree_den": grado_den
+            })
+
+        # Imprimir por pantalla los options y grados seleccionados para cada expresión
+        print("Opciones seleccionadas y grados por expresión:")
+        for info in options_info:
+            print(f"Expresión {info['expression']}: opción {info['selected_option']}, grado_num={info['degree_num']}, grado_den={info['degree_den']}")
+
+        resultado = {
+            "groups": grupos,
+            "options": options_info
+        }
+
+        print("Resultado JSON:")
+        print(resultado)
+
+        return resultado
 
     else:
         print("No se encontró una solución válida bajo las restricciones dadas.")
         return 0
-
+    
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="Input JSON file")
 args = parser.parse_args()
@@ -201,4 +214,4 @@ args = parser.parse_args()
 with open(args.input, "r") as f:
     data = json.load(f)
 
-suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"])
+suma_fracciones_multiopcion(data["degree"], data["degree"] - 1, data["expressions"])

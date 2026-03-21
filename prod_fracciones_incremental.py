@@ -461,7 +461,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     # INCREMENTALIDAD
 
     # Cota optimista con una aproximación mía
-    optimistic_intermediate = max(degree_num, degree_den) // maxDeg + 1
+    optimistic_intermediate = max(degree_num, degree_den) // maxDeg
     print(f"Max intermediate realistic: {max_intermediate} ")
     print(f"Max intermediate optimistic: {optimistic_intermediate} ")
 
