@@ -4,8 +4,312 @@
             "op": "frac",
             "product": {
                 "numerator": {
+                    "intermediate": [],
+                    "orig_num": 2,
+                    "orig_den": 0
+                },
+                "denominator": {
                     "intermediate": [
-                        2
+                        4,
+                        5
+                    ],
+                    "orig_num": 0,
+                    "orig_den": 0
+                }
+            },
+            "intermediate_variables": [
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 3,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 1
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 3,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 1
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 3
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 3
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 3
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            2,
+                            3
+                        ],
+                        "orig_num": 0,
+                        "orig_den": 1
+                    },
+                    "denominator": {
+                        "intermediate": [
+                            0,
+                            1
+                        ],
+                        "orig_num": 0,
+                        "orig_den": 0
+                    }
+                }
+            ],
+            "degree_numerator": 2,
+            "degree_denominator": 2
+        },
+        {
+            "op": "frac",
+            "product": {
+                "numerator": {
+                    "intermediate": [],
+                    "orig_num": 3,
+                    "orig_den": 0
+                },
+                "denominator": {
+                    "intermediate": [
+                        5
+                    ],
+                    "orig_num": 0,
+                    "orig_den": 0
+                }
+            },
+            "intermediate_variables": [
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 3,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 1
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 3
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 3
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 3
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            1
+                        ],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    },
+                    "denominator": {
+                        "intermediate": [
+                            0
+                        ],
+                        "orig_num": 1,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            2,
+                            3,
+                            4
+                        ],
+                        "orig_num": 0,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 1,
+                        "orig_den": 0
+                    }
+                }
+            ],
+            "degree_numerator": 3,
+            "degree_denominator": 1
+        },
+        {
+            "op": "frac",
+            "product": {
+                "numerator": {
+                    "intermediate": [],
+                    "orig_num": 2,
+                    "orig_den": 0
+                },
+                "denominator": {
+                    "intermediate": [
+                        5
+                    ],
+                    "orig_num": 0,
+                    "orig_den": 0
+                }
+            },
+            "intermediate_variables": [
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 3,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 3,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            0
+                        ],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            1
+                        ],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 1
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 3
+                    },
+                    "denominator": {
+                        "intermediate": [
+                            2
+                        ],
+                        "orig_num": 1,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            4
+                        ],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    },
+                    "denominator": {
+                        "intermediate": [
+                            3
+                        ],
+                        "orig_num": 1,
+                        "orig_den": 0
+                    }
+                }
+            ],
+            "degree_numerator": 2,
+            "degree_denominator": 1
+        },
+        {
+            "op": "frac",
+            "product": {
+                "numerator": {
+                    "intermediate": [
+                        5
                     ],
                     "orig_num": 1,
                     "orig_den": 0
@@ -20,40 +324,82 @@
                 {
                     "numerator": {
                         "intermediate": [],
-                        "orig_num": 2,
+                        "orig_num": 3,
                         "orig_den": 0
                     },
                     "denominator": {
                         "intermediate": [],
                         "orig_num": 0,
-                        "orig_den": 1
+                        "orig_den": 2
                     }
                 },
                 {
                     "numerator": {
                         "intermediate": [],
-                        "orig_num": 2,
+                        "orig_num": 3,
                         "orig_den": 0
                     },
                     "denominator": {
                         "intermediate": [],
                         "orig_num": 0,
-                        "orig_den": 1
+                        "orig_den": 2
                     }
                 },
                 {
                     "numerator": {
                         "intermediate": [
-                            0,
-                            1
+                            0
                         ],
-                        "orig_num": 0,
+                        "orig_num": 2,
                         "orig_den": 0
                     },
                     "denominator": {
                         "intermediate": [],
                         "orig_num": 0,
-                        "orig_den": 1
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            1
+                        ],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            2
+                        ],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            3,
+                            4
+                        ],
+                        "orig_num": 1,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
                     }
                 }
             ],

@@ -190,23 +190,23 @@ def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var
     max_solutions = 5
     d_num_sol = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
     d_den_sol = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
-    solver.add(Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol))
+    solver.add(Or(addsum(degree_prod_num) + addsum(degree_prod_den) < d_num_sol + d_den_sol, Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol)))
+    solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) <= d_num_sol + d_den_sol) # Meterlo dentro del bucle también???
 
     while(solver.check() == sat and num_solutions < max_solutions):
         m = solver.model()
-        d_num_sol_actual = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
-        d_den_sol_actual = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
-        print("Otra solución con grado final " + str(d_num_sol_actual) + "/" + str(d_den_sol_actual))
+        d_num_sol = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
+        d_den_sol = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
+        print("Otra solución con grado final " + str(d_num_sol) + "/" + str(d_den_sol))
         
         output_data = print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
         product_uses_initials_in_den, degree_prod_num, degree_prod_den)
         
         opciones.append(output_data)
-
-        d_num_sol = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
-        d_den_sol = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
-        solver.add(Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol))
+        
+        # Si encuentra una solución del mismo grado sí que deben ser distintas, si la saca de distinto grado da igual
+        solver.add(Or(addsum(degree_prod_num) + addsum(degree_prod_den) < d_num_sol + d_den_sol, Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol)))
 
         num_solutions += 1
     
@@ -452,46 +452,17 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     # for var in range(max_intermediate):
     #     solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
 
-    # Minimizar suma grado final incremental --> Desde el máximo grado posible que es maxDeg + (maxDeg - 1) hasta el minimo grado que es 1
-    for deg in range(2 * maxDeg - 1, 0, -1):
-        solver.push()
-        solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) <= deg)
-
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
         m = solver.model()
         
         print("Existe solución con grado final 1")
-        solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) == deg)
+        # solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) == deg)
         guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
         product_uses_initials_in_den, degree_prod_num, degree_prod_den)
 
     else:
-        print("No existe solución con grado final 1")
-        print("pop")
-
-        solver.pop()
-        deg = 2
-        while(solver.check() == unsat and deg <= 2 * maxDeg - 1):
-            print(f"No existe solución con grado final {deg}")
-            print("pop")
-            solver.pop()
-            deg += 1
-        
-        if deg <= 2 * maxDeg - 1:
-            m = solver.model()
-            print("Existe solución con grado final " + str(deg))
-
-            solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) == deg)
-           
-            guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
-            var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num, 
-            product_uses_initials_in_den, degree_prod_num, degree_prod_den)
-
-            # with open("prod.json", "w") as fout:
-            #     json.dump({}, fout)
-        else:
-            print("No existe solución con grado final entre 1 y " + str(2 * maxDeg - 1))
+        print("No existe solución")
     
-reducir_grado_producto(2, 5, 3, 0)
+reducir_grado_producto(3, 14, 12, 0)
