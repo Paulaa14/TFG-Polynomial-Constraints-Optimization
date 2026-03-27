@@ -467,13 +467,8 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
 
     for var in range(max_intermediate - 1, optimistic_intermediate - 1, -1):
         solver.push()
-        print("push")
         solver.add(degree_num_variables[var] == 0)
         solver.add(degree_den_variables[var] == 0)
-
-    # solver.push()
-    # solver.add(degree_num_variables[max_intermediate - 1] == 0)
-    # solver.add(degree_den_variables[max_intermediate - 1] == 0)
 
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
@@ -496,6 +491,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
                 print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
                 var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
                 product_uses_initials_in_den, degree_prod_num, degree_prod_den)
+                break
             else: 
                 print("No hay solución con " + str(var) + " variables intermedias.")
                 with open("prod.json", "w") as fout:
