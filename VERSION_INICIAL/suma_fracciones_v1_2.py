@@ -109,11 +109,12 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         for e in range(exp, num_expressions): # En la fila solo puede tener activos los siguientes, incluído él
             add_row.append(If(join[exp][e - exp], 1, 0))
         
-        for e in range(0, exp): # En la columna solo puede estar activo en los anteriores
+        for e in range(0, exp + 1): # En la columna solo puede estar activo en los anteriores
             add_col.append(If(join[e][exp - e], 1, 0))
         
         # Obligo a que se junte 100% con alguien, ya sea en fila o en columna
-        solver.add(Or(addsum(add_row) > 0, addsum(add_col) > 0))
+        # solver.add(Or(addsum(add_row) > 0, addsum(add_col) > 0))
+        solver.add(addsum(add_col) == 1)
         
         # Minimizar número de variables creadas
         solver.add_soft(addsum(add_row) == 0, 1, "min_vars")
@@ -136,7 +137,7 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         print("Solution found:\n")
 
         grupos = []
-        sum_id = 1
+        sum_id = 0
         usados = set()  # Para no repetir fracciones
 
         for i in range(num_expressions):
@@ -161,16 +162,16 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         print("No se encontró una solución válida bajo las restricciones dadas.")
         return 0
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input", help="Input JSON file")
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("input", help="Input JSON file")
+# args = parser.parse_args()
 
-with open(args.input, "r") as f:
-    data = json.load(f)
+# with open(args.input, "r") as f:
+#     data = json.load(f)
 
-indices = []
-for exp in range(len(data["expressions"])):
-    indices.append(exp)
+# indices = []
+# for exp in range(len(data["expressions"])):
+#     indices.append(exp)
 
-resultado = suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"], indices)
-print(json.dumps(resultado, indent=2))
+# resultado = suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"], indices)
+# print(json.dumps(resultado, indent=2))

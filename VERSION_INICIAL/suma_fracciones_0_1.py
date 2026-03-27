@@ -44,17 +44,6 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     for exp in range(num_expressions):
         for e in range(exp, num_expressions):
             solver.add(Or(join[exp][e - exp] == 0, join[exp][e - exp] == 1)) 
-        
-    columnas = []
-    for exp in range(num_expressions):
-        col_exp = []
-        for e in range(0, exp + 1): # En la columna solo puede estar activo en los anteriores
-            col_exp.append(join[e][exp - e])
-        
-        columnas.append(col_exp)
-
-    for exp in range(num_expressions):
-        solver.add(addsum(columnas[exp]) == 1) # Cada fracción solo puede estar en un grupo
 
         # La columna de e, debe estar a false si se junta exp con e. Las filas anteriores, excluyendo exp, deben tenerlo a false
         # for row in range(e):
@@ -120,7 +109,10 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     #     solver.add(curr_num <= maxDegNum)
     #     solver.add(curr_den <= maxDegDen)
 
+    degs_num = []
+    degs_den = []
     for exp in range(num_expressions):
+        dg_num = []
         curr_den = []
         # curr_den.append(degrees_den[exp] * join[exp][0])
 
@@ -131,26 +123,32 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         solver.add(den_comun <= maxDegDen)
 
         for e in range(exp, num_expressions):
-            degrees_num[e] * join[exp][e - exp] + (den_comun - degrees_den[e] * join[exp][e - exp]) <= maxDegNum # Creo que funcionaría porque el maxDegNum siempre va a ser mayor que maxDegDen por construcción
+            dg_num.append(degrees_num[e] + (den_comun - degrees_den[e] * join[exp][e - exp]))
+            solver.add((den_comun + (degrees_num[e] - degrees_den[e]) * join[exp][e - exp]) <= maxDegNum)
+        
+        degs_num.append(dg_num)
+        degs_den.append(den_comun)
 
     # Variables que realmente cuentan
-    for exp in range(num_expressions):
-        
+    # for exp in range(num_expressions):
         # Obligo a que se junte 100% con alguien, ya sea en fila o en columna
-        solver.add(Or(addsum(join[exp]) > 0, addsum(columnas[exp]) > 0))
-        
-        # Minimizar número de variables creadas --> Minimizar la suma de la diagonal
-        diagonal = []
-        for exp in range(num_expressions):
-            diagonal.append(join[exp][0])
-        solver.minimize(addsum(diagonal))
+        # solver.add(Or(addsum(join[exp]) > 0, addsum(columnas[exp]) > 0))  
+    
+    # Minimizar número de variables creadas --> Minimizar la suma de la diagonal
+    diagonal = []
+    for exp in range(num_expressions):
+        diagonal.append(join[exp][0])
+    solver.minimize(addsum(diagonal))
+
+    # for exp in range(num_expressions):
+    #     print(f"Grado numerador {original_indices[exp]}: {degrees_num[exp]}, grado denominador: {degrees_den[exp]}")
 
     if solver.check() == sat:
         modelo = solver.model()
-        print("Solution found:\n")
+        print(f"Solution found for degNum {maxDegNum} and degDen {maxDegDen}:\n")
 
         grupos = []
-        sum_id = 1
+        sum_id = 0
         usados = set()  # Para no repetir fracciones
 
         for i in range(num_expressions):
@@ -160,10 +158,12 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
             # Construimos la lista de fracciones que se suman en este grupo
             grupo_actual = [original_indices[i]]
             usados.add(i)
+            # print(f"Grado num para {original_indices[i]}: {modelo.evaluate(degs_num[i][0])}, grado den {modelo.evaluate(degs_den[i])}")
 
             for j in range(i + 1, num_expressions):
                 if modelo.evaluate(join[i][j - i]) == 1:
                     grupo_actual.append(original_indices[j])
+                    # print(f"Grado num para {original_indices[j]} en {original_indices[i]}: {modelo.evaluate(degs_num[i][j - i])}, grado den {modelo.evaluate(degs_den[i])}")
                     usados.add(j)
 
             grupos.append({"sum": sum_id, "fractions": grupo_actual})
@@ -175,16 +175,20 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         print("No se encontró una solución válida bajo las restricciones dadas.")
         return 0
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input", help="Input JSON file")
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("input", help="Input JSON file")
+# args = parser.parse_args()
 
-with open(args.input, "r") as f:
-    data = json.load(f)
+# with open(args.input, "r") as f:
+#     data = json.load(f)
 
-indices = []
-for exp in range(len(data["expressions"])):
-    indices.append(exp)
+# indices = []
+# for exp in range(len(data["expressions"])):
+#     indices.append(exp)
 
-resultado = suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"], indices)
-print(json.dumps(resultado, indent=2))
+# resultado = suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"], indices)
+# print("\n--- Resultado de sumas ---")
+# for g in resultado:
+#     frs = g["fractions"]
+#     cadena = " + ".join(f"fraction {f}" for f in frs)
+#     print(f"sum{g['sum']} = {cadena}")

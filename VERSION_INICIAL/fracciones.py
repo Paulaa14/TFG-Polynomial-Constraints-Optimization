@@ -201,11 +201,11 @@ for id_f, f in enumerate(fracciones):
     if combinable: 
         fracciones_combinables.append(f)
         indices_combinables_originales.append(id_f) 
-        print(f"Fracción {id_f} se puede combinar con alguna otra: grado num {grado_num_f}, grado den {grado_den_f}")
+        # print(f"Fracción {id_f} se puede combinar con alguna otra: grado num {grado_num_f}, grado den {grado_den_f}")
     else: 
         fracciones_que_forman_var.append(f)
         indices_fracciones_que_forman_var.append(id_f)
-        print(f"Fracción {id_f} no se puede combinar con ninguna otra, formará una VI nueva: grado num {grado_num_f}, grado den {grado_den_f}")
+        # print(f"Fracción {id_f} no se puede combinar con ninguna otra, formará una VI nueva: grado num {grado_num_f}, grado den {grado_den_f}")
 
 if len(fracciones_combinables) > 0:
     print("Executing suma_fracciones_v1_2...\n")
@@ -329,4 +329,4 @@ resultado = {
 with open("resultado_final.json", "w") as fout:
     json.dump(resultado, fout, indent=4)
 
-print("\File 'resultado_final.json' generated correctly.")
+print("File 'resultado_final.json' generated correctly.")

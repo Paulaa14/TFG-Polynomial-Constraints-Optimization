@@ -1,127 +1,6 @@
 {
-    "total_vi_created": 12,
-    "intermediate_variables": [
-        {
-            "fraction": 0,
-            "iv": 0,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 3,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        },
-        {
-            "fraction": 1,
-            "iv": 0,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 3,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        },
-        {
-            "fraction": 1,
-            "iv": 1,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 3,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        },
-        {
-            "fraction": 1,
-            "iv": 2,
-            "numerator": {
-                "intermediate": [
-                    1
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        },
-        {
-            "fraction": 1,
-            "iv": 3,
-            "numerator": {
-                "intermediate": [
-                    2
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 2
-            }
-        },
-        {
-            "fraction": 1,
-            "iv": 4,
-            "numerator": {
-                "intermediate": [
-                    3
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 1
-            }
-        },
-        {
-            "fraction": 1,
-            "iv": 5,
-            "numerator": {
-                "intermediate": [
-                    4
-                ],
-                "orig_num": 2,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 1
-            }
-        },
-        {
-            "fraction": 3,
-            "iv": 0,
-            "numerator": {
-                "intermediate": [],
-                "orig_num": 3,
-                "orig_den": 0
-            },
-            "denominator": {
-                "intermediate": [],
-                "orig_num": 0,
-                "orig_den": 1
-            }
-        }
-    ],
+    "total_vi_created": 4,
+    "intermediate_variables": [],
     "equations": [
         {
             "left_side": {
@@ -131,7 +10,7 @@
                 "original_factors": [
                     {
                         "origen": "denominator",
-                        "fraccion": 4,
+                        "fraccion": 3,
                         "cantidad": 1
                     }
                 ]
@@ -141,32 +20,16 @@
                 "terms": [
                     {
                         "type": "prod",
-                        "intermediate": [
-                            0
-                        ],
+                        "intermediate": [],
                         "original_factors": [
                             {
                                 "origen": "numerator",
                                 "fraccion": 0,
-                                "cantidad": 1
+                                "cantidad": 4
                             },
                             {
                                 "origen": "denominator",
-                                "fraccion": 4,
-                                "cantidad": 1
-                            }
-                        ]
-                    },
-                    {
-                        "type": "prod",
-                        "intermediate": [
-                            5,
-                            6
-                        ],
-                        "original_factors": [
-                            {
-                                "origen": "denominator",
-                                "fraccion": 4,
+                                "fraccion": 3,
                                 "cantidad": 1
                             }
                         ]
@@ -177,7 +40,23 @@
                         "original_factors": [
                             {
                                 "origen": "numerator",
+                                "fraccion": 3,
+                                "cantidad": 5
+                            }
+                        ]
+                    },
+                    {
+                        "type": "prod",
+                        "intermediate": [],
+                        "original_factors": [
+                            {
+                                "origen": "numerator",
                                 "fraccion": 4,
+                                "cantidad": 3
+                            },
+                            {
+                                "origen": "denominator",
+                                "fraccion": 3,
                                 "cantidad": 1
                             }
                         ]
@@ -193,8 +72,13 @@
                 "original_factors": [
                     {
                         "origen": "denominator",
+                        "fraccion": 1,
+                        "cantidad": 3
+                    },
+                    {
+                        "origen": "denominator",
                         "fraccion": 2,
-                        "cantidad": 2
+                        "cantidad": 1
                     }
                 ]
             },
@@ -207,8 +91,29 @@
                         "original_factors": [
                             {
                                 "origen": "numerator",
+                                "fraccion": 1,
+                                "cantidad": 2
+                            },
+                            {
+                                "origen": "denominator",
+                                "fraccion": 2,
+                                "cantidad": 1
+                            }
+                        ]
+                    },
+                    {
+                        "type": "prod",
+                        "intermediate": [],
+                        "original_factors": [
+                            {
+                                "origen": "numerator",
                                 "fraccion": 2,
                                 "cantidad": 2
+                            },
+                            {
+                                "origen": "denominator",
+                                "fraccion": 1,
+                                "cantidad": 3
                             }
                         ]
                     }
@@ -223,8 +128,13 @@
                 "original_factors": [
                     {
                         "origen": "denominator",
-                        "fraccion": 3,
-                        "cantidad": 2
+                        "fraccion": 5,
+                        "cantidad": 1
+                    },
+                    {
+                        "origen": "denominator",
+                        "fraccion": 7,
+                        "cantidad": 3
                     }
                 ]
             },
@@ -233,14 +143,33 @@
                 "terms": [
                     {
                         "type": "prod",
-                        "intermediate": [
-                            7
-                        ],
+                        "intermediate": [],
                         "original_factors": [
                             {
                                 "origen": "numerator",
-                                "fraccion": 3,
+                                "fraccion": 5,
                                 "cantidad": 2
+                            },
+                            {
+                                "origen": "denominator",
+                                "fraccion": 7,
+                                "cantidad": 3
+                            }
+                        ]
+                    },
+                    {
+                        "type": "prod",
+                        "intermediate": [],
+                        "original_factors": [
+                            {
+                                "origen": "numerator",
+                                "fraccion": 7,
+                                "cantidad": 1
+                            },
+                            {
+                                "origen": "denominator",
+                                "fraccion": 5,
+                                "cantidad": 1
                             }
                         ]
                     }
@@ -255,7 +184,7 @@
                 "original_factors": [
                     {
                         "origen": "denominator",
-                        "fraccion": 5,
+                        "fraccion": 6,
                         "cantidad": 2
                     }
                 ]
@@ -269,8 +198,8 @@
                         "original_factors": [
                             {
                                 "origen": "numerator",
-                                "fraccion": 5,
-                                "cantidad": 3
+                                "fraccion": 6,
+                                "cantidad": 2
                             }
                         ]
                     }
