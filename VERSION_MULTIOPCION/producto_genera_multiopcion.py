@@ -171,10 +171,55 @@ def print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_
 
     print(output_data)
 
-    with open("prod.json", "w") as fout:
-        json.dump(output_data, fout, indent=4)
+    return output_data
 
-    print("\nResult exported to prod.json")
+def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
+    var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num, 
+    product_uses_initials_in_den, degree_prod_num, degree_prod_den):
+
+    opciones = []
+    
+    # Guardar la primera solución
+    output_data = print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+    var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
+    product_uses_initials_in_den, degree_prod_num, degree_prod_den)
+    
+    opciones.append(output_data)
+
+    num_solutions = 1
+    max_solutions = 5
+    d_num_sol = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
+    d_den_sol = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
+    solver.add(Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol))
+
+    while(solver.check() == sat and num_solutions < max_solutions):
+        m = solver.model()
+        d_num_sol_actual = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
+        d_den_sol_actual = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
+        print("Otra solución con grado final " + str(d_num_sol_actual) + "/" + str(d_den_sol_actual))
+        
+        output_data = print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+        var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
+        product_uses_initials_in_den, degree_prod_num, degree_prod_den)
+        
+        opciones.append(output_data)
+
+        d_num_sol = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
+        d_den_sol = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
+        solver.add(Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol))
+
+        num_solutions += 1
+    
+    print("Se han obtenido " + str(num_solutions) + " soluciones en total.")
+    
+    json_final = {
+        "opciones": opciones
+    }
+    
+    with open("prod.json", "w") as fout:
+        json.dump(json_final, fout, indent=4)
+    
+    print("\nSe han exportado todas las soluciones a prod.json")
 
 # Meter variables que representan la fracción, cuántas variables se cogen en el numerador, y cuántas en el denominador
 def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
@@ -415,8 +460,10 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
         m = solver.model()
-
-        print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+        
+        print("Existe solución con grado final 1")
+        solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) == deg)
+        guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
         product_uses_initials_in_den, degree_prod_num, degree_prod_den)
 
@@ -435,13 +482,16 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         if deg <= 2 * maxDeg - 1:
             m = solver.model()
             print("Existe solución con grado final " + str(deg))
-            print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
-            var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
+
+            solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) == deg)
+           
+            guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
+            var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num, 
             product_uses_initials_in_den, degree_prod_num, degree_prod_den)
 
-            with open("prod.json", "w") as fout:
-                json.dump({}, fout)
+            # with open("prod.json", "w") as fout:
+            #     json.dump({}, fout)
         else:
             print("No existe solución con grado final entre 1 y " + str(2 * maxDeg - 1))
     
-reducir_grado_producto(3, 14, 10, 0)
+reducir_grado_producto(2, 5, 3, 0)
