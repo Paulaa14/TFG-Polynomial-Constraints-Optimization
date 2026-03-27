@@ -5,7 +5,7 @@
             "intermediate": [
                 0
             ],
-            "orig_num": 0,
+            "orig_num": 2,
             "orig_den": 0
         },
         "denominator": {
@@ -28,6 +28,6 @@
             }
         }
     ],
-    "degree_numerator": 1,
+    "degree_numerator": 3,
     "degree_denominator": 2
 }

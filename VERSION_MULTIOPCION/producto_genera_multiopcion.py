@@ -283,10 +283,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n --> Ralentiza algo menos que la previous pero tmb
     for var in range(max_intermediate):
         solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
-    
-    # solver.push()
-    # solver.add(degree_num_variables[max_intermediate - 1] == 0)
-    # solver.add(degree_den_variables[max_intermediate - 1] == 0)
 
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
@@ -309,9 +305,9 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
                 val_num = m.eval(var_uses_previous_num[var][previous], model_completion=True)
                 val_den = m.eval(var_uses_previous_den[var][previous], model_completion=True)
                 if is_true(val_num):
-                    deps_num.append(previous) # f"VI_{id}_{previous}")
+                    deps_num.append(previous)
                 if is_true(val_den):
-                    deps_den.append(previous) # f"VI_{id}_{previous}")
+                    deps_den.append(previous)
 
             print(f"VI_{id}_{var}: num = {num}, den = {den}, cubre {cubre_num} en num y {cubre_den} en den")
 
@@ -325,17 +321,9 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
             usa_num = m.eval(product_uses_var_in_num[var], model_completion=True)
             usa_den = m.eval(product_uses_var_in_den[var], model_completion=True)
             if is_true(usa_num):
-                usadas_num.append(var) # f"VI_{id}_{var}")
+                usadas_num.append(var)
             elif is_true(usa_den):
-                usadas_den.append(var) # f"VI_{id}_{var}")
-
-        # inic_num = m.eval(product_uses_initials_in_num, model_completion=True).as_long()
-        # inic_den = m.eval(product_uses_initials_in_den, model_completion=True).as_long()
-
-        # producto_str_num = " * ".join(usadas_num) if usadas_num else "1"
-        # producto_str_den = " * ".join(usadas_den) if usadas_den else "1"
-
-        # print(f"\nProducto final: ({producto_str_num} * forig_{id}_n_{inic_num}) / ({producto_str_den} * forig_{id}_d_{inic_den})")
+                usadas_den.append(var)
 
         # Construir JSON final
         vi_detalles = []
@@ -352,17 +340,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
 
             num_orig = int(m.eval(num_original_variables_var_num[var], model_completion=True).as_long())
             den_orig = int(m.eval(num_original_variables_var_den[var], model_completion=True).as_long())
-
-            # comp_num = []
-            # comp_den = []
-
-            # comp_num.extend(deps_num)
-            # comp_den.extend(deps_den)
-
-            # if num_orig > 0:
-            #     comp_num.append(f"forig_{id}_n_{num_orig}")
-            # if den_orig > 0:
-            #     comp_den.append(f"forig_{id}_d_{den_orig}")
 
             usada_en_otra_var = False
 
@@ -384,7 +361,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
                     "orig_den": 0
                 }
 
-                # comp_num, comp_den = comp_den, comp_num
             else:
 
                 detalles_num = {
@@ -413,8 +389,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
             # numerador_detalle.append(v)
             vars_num.append(v)
 
-        # if inic_num_val > 0: numerador_detalle.append(f"forig_{id}_n_{inic_num_val}")
-
         numerador_detalle = {
             "intermediate": vars_num,
             "orig_num": inic_num_val,
@@ -427,23 +401,11 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         for v in usadas_den:
             vars_den.append(v)
 
-        # if inic_den_val > 0: denominador_detalle.append(f"forig_{id}_d_{inic_den_val}")
-
         denominador_detalle = {
             "intermediate": vars_den,
             "orig_num": 0,
             "orig_den": inic_den_val
         }
-
-        # numerador_detalle = {
-        #     "componentes": componentes_detalle(usadas_num),
-        #     "variables_originales": inic_num_val,
-        # }
-
-        # denominador_detalle = {
-        #     "componentes": componentes_detalle(usadas_den),
-        #     "variables_originales": inic_den_val,
-        # }
 
         output_data = {
             "op": "frac",

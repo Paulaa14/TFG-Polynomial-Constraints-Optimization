@@ -92,10 +92,6 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
 
             # for previous in range(exp): # AÑADIDO DESPUES
             #     solver.add(Implies(join[previous][exp - previous], Not(join[previous][e - previous])))
-
-        # Si la expresión se pasa de grado obligatoriamente tiene que ir sola
-        # if degree_num_exp > maxDeg or degree_den_exp > maxDeg:
-        #     solver.add(join[exp][0]) 
         
     # Comprobar que las expressions que se forman no superan el grado
     for exp in range(num_expressions):

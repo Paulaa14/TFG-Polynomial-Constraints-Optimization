@@ -12,6 +12,7 @@ import argparse
 import prod_fracciones_nuevo
 import prod_fracciones_incremental
 import suma_fracciones_v1_2
+import suma_fracciones_0_1
     
 def ref_vi(fraccion, vi):
     return {
@@ -209,6 +210,9 @@ for id_f, f in enumerate(fracciones):
 if len(fracciones_combinables) > 0:
     print("Executing suma_fracciones_v1_2...\n")
     grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
+
+    # print("Executing suma_fracciones_0_1...\n")
+    # grupos = suma_fracciones_0_1.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
 
 # Calcular cuántas VI se necesitan realmente
 total_vi_creadas = 0

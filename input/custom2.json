@@ -7,5 +7,5 @@
     {"op": "frac","values": [{"signals": 4,"degree": 0}, {"signals": 10, "degree": 4}]}
 
 ],
-    "degree": 2
+    "degree": 6
 }

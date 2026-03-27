@@ -37,23 +37,29 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     for exp in range(num_expressions): # Sólo se define el triángulo superior
         join_exp = []
         for e in range(exp, num_expressions):
-            join_exp.append(Bool("join_" + str(exp) + "_" + str(e)))
+            join_exp.append(Int("join_" + str(exp) + "_" + str(e))) # Para controlar el número de variables creadas, en vez de booleanos, pongo enteros que indican el número de fracciones que se juntan en esa posición
         
         join.append(join_exp) 
+    
+    for exp in range(num_expressions):
+        for e in range(exp, num_expressions):
+            solver.add(Or(join[exp][e - exp] == 0, join[exp][e - exp] == 1)) 
+        
+    columnas = []
+    for exp in range(num_expressions):
+        col_exp = []
+        for e in range(0, exp + 1): # En la columna solo puede estar activo en los anteriores
+            col_exp.append(join[e][exp - e])
+        
+        columnas.append(col_exp)
 
     for exp in range(num_expressions):
-        for e in range(exp + 1, num_expressions):     
-            # Si se cumple esto, se pueden unir. Sino, obligatoriamente el booleano debe ir a false
-            # solver.add(Implies(Or(Not(expando[exp]), Not(expando[e])), Not(join[exp][e - exp - 1])))
+        solver.add(addsum(columnas[exp]) == 1) # Cada fracción solo puede estar en un grupo
 
-            # Si exp se conecta con e, la fila de e debe estar a false entera, incluido consigo misma
-            for col in range(e, num_expressions):
-                solver.add(Implies(join[exp][e - exp], Not(join[e][col - e])))
-
-            # La columna de e, debe estar a false si se junta exp con e. Las filas anteriores, excluyendo exp, deben tenerlo a false
-            for row in range(e):
-                if row != exp:
-                    solver.add(Implies(join[exp][e - exp], Not(join[row][e - row])))
+        # La columna de e, debe estar a false si se junta exp con e. Las filas anteriores, excluyendo exp, deben tenerlo a false
+        # for row in range(e):
+        #     if row != exp:
+        #         solver.add(Implies(join[exp][e - exp], Not(join[row][e - row])))
 
             # Para que las relaciones entén en la primera fracción que forma la unión de fracciones y no contar el grado 2 veces
             # for anterior in range(0, e - exp - 1):
@@ -61,7 +67,7 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
 
         # Cuando la fracción por si sola forma un grupo, solo puede tener activa la 0, consigo misma
         # for e in range(exp + 1, num_expressions):
-            # solver.add(Implies(join[exp][0], Not(join[exp][e - exp])))
+        # solver.add(Implies(join[exp][0], Not(join[exp][e - exp])))
 
         # Lo mismo para la columna
         # for e in range(exp):
@@ -80,56 +86,64 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         for e in range(exp + 1, num_expressions):
             # Si se juntan se pasa de grado
             if degrees_num[exp] + degrees_den[e] > maxDegNum or degrees_num[e] + degrees_den[exp] > maxDegNum or degrees_den[exp] + degrees_den[e] > maxDegDen:
-                solver.add(Not(join[exp][e - exp]))
+                solver.add(join[exp][e - exp] == 0)
 
-                # for previous in range(exp): # AÑADIDO DESPUES
-                #     solver.add(Implies(join[previous][exp - previous], Not(join[previous][e - previous])))
-        
-    # Comprobar que las expressions que se forman no superan el grado
+    columnas = []
     for exp in range(num_expressions):
-        curr_num = degrees_num[exp]
-        curr_den = degrees_den[exp]
+        col_exp = []
+        for e in range(0, exp + 1): # En la columna solo puede estar activo en los anteriores
+            col_exp.append(join[e][exp - e])
+        
+        columnas.append(col_exp)
+    
+    for exp in range(num_expressions):
+        solver.add(addsum(columnas[exp]) == 1)  # Cada fracción EXACTAMENTE en 1 grupo
 
-        for e in range(exp + 1, num_expressions):
-            expr1 = curr_num + degrees_den[e]
-            expr2 = curr_den + degrees_num[e]
+    # Comprobar que las expressions que se forman no superan el grado
+    # for exp in range(num_expressions):
+    #     # deg_num = []
+    #     # deg_den = []
+    #     # deg_num.append(degrees_num[exp] * join[exp][0]) # Si se junta consigo misma, el grado es el mismo, si no, 0
+    #     # deg_den.append(degrees_den[exp] * join[exp][0])
+    #     curr_num = degrees_num[exp]
+    #     curr_den = degrees_den[exp]
 
-            max_deg_exp = If(expr1 > expr2, expr1, expr2)
+    #     for e in range(exp + 1, num_expressions):
+    #         expr1 = curr_num + degrees_den[e]
+    #         expr2 = curr_den + degrees_num[e]
 
-            curr_num = If(join[exp][e - exp], max_deg_exp, curr_num)
-            curr_den = If(join[exp][e - exp], curr_den + degrees_den[e], curr_den)
+    #         max_deg_exp = If(expr1 > expr2, expr1, expr2)
 
-        solver.add(curr_num <= maxDegNum)
-        solver.add(curr_den <= maxDegDen)
+    #         curr_num = If(join[exp][e - exp] == 1, max_deg_exp, curr_num)
+    #         curr_den = If(join[exp][e - exp] == 1, curr_den + degrees_den[e], curr_den)
+
+    #     solver.add(curr_num <= maxDegNum)
+    #     solver.add(curr_den <= maxDegDen)
+
+    for exp in range(num_expressions):
+        curr_den = []
+        # curr_den.append(degrees_den[exp] * join[exp][0])
+
+        for e in range(exp, num_expressions):
+            curr_den.append(degrees_den[e] * join[exp][e - exp])
+
+        den_comun = addsum(curr_den)
+        solver.add(den_comun <= maxDegDen)
+
+        for e in range(exp, num_expressions):
+            degrees_num[e] * join[exp][e - exp] + (den_comun - degrees_den[e] * join[exp][e - exp]) <= maxDegNum # Creo que funcionaría porque el maxDegNum siempre va a ser mayor que maxDegDen por construcción
 
     # Variables que realmente cuentan
     for exp in range(num_expressions):
-        add_row = []
-        add_col = []
-        for e in range(exp, num_expressions): # En la fila solo puede tener activos los siguientes, incluído él
-            add_row.append(If(join[exp][e - exp], 1, 0))
-        
-        for e in range(0, exp): # En la columna solo puede estar activo en los anteriores
-            add_col.append(If(join[e][exp - e], 1, 0))
         
         # Obligo a que se junte 100% con alguien, ya sea en fila o en columna
-        solver.add(Or(addsum(add_row) > 0, addsum(add_col) > 0))
+        solver.add(Or(addsum(join[exp]) > 0, addsum(columnas[exp]) > 0))
         
-        # Minimizar número de variables creadas
-        solver.add_soft(addsum(add_row) == 0, 1, "min_vars")
-
-        # s_fila = addsum(add_row)
-        # s_col = addsum(add_col)
-
-        # Cada fracción únicamente está unificada 1 vez
-        # solver.add(Implies(s_fila > 0, s_col == 0))
-        # solver.add(Implies(s_col > 0, s_fila == 0))
-        # solver.add(s_col <= 1)
-
-        # Solo puede ser usada en una variable nueva
-        # for e in range(exp + 1, num_expressions - 1):
-        #     for sig in range(exp + 1, e):
-        #         solver.add(Implies(join[exp][e - exp - 1], Not(join[sig][e - sig - 1])))
+        # Minimizar número de variables creadas --> Minimizar la suma de la diagonal
+        diagonal = []
+        for exp in range(num_expressions):
+            diagonal.append(join[exp][0])
+        solver.minimize(addsum(diagonal))
 
     if solver.check() == sat:
         modelo = solver.model()
@@ -147,8 +161,8 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
             grupo_actual = [original_indices[i]]
             usados.add(i)
 
-            for j in range(i+1, num_expressions):
-                if modelo.evaluate(join[i][j - i]):
+            for j in range(i + 1, num_expressions):
+                if modelo.evaluate(join[i][j - i]) == 1:
                     grupo_actual.append(original_indices[j])
                     usados.add(j)
 
