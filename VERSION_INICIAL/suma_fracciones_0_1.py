@@ -109,10 +109,10 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     #     solver.add(curr_num <= maxDegNum)
     #     solver.add(curr_den <= maxDegDen)
 
-    degs_num = []
-    degs_den = []
+    # degs_num = []
+    # degs_den = []
     for exp in range(num_expressions):
-        dg_num = []
+        # dg_num = []
         curr_den = []
         # curr_den.append(degrees_den[exp] * join[exp][0])
 
@@ -123,11 +123,11 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         solver.add(den_comun <= maxDegDen)
 
         for e in range(exp, num_expressions):
-            dg_num.append(degrees_num[e] + (den_comun - degrees_den[e] * join[exp][e - exp]))
+            # dg_num.append(degrees_num[e] + (den_comun - degrees_den[e] * join[exp][e - exp]))
             solver.add((den_comun + (degrees_num[e] - degrees_den[e]) * join[exp][e - exp]) <= maxDegNum)
         
-        degs_num.append(dg_num)
-        degs_den.append(den_comun)
+        # degs_num.append(dg_num)
+        # degs_den.append(den_comun)
 
     # Variables que realmente cuentan
     # for exp in range(num_expressions):
