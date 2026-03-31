@@ -1,0 +1,70 @@
+{
+  "degree": 5,
+  "expressions": [
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 10,
+          "degree": 5
+        },
+        {
+          "signals": 4,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 4
+        },
+        {
+          "signals": 9,
+          "degree": 3
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 7,
+          "degree": 5
+        },
+        {
+          "signals": 7,
+          "degree": 3
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 10,
+          "degree": 5
+        },
+        {
+          "signals": 1,
+          "degree": 3
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 9,
+          "degree": 5
+        },
+        {
+          "signals": 6,
+          "degree": 1
+        }
+      ]
+    }
+  ]
+}

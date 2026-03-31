@@ -104,6 +104,9 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     #     solver.add(curr_den <= maxDegDen)
 
     # Comprobar grado de las expresiones que se forman
+    degs_num = []
+    degs_den = []
+    
     for exp in range(num_expressions):
         curr_den = []
 
@@ -113,9 +116,14 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         den_comun = addsum(curr_den)
         solver.add(den_comun <= maxDegDen)
 
+        dg_num_list = []
         for e in range(exp, num_expressions):   
             dg_num = degrees_num[e] + (den_comun - degrees_den[e])
             solver.add(If(join[exp][e - exp], dg_num, 0) <= maxDegNum)
+            dg_num_list.append(dg_num)
+        
+        degs_num.append(dg_num_list)
+        degs_den.append(den_comun)
 
     # Variables que realmente cuentan
     for exp in range(num_expressions):
@@ -151,6 +159,42 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
         modelo = solver.model()
         print("Solution found:\n")
 
+        # # Mostrar matriz de variables join
+        # print("Matriz de variables join (triángulo superior):")
+        # print("-" * 60)
+        # matriz_join = []
+        # for exp in range(num_expressions):
+        #     fila = []
+        #     for e in range(exp, num_expressions):
+        #         valor_z3 = modelo.evaluate(join[exp][e - exp])
+        #         # Convertir Bool a 0/1 o Int directamente
+        #         if str(valor_z3) == 'True':
+        #             valor = 1
+        #         elif str(valor_z3) == 'False':
+        #             valor = 0
+        #         else:
+        #             valor = int(str(valor_z3))
+        #         fila.append(valor)
+        #     matriz_join.append(fila)
+        
+        # # Mostrar encabezado
+        # print("   ", end="")
+        # for j in range(num_expressions):
+        #     print(f"  {j}", end="")
+        # print()
+        
+        # # Mostrar matriz
+        # for i, fila in enumerate(matriz_join):
+        #     print(f"{i}: ", end="")
+        #     # Espacios vacíos antes del triángulo
+        #     for _ in range(i):
+        #         print("  -", end="")
+        #     # Valores del triángulo
+        #     for valor in fila:
+        #         print(f"  {valor}", end="")
+        #     print()
+        # print()
+
         grupos = []
         sum_id = 0
         usados = set()  # Para no repetir fracciones
@@ -169,6 +213,15 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
                     usados.add(j)
 
             grupos.append({"sum": sum_id, "fractions": grupo_actual})
+            
+            # Mostrar grados finales
+            deg_num_i = modelo.evaluate(degs_num[i][0])
+            deg_den_i = modelo.evaluate(degs_den[i])
+            
+            # print(f"Grupo {sum_id} (expresiones {grupo_actual}):")
+            # print(f"  Grado numerador:   {deg_num_i}")
+            # print(f"  Grado denominador: {deg_den_i}")
+            
             sum_id += 1
 
         return grupos
@@ -189,4 +242,8 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
 #     indices.append(exp)
 
 # resultado = suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"], indices)
-# print(json.dumps(resultado, indent=2))
+# print("\n--- Resultado de sumas ---")
+# for g in resultado:
+#     frs = g["fractions"]
+#     cadena = " + ".join(f"fraction {f}" for f in frs)
+#     print(f"sum{g['sum']} = {cadena}")

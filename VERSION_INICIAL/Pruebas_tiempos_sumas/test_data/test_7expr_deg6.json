@@ -1,0 +1,96 @@
+{
+  "degree": 6,
+  "expressions": [
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 6,
+          "degree": 5
+        },
+        {
+          "signals": 11,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 12,
+          "degree": 1
+        },
+        {
+          "signals": 8,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 2
+        },
+        {
+          "signals": 4,
+          "degree": 4
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 6
+        },
+        {
+          "signals": 4,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 9,
+          "degree": 2
+        },
+        {
+          "signals": 11,
+          "degree": 5
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 2,
+          "degree": 3
+        },
+        {
+          "signals": 11,
+          "degree": 4
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 12,
+          "degree": 4
+        },
+        {
+          "signals": 8,
+          "degree": 5
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "degree": 7,
+  "expressions": [
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 1
+        },
+        {
+          "signals": 8,
+          "degree": 5
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 11,
+          "degree": 3
+        },
+        {
+          "signals": 4,
+          "degree": 3
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 1
+        },
+        {
+          "signals": 4,
+          "degree": 4
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 13,
+          "degree": 4
+        },
+        {
+          "signals": 6,
+          "degree": 3
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 14,
+          "degree": 6
+        },
+        {
+          "signals": 12,
+          "degree": 4
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 1
+        },
+        {
+          "signals": 11,
+          "degree": 4
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 7
+        },
+        {
+          "signals": 9,
+          "degree": 6
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 8,
+          "degree": 7
+        },
+        {
+          "signals": 7,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 7
+        },
+        {
+          "signals": 2,
+          "degree": 3
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 1
+        },
+        {
+          "signals": 7,
+          "degree": 1
+        }
+      ]
+    }
+  ]
+}
