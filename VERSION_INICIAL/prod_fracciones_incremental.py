@@ -44,7 +44,7 @@ def fun_max_intermediate(degree_num, degree_den, maxDeg): #Demostrar que no me q
     resto = 0
     intermediate_den = 0
 
-    while degree_den > maxDeg:
+    while degree_den >= maxDeg:
         intermediate_den += degree_den // maxDeg
         resto = degree_den % maxDeg
         degree_den = (degree_den // maxDeg) + resto
@@ -461,11 +461,12 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     # INCREMENTALIDAD
 
     # Cota optimista con una aproximación mía
-    optimistic_intermediate = max(degree_num, degree_den) // maxDeg
+    lower_bound = max(degree_num, degree_den) // maxDeg
     print(f"Max intermediate realistic: {max_intermediate} ")
-    print(f"Max intermediate optimistic: {optimistic_intermediate} ")
+    print(f"Max intermediate optimistic: {lower_bound} ")
 
-    for var in range(max_intermediate - 1, optimistic_intermediate - 1, -1):
+    upper_bound = max_intermediate
+    for var in range(upper_bound - 1, lower_bound - 1, -1):
         solver.push()
         solver.add(degree_num_variables[var] == 0)
         solver.add(degree_den_variables[var] == 0)
@@ -475,20 +476,20 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         m = solver.model()
         print("Variables intermedias formadas:")
 
-        print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+        print_solucion(id, m, lower_bound, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
         product_uses_initials_in_den, degree_prod_num, degree_prod_den)
 
     else:
-        print(f"No existe solución con " + str(optimistic_intermediate) + " variables intermedias")
-
-        for var in range(optimistic_intermediate + 1, max_intermediate + 1):
+        print(f"No existe solución con " + str(lower_bound) + " variables intermedias")
+        
+        for var in range(lower_bound + 1, upper_bound + 1):
             solver.pop()
             if solver.check() == sat:
                 m = solver.model()
 
                 print("Existe solución con " + str(var) + " variables intermedias.")
-                print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+                print_solucion(id, m, var, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
                 var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
                 product_uses_initials_in_den, degree_prod_num, degree_prod_den)
                 break
