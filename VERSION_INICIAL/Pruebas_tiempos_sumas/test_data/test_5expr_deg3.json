@@ -1,54 +1,28 @@
 {
-  "degree": 5,
+  "degree": 3,
   "expressions": [
     {
       "op": "frac",
       "values": [
         {
-          "signals": 6,
+          "signals": 1,
           "degree": 2
         },
-        {
-          "signals": 1,
-          "degree": 3
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
-          "signals": 1,
-          "degree": 4
-        },
-        {
-          "signals": 1,
-          "degree": 4
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
-          "signals": 8,
-          "degree": 2
-        },
-        {
-          "signals": 7,
-          "degree": 3
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
         {
           "signals": 2,
           "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 2
         },
         {
-          "signals": 1,
+          "signals": 6,
           "degree": 1
         }
       ]
@@ -57,12 +31,38 @@
       "op": "frac",
       "values": [
         {
-          "signals": 7,
-          "degree": 5
+          "signals": 4,
+          "degree": 2
         },
         {
-          "signals": 7,
-          "degree": 4
+          "signals": 3,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 6,
+          "degree": 3
+        },
+        {
+          "signals": 3,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 2
+        },
+        {
+          "signals": 3,
+          "degree": 2
         }
       ]
     }

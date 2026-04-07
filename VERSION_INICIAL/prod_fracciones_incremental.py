@@ -476,7 +476,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         m = solver.model()
         print("Variables intermedias formadas:")
 
-        print_solucion(id, m, lower_bound, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+        print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
         product_uses_initials_in_den, degree_prod_num, degree_prod_den)
 
@@ -489,12 +489,12 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
                 m = solver.model()
 
                 print("Existe solución con " + str(var) + " variables intermedias.")
-                print_solucion(id, m, var, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
+                print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
                 var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
                 product_uses_initials_in_den, degree_prod_num, degree_prod_den)
                 break
             else: 
-                print("No hay solución con " + str(var) + " variables intermedias.")
+                print("No existe solución con " + str(var) + " variables intermedias.")
                 with open("prod.json", "w") as fout:
                     json.dump({}, fout)
     

@@ -1,38 +1,25 @@
 {
-  "degree": 8,
+  "degree": 3,
   "expressions": [
     {
       "op": "frac",
       "values": [
         {
-          "signals": 12,
-          "degree": 5
+          "signals": 4,
+          "degree": 2
         },
         {
-          "signals": 3,
-          "degree": 6
+          "signals": 6,
+          "degree": 1
         }
       ]
     },
     {
       "op": "frac",
       "values": [
-        {
-          "signals": 9,
-          "degree": 1
-        },
         {
           "signals": 4,
-          "degree": 1
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
-          "signals": 13,
-          "degree": 4
+          "degree": 3
         },
         {
           "signals": 6,
@@ -44,51 +31,12 @@
       "op": "frac",
       "values": [
         {
-          "signals": 9,
-          "degree": 5
-        },
-        {
-          "signals": 6,
-          "degree": 6
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
-          "signals": 11,
-          "degree": 8
-        },
-        {
-          "signals": 10,
-          "degree": 3
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
           "signals": 2,
-          "degree": 1
-        },
-        {
-          "signals": 11,
-          "degree": 7
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
-          "signals": 13,
-          "degree": 4
+          "degree": 3
         },
         {
           "signals": 1,
-          "degree": 7
+          "degree": 2
         }
       ]
     },
@@ -96,8 +44,47 @@
       "op": "frac",
       "values": [
         {
-          "signals": 12,
-          "degree": 4
+          "signals": 4,
+          "degree": 2
+        },
+        {
+          "signals": 1,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 2
+        },
+        {
+          "signals": 3,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 2
+        },
+        {
+          "signals": 1,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 2
         },
         {
           "signals": 5,
@@ -109,12 +96,12 @@
       "op": "frac",
       "values": [
         {
-          "signals": 4,
-          "degree": 4
+          "signals": 3,
+          "degree": 3
         },
         {
-          "signals": 10,
-          "degree": 6
+          "signals": 4,
+          "degree": 1
         }
       ]
     },
@@ -122,11 +109,11 @@
       "op": "frac",
       "values": [
         {
-          "signals": 3,
-          "degree": 7
+          "signals": 4,
+          "degree": 1
         },
         {
-          "signals": 4,
+          "signals": 2,
           "degree": 2
         }
       ]
@@ -135,21 +122,8 @@
       "op": "frac",
       "values": [
         {
-          "signals": 2,
-          "degree": 3
-        },
-        {
-          "signals": 2,
-          "degree": 4
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
-          "signals": 16,
-          "degree": 8
+          "signals": 3,
+          "degree": 2
         },
         {
           "signals": 6,

@@ -49,6 +49,7 @@ def fun_max_intermediate(degree_num, degree_den, maxDeg): # Demostrar que no me 
         resto = degree_den % maxDeg
         degree_den = (degree_den // maxDeg) + resto
 
+    print(f"Intermedias num: {intermediate_num}, intermedias den: {intermediate_den}")
     return max(intermediate_num, intermediate_den)
 
 # Meter variables que representan la fracción, cuántas variables se cogen en el numerador, y cuántas en el denominador
@@ -283,10 +284,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n --> Ralentiza algo menos que la previous pero tmb
     for var in range(max_intermediate):
         solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
-    
-    # solver.push()
-    # solver.add(degree_num_variables[max_intermediate - 1] == 0)
-    # solver.add(degree_den_variables[max_intermediate - 1] == 0)
 
     print(f"Grado numerador: {degree_num}. Grado denominador: {degree_den}")
     if solver.check() == sat:
@@ -464,12 +461,8 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         print("\nResult exported to prod.json")
 
     else:
-        print("pop")
-        solver.pop()
-        # if solver.check() == sat:
-        #     print("Hay solución.")
-        # else: print("No hay solución.")
+        print("No hay solución.")
         with open("prod.json", "w") as fout:
             json.dump({}, fout)
     
-# reducir_grado_producto(2, 3, 2, 0)
+reducir_grado_producto(2, 14, 10, 0)

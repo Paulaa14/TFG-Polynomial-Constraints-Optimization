@@ -5,8 +5,21 @@
       "op": "frac",
       "values": [
         {
+          "signals": 4,
+          "degree": 3
+        },
+        {
           "signals": 1,
           "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 1
         },
         {
           "signals": 2,
@@ -18,25 +31,12 @@
       "op": "frac",
       "values": [
         {
-          "signals": 3,
-          "degree": 1
-        },
-        {
           "signals": 6,
           "degree": 1
-        }
-      ]
-    },
-    {
-      "op": "frac",
-      "values": [
-        {
-          "signals": 4,
-          "degree": 2
         },
         {
-          "signals": 3,
-          "degree": 1
+          "signals": 1,
+          "degree": 2
         }
       ]
     }

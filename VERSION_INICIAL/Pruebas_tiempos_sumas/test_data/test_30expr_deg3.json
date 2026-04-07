@@ -1,0 +1,395 @@
+{
+  "degree": 3,
+  "expressions": [
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 3
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 3
+        },
+        {
+          "signals": 2,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 1
+        },
+        {
+          "signals": 6,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 1
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 3
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 3
+        },
+        {
+          "signals": 5,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 3
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 1
+        },
+        {
+          "signals": 3,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 6,
+          "degree": 3
+        },
+        {
+          "signals": 6,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 6,
+          "degree": 3
+        },
+        {
+          "signals": 1,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 1
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 2
+        },
+        {
+          "signals": 4,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 2
+        },
+        {
+          "signals": 5,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 2
+        },
+        {
+          "signals": 4,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 2,
+          "degree": 1
+        },
+        {
+          "signals": 5,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 3
+        },
+        {
+          "signals": 3,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 5,
+          "degree": 3
+        },
+        {
+          "signals": 3,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 3
+        },
+        {
+          "signals": 2,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 2,
+          "degree": 2
+        },
+        {
+          "signals": 2,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 6,
+          "degree": 2
+        },
+        {
+          "signals": 2,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 1
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 6,
+          "degree": 3
+        },
+        {
+          "signals": 3,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 2,
+          "degree": 3
+        },
+        {
+          "signals": 6,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 2,
+          "degree": 2
+        },
+        {
+          "signals": 4,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 1
+        },
+        {
+          "signals": 2,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 3
+        },
+        {
+          "signals": 5,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 6,
+          "degree": 2
+        },
+        {
+          "signals": 5,
+          "degree": 1
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 3,
+          "degree": 2
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 1,
+          "degree": 2
+        },
+        {
+          "signals": 6,
+          "degree": 2
+        }
+      ]
+    },
+    {
+      "op": "frac",
+      "values": [
+        {
+          "signals": 4,
+          "degree": 2
+        },
+        {
+          "signals": 5,
+          "degree": 2
+        }
+      ]
+    }
+  ]
+}

@@ -494,4 +494,4 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         else:
             print("No existe solución con grado final entre 1 y " + str(2 * maxDeg - 1))
     
-reducir_grado_producto(3, 14, 12, 0)
+reducir_grado_producto(3, 4, 4, 0)

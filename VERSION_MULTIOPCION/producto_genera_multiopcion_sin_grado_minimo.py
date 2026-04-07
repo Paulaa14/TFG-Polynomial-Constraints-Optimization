@@ -193,6 +193,9 @@ def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var
     solver.add(Or(addsum(degree_prod_num) + addsum(degree_prod_den) < d_num_sol + d_den_sol, Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol)))
     solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) <= d_num_sol + d_den_sol) # Meterlo dentro del bucle también???
 
+    d_num_sol_prev = d_num_sol
+    d_den_sol_prev = d_den_sol
+
     while(solver.check() == sat and num_solutions < max_solutions):
         m = solver.model()
         d_num_sol = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
@@ -208,7 +211,8 @@ def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var
         # Si encuentra una solución del mismo grado sí que deben ser distintas, si la saca de distinto grado da igual
         solver.add(Or(addsum(degree_prod_num) + addsum(degree_prod_den) < d_num_sol + d_den_sol, Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol)))
 
-        num_solutions += 1
+        if (d_num_sol + d_den_sol) < (d_num_sol_prev + d_den_sol_prev): num_solutions = 1
+        else: num_solutions += 1
     
     print("Se han obtenido " + str(num_solutions) + " soluciones en total.")
     
@@ -465,4 +469,4 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     else:
         print("No existe solución")
     
-reducir_grado_producto(3, 14, 12, 0)
+reducir_grado_producto(3, 4, 4, 0)
