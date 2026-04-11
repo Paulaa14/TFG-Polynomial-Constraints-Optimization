@@ -5,7 +5,7 @@
             "product": {
                 "numerator": {
                     "intermediate": [
-                        0
+                        5
                     ],
                     "orig_num": 1,
                     "orig_den": 0
@@ -13,7 +13,7 @@
                 "denominator": {
                     "intermediate": [],
                     "orig_num": 0,
-                    "orig_den": 2
+                    "orig_den": 0
                 }
             },
             "intermediate_variables": [
@@ -28,10 +28,78 @@
                         "orig_num": 0,
                         "orig_den": 2
                     }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 3,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [],
+                        "orig_num": 3,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            0
+                        ],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            1,
+                            2
+                        ],
+                        "orig_num": 1,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            3,
+                            4
+                        ],
+                        "orig_num": 1,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 0
+                    }
                 }
             ],
             "degree_numerator": 2,
-            "degree_denominator": 2
+            "degree_denominator": 0
         }
     ]
 }

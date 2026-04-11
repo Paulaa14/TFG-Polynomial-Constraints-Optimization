@@ -205,14 +205,16 @@ def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var
         output_data = print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den, 
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
         product_uses_initials_in_den, degree_prod_num, degree_prod_den)
-        
-        opciones.append(output_data)
-        
+                
         # Si encuentra una solución del mismo grado sí que deben ser distintas, si la saca de distinto grado da igual
         solver.add(Or(addsum(degree_prod_num) + addsum(degree_prod_den) < d_num_sol + d_den_sol, Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol)))
 
-        if (d_num_sol + d_den_sol) < (d_num_sol_prev + d_den_sol_prev): num_solutions = 1
-        else: num_solutions += 1
+        if (d_num_sol + d_den_sol) < (d_num_sol_prev + d_den_sol_prev): 
+            num_solutions = 1
+            opciones = [output_data]
+        else: 
+            num_solutions += 1
+            opciones.append(output_data)
     
     print("Se han obtenido " + str(num_solutions) + " soluciones en total.")
     
@@ -460,7 +462,6 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     if solver.check() == sat:
         m = solver.model()
         
-        print("Existe solución con grado final 1")
         # solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) == deg)
         guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
@@ -469,4 +470,4 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     else:
         print("No existe solución")
     
-reducir_grado_producto(3, 4, 4, 0)
+# reducir_grado_producto(3, 4, 4, 0)

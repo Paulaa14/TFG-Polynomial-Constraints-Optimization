@@ -14,7 +14,7 @@ def addsum(a):
             asum = asum + a[i]
         return asum
     
-def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
+def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions, indices_oriiginales=None):
 
     solver = Optimize()
 
@@ -189,9 +189,28 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
         for info in options_info:
             print(f"Expresión {info['expression']}: opción {info['selected_option']}, grado_num={info['degree_num']}, grado_den={info['degree_den']}")
 
+        # Calcular VI creadas en cada grupo
+        # Una VI se crea cuando hay 2 o más fracciones en el grupo
+        grupos_con_vi = []
+        total_vi_suma = 0
+        
+        for g in grupos:
+            num_fracciones_en_grupo = len(g["fractions"])
+            # Se crea una VI si hay 2 o más fracciones (suma de 2 o más)
+            vi_creadas_en_grupo = 1 if num_fracciones_en_grupo >= 2 else 0
+            
+            g_con_info = {
+                "sum": g["sum"],
+                "fractions": g["fractions"],
+                "vi_created": vi_creadas_en_grupo
+            }
+            grupos_con_vi.append(g_con_info)
+            total_vi_suma += vi_creadas_en_grupo
+
         resultado = {
-            "groups": grupos,
-            "options": options_info
+            "groups": grupos_con_vi,
+            "options": options_info,
+            "total_vi_created_in_sum": total_vi_suma
         }
 
         print("Resultado JSON:")
@@ -210,4 +229,4 @@ args = parser.parse_args()
 with open(args.input, "r") as f:
     data = json.load(f)
 
-suma_fracciones_multiopcion(data["degree"], data["degree"] - 1, data["expressions"])
+#suma_fracciones_multiopcion(data["degree"], data["degree"] - 1, data["expressions"])
