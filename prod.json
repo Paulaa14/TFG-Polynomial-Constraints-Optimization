@@ -31,30 +31,6 @@
                 },
                 {
                     "numerator": {
-                        "intermediate": [],
-                        "orig_num": 3,
-                        "orig_den": 0
-                    },
-                    "denominator": {
-                        "intermediate": [],
-                        "orig_num": 0,
-                        "orig_den": 2
-                    }
-                },
-                {
-                    "numerator": {
-                        "intermediate": [],
-                        "orig_num": 3,
-                        "orig_den": 0
-                    },
-                    "denominator": {
-                        "intermediate": [],
-                        "orig_num": 0,
-                        "orig_den": 2
-                    }
-                },
-                {
-                    "numerator": {
                         "intermediate": [
                             0
                         ],
@@ -70,10 +46,9 @@
                 {
                     "numerator": {
                         "intermediate": [
-                            1,
-                            2
+                            1
                         ],
-                        "orig_num": 1,
+                        "orig_num": 2,
                         "orig_den": 0
                     },
                     "denominator": {
@@ -85,16 +60,43 @@
                 {
                     "numerator": {
                         "intermediate": [
-                            3,
-                            4
+                            2
                         ],
-                        "orig_num": 1,
+                        "orig_num": 2,
                         "orig_den": 0
                     },
                     "denominator": {
                         "intermediate": [],
                         "orig_num": 0,
+                        "orig_den": 2
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            3
+                        ],
+                        "orig_num": 2,
                         "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 1
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            4
+                        ],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 0,
+                        "orig_den": 1
                     }
                 }
             ],

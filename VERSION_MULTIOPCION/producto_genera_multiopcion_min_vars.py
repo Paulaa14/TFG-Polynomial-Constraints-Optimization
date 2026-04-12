@@ -173,11 +173,11 @@ def print_solucion(id, m, max_intermediate, num_original_variables_var_num, num_
 
     return output_data
 
-def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
+def guardar_options(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
     var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num, 
     product_uses_initials_in_den, degree_prod_num, degree_prod_den):
     
-    opciones = []
+    options = []
 
     # Asegurar que se utilizan exactamente las mismas variables que se han usado en la solución actual
     for var in range(max_intermediate):
@@ -189,8 +189,6 @@ def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var
     max_solutions = 5
     d_num_sol = m.eval(addsum(degree_prod_num), model_completion=True).as_long()
     d_den_sol = m.eval(addsum(degree_prod_den), model_completion=True).as_long()
-    solver.add(Or(addsum(degree_prod_num) + addsum(degree_prod_den) < d_num_sol + d_den_sol, Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol)))
-    solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) <= d_num_sol + d_den_sol) # Meterlo dentro del bucle también???
 
     print(f"Solución encontrada con grado final {d_num_sol} / {d_den_sol}")
 
@@ -228,12 +226,12 @@ def guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var
         solver.add(Or(addsum(degree_prod_num) + addsum(degree_prod_den) < d_num_sol + d_den_sol, Or(addsum(degree_prod_num) != d_num_sol, addsum(degree_prod_den) != d_den_sol)))
 
         num_solutions += 1
-        opciones.append(output_data)
+        options.append(output_data)
     
     print("Se han obtenido " + str(num_solutions) + " soluciones en total.")
     
     json_final = {
-        "opciones": opciones
+        "options": options
     }
     
     with open("prod.json", "w") as fout:
@@ -477,7 +475,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         m = solver.model()
         
         # solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) == deg)
-        guardar_opciones(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
+        guardar_options(solver, id, m, max_intermediate, num_original_variables_var_num, num_original_variables_var_den, variables_covered_num, variables_covered_den,
         var_uses_previous_num, var_uses_previous_den, product_uses_var_in_num, product_uses_var_in_den, degree_num_variables, degree_den_variables, product_uses_initials_in_num,
         product_uses_initials_in_den, degree_prod_num, degree_prod_den)
 

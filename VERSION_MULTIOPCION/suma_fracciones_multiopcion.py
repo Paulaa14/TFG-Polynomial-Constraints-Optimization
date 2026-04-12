@@ -94,29 +94,52 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions, indices_oriig
             #     solver.add(Implies(join[previous][exp - previous], Not(join[previous][e - previous])))
         
     # Comprobar que las expressions que se forman no superan el grado
+    # for exp in range(num_expressions):
+
+    #     for option_exp in range(len(expressions[exp])):
+    #         curr_num_exp = If(options[exp] == option_exp, degrees_num[exp][option_exp], 0)
+    #         curr_den_exp = If(options[exp] == option_exp, degrees_den[exp][option_exp], 0)
+
+    #         for e in range(exp + 1, num_expressions):
+
+    #             for option_e in range(len(expressions[e])):
+
+    #                 curr_num_e = If(options[e] == option_e, degrees_num[e][option_e], 0)
+    #                 curr_den_e = If(options[e] == option_e, degrees_den[e][option_e], 0)
+
+    #                 expr1 = curr_num_exp + curr_den_e
+    #                 expr2 = curr_den_exp + curr_num_e
+
+    #                 max_deg_exp = If(expr1 > expr2, expr1, expr2)
+
+    #                 curr_num_exp = If(join[exp][e - exp], max_deg_exp, curr_num_exp)
+    #                 curr_den_exp = If(join[exp][e - exp], curr_den_exp + curr_den_e, curr_den_exp)
+
+    #         solver.add(curr_num_exp <= maxDegNum)
+    #         solver.add(curr_den_exp <= maxDegDen)
+
+    degs_num = []
+    degs_den = []
+
     for exp in range(num_expressions):
+        curr_den = []
 
-        for option_exp in range(len(expressions[exp])):
-            curr_num_exp = If(options[exp] == option_exp, degrees_num[exp][option_exp], 0)
-            curr_den_exp = If(options[exp] == option_exp, degrees_den[exp][option_exp], 0)
+        for e in range(exp, num_expressions):
+            for option_e in range(len(expressions[e])):
+                curr_den.append(If(And(join[exp][e - exp], options[e] == option_e), degrees_den[e][option_e], 0))
 
-            for e in range(exp + 1, num_expressions):
+        den_comun = addsum(curr_den)
+        solver.add(den_comun <= maxDegDen)
 
-                for option_e in range(len(expressions[e])):
+        dg_num_list = []
+        for e in range(exp, num_expressions):   
+            for option_e in range(len(expressions[e])):
+                dg_num = degrees_num[e][option_e] + (den_comun - degrees_den[e][option_e])
+                solver.add(If(And(join[exp][e - exp], options[e] == option_e), dg_num, 0) <= maxDegNum)
+                dg_num_list.append(dg_num)
 
-                    curr_num_e = If(options[e] == option_e, degrees_num[e][option_e], 0)
-                    curr_den_e = If(options[e] == option_e, degrees_den[e][option_e], 0)
-
-                    expr1 = curr_num_exp + curr_den_e
-                    expr2 = curr_den_exp + curr_num_e
-
-                    max_deg_exp = If(expr1 > expr2, expr1, expr2)
-
-                    curr_num_exp = If(join[exp][e - exp], max_deg_exp, curr_num_exp)
-                    curr_den_exp = If(join[exp][e - exp], curr_den_exp + curr_den_e, curr_den_exp)
-
-            solver.add(curr_num_exp <= maxDegNum)
-            solver.add(curr_den_exp <= maxDegDen)
+        degs_num.append(dg_num_list)
+        degs_den.append(den_comun)
 
     # Variables que realmente cuentan
     for exp in range(num_expressions):
@@ -229,4 +252,4 @@ args = parser.parse_args()
 with open(args.input, "r") as f:
     data = json.load(f)
 
-#suma_fracciones_multiopcion(data["degree"], data["degree"] - 1, data["expressions"])
+suma_fracciones_multiopcion(data["degree"], data["degree"] - 1, data["expressions"])
