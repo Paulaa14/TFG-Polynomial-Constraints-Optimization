@@ -61,7 +61,7 @@ def run_benchmark():
         3, 4, 5, 6, 7, 8, 9, 10,
         11, 12, 13, 14, 15, 16, 17, 18,
         19, 20, 21, 22, 23, 24, 25, 26,
-        27, 28, 29, 30, 31, 32
+        27, 28, 29, 30
     ]
     
     results = []
@@ -74,7 +74,7 @@ def run_benchmark():
         times_v0_1 = []
         times_v1_2 = []
         
-        for sample_id in range(NUM_SAMPLES):
+        for id in range(NUM_SAMPLES):
             expressions = generate_test_data(num_frac, maxDeg)
             
             time_v0_1 = test_case(suma_v0_1, expressions, maxDeg)
@@ -172,7 +172,14 @@ def plot_results(results_data):
     ax1.set_ylabel('Tiempo (segundos)', fontsize=12, fontweight='bold')
     ax1.set_title('Tiempos reales de cada algoritmo por entrada', fontsize=13, fontweight='bold', pad=15)
     ax1.legend(fontsize=11, loc='upper left')
-    ax1.set_ylim(0, 2)
+    # Calcular el límite dinámico del eje Y basado en el tiempo máximo
+    all_times = []
+    for entry in data:
+        all_times.extend(entry['v0_1_times'])
+        all_times.extend(entry['v1_2_times'])
+    max_time = max(all_times) if all_times else 2
+    y_limit = max_time * 1.1  # Añadir un margen del 10%
+    ax1.set_ylim(0, y_limit)
     ax1.set_xticks(x_ticks)
     ax1.set_xticklabels(x_labels, rotation=45, ha='right')
     
