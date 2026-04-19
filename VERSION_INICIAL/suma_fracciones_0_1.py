@@ -24,6 +24,41 @@ def addsum(a):
             asum = asum + a[i]
         return asum
     
+def print_solution(model, join, degs_num, degs_den, original_indices, num_expressions, maxDegNum, maxDegDen):
+    print(f"Solution found for degNum {maxDegNum} and degDen {maxDegDen}:\n")
+
+    grupos = []
+    sum_id = 0
+    usados = set()  # Para no repetir fracciones
+
+    for i in range(num_expressions):
+        if i in usados:
+            continue
+
+        # Construimos la lista de fracciones que se suman en este grupo
+        grupo_actual = [original_indices[i]]
+        usados.add(i)
+        
+        # Grados de la expresión en i
+        deg_num_i = model.evaluate(degs_num[i][0])
+        deg_den_i = model.evaluate(degs_den[i])
+
+        for j in range(i + 1, num_expressions):
+            if model.evaluate(join[i][j - i]) == 1:
+                grupo_actual.append(original_indices[j])
+                usados.add(j)
+
+        grupos.append({"sum": sum_id, "fractions": grupo_actual})
+        
+        # Mostrar grados finales
+        # print(f"Grupo {sum_id} (expresiones {grupo_actual}):")
+        # print(f"  Grado numerador:   {deg_num_i}")
+        # print(f"  Grado denominador: {deg_den_i}")
+        
+        sum_id += 1
+
+    return grupos
+    
 def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
 
     solver = Optimize()
@@ -63,7 +98,8 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     # Si una fraccion tiene su variable [exp][0] a 0, el resto de la fila tiene que ser 0
     for exp in range(num_expressions):
         for e in range(exp + 1, num_expressions):
-            solver.add(Implies(join[exp][0] == 0, join[exp][e - exp] == 0))
+            # solver.add(Implies(join[exp][0] == 0, join[exp][e - exp] == 0))
+            solver.add(join[exp][e - exp] <= join[exp][0])
 
     columnas = []
     for exp in range(num_expressions):
@@ -97,77 +133,93 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     diagonal = []
     for exp in range(num_expressions):
         diagonal.append(join[exp][0])
-    solver.minimize(addsum(diagonal))
+    
+    # Minimize es muy lento con casos grande, se hace búsqueda incremental para encontrar el mínimo número de variables intermedias
+    # solver.minimize(addsum(diagonal))
 
-    if solver.check() == sat:
-        modelo = solver.model()
-        print(f"Solution found for degNum {maxDegNum} and degDen {maxDegDen}:\n")
-
-        # Mostrar matriz de variables join
-        # print("Matriz de variables join (triángulo superior):")
-        # print("-" * 60)
-        # matriz_join = []
-        # for exp in range(num_expressions):
-        #     fila = []
-        #     for e in range(exp, num_expressions):
-        #         valor_z3 = modelo.evaluate(join[exp][e - exp])
-        #         valor = int(str(valor_z3))
-        #         fila.append(valor)
-        #     matriz_join.append(fila)
+    for k in range(1, num_expressions + 1):
+        solver.push()
+        solver.add(addsum(diagonal) <= k)
         
-        # # Mostrar encabezado
-        # print("   ", end="")
-        # for j in range(num_expressions):
-        #     print(f"  {j}", end="")
-        # print()
+        if solver.check() == sat:
+            model = solver.model()
+            
+            return print_solution(model, join, degs_num, degs_den, original_indices, num_expressions, maxDegNum, maxDegDen)
         
-        # # Mostrar matriz
-        # for i, fila in enumerate(matriz_join):
-        #     print(f"{i}: ", end="")
-        #     # Espacios vacíos antes del triángulo
-        #     for _ in range(i):
-        #         print("  -", end="")
-        #     # Valores del triángulo
-        #     for valor in fila:
-        #         print(f"  {valor}", end="")
-        #     print()
-        # print()
+        solver.pop()
+    
+    print("No se encontró una solución válida bajo las restricciones dadas.")
+    return 0
 
-        grupos = []
-        sum_id = 0
-        usados = set()  # Para no repetir fracciones
+    # if solver.check() == sat:
+    #     modelo = solver.model()
+    #     print(f"Solution found for degNum {maxDegNum} and degDen {maxDegDen}:\n")
 
-        for i in range(num_expressions):
-            if i in usados:
-                continue
+    #     # Mostrar matriz de variables join
+    #     # print("Matriz de variables join (triángulo superior):")
+    #     # print("-" * 60)
+    #     # matriz_join = []
+    #     # for exp in range(num_expressions):
+    #     #     fila = []
+    #     #     for e in range(exp, num_expressions):
+    #     #         valor_z3 = modelo.evaluate(join[exp][e - exp])
+    #     #         valor = int(str(valor_z3))
+    #     #         fila.append(valor)
+    #     #     matriz_join.append(fila)
+        
+    #     # # Mostrar encabezado
+    #     # print("   ", end="")
+    #     # for j in range(num_expressions):
+    #     #     print(f"  {j}", end="")
+    #     # print()
+        
+    #     # # Mostrar matriz
+    #     # for i, fila in enumerate(matriz_join):
+    #     #     print(f"{i}: ", end="")
+    #     #     # Espacios vacíos antes del triángulo
+    #     #     for _ in range(i):
+    #     #         print("  -", end="")
+    #     #     # Valores del triángulo
+    #     #     for valor in fila:
+    #     #         print(f"  {valor}", end="")
+    #     #     print()
+    #     # print()
 
-            # Construimos la lista de fracciones que se suman en este grupo
-            grupo_actual = [original_indices[i]]
-            usados.add(i)
+    #     grupos = []
+    #     sum_id = 0
+    #     usados = set()  # Para no repetir fracciones
+
+    #     for i in range(num_expressions):
+    #         if i in usados:
+    #             continue
+
+    #         # Construimos la lista de fracciones que se suman en este grupo
+    #         grupo_actual = [original_indices[i]]
+    #         usados.add(i)
             
-            # Grados de la expresión en i
-            deg_num_i = modelo.evaluate(degs_num[i][0])
-            deg_den_i = modelo.evaluate(degs_den[i])
+    #         # Grados de la expresión en i
+    #         deg_num_i = modelo.evaluate(degs_num[i][0])
+    #         deg_den_i = modelo.evaluate(degs_den[i])
 
-            for j in range(i + 1, num_expressions):
-                if modelo.evaluate(join[i][j - i]) == 1:
-                    grupo_actual.append(original_indices[j])
-                    usados.add(j)
+    #         for j in range(i + 1, num_expressions):
+    #             if modelo.evaluate(join[i][j - i]) == 1:
+    #                 grupo_actual.append(original_indices[j])
+    #                 usados.add(j)
 
-            grupos.append({"sum": sum_id, "fractions": grupo_actual})
+    #         grupos.append({"sum": sum_id, "fractions": grupo_actual})
             
-            # Mostrar grados finales
-            # print(f"Grupo {sum_id} (expresiones {grupo_actual}):")
-            # print(f"  Grado numerador:   {deg_num_i}")
-            # print(f"  Grado denominador: {deg_den_i}")
+    #         # Mostrar grados finales
+    #         # print(f"Grupo {sum_id} (expresiones {grupo_actual}):")
+    #         # print(f"  Grado numerador:   {deg_num_i}")
+    #         # print(f"  Grado denominador: {deg_den_i}")
             
-            sum_id += 1
+    #         sum_id += 1
 
-        return grupos
+    #     return grupos
 
-    else:
-        print("No se encontró una solución válida bajo las restricciones dadas.")
-        return 0
+    # else:
+    #     print("No se encontró una solución válida bajo las restricciones dadas.")
+    #     return 0
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument("input", help="Input JSON file")
