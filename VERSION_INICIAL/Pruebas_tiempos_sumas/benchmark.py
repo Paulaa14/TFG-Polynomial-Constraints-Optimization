@@ -56,7 +56,7 @@ def run_benchmark():
     
     print(f"Resultados en: {results_dir.resolve()}\n")
     
-    NUM_SAMPLES = 5
+    NUM_SAMPLES = 3
     test_cases = [
         3, 4, 5, 6, 7, 8, 9, 10,
         11, 12, 13, 14, 15, 16, 17, 18,
