@@ -196,13 +196,12 @@ def guardar_options(solver, id, m, max_intermediate, num_original_variables_var_
     minPossibleDeg = 1
     maxPossibleDeg = d_num_sol + d_den_sol # Con d_num_sol + d_den_sol sé que hay solución, hay que buscar con menor
 
-    while(minPossibleDeg < maxPossibleDeg):
+    while(minPossibleDeg <= maxPossibleDeg):
         currentDeg = (minPossibleDeg + maxPossibleDeg) // 2
         solver.push()
         solver.add(addsum(degree_prod_num) + addsum(degree_prod_den) <= currentDeg)
 
         if solver.check() == sat:
-            m = solver.model()
             maxPossibleDeg = currentDeg - 1
         else:
             minPossibleDeg = currentDeg + 1
@@ -482,4 +481,4 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
     else:
         print("No existe solución")
     
-reducir_grado_producto(3, 14, 10, 0)
+# reducir_grado_producto(3, 4, 2, 0)

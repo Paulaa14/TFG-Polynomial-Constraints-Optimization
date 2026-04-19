@@ -14,7 +14,7 @@ def addsum(a):
             asum = asum + a[i]
         return asum
     
-def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions, indices_oriiginales=None):
+def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
 
     solver = Optimize()
 
@@ -252,4 +252,4 @@ args = parser.parse_args()
 with open(args.input, "r") as f:
     data = json.load(f)
 
-suma_fracciones_multiopcion(data["degree"], data["degree"] - 1, data["expressions"])
+# suma_fracciones_multiopcion(data["degree"], data["degree"] - 1, data["expressions"])

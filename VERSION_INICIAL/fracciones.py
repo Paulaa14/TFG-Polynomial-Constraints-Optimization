@@ -9,10 +9,10 @@
 
 import json
 import argparse
-import prod_fracciones_nuevo
+# import prod_fracciones_nuevo
 import prod_fracciones_incremental
 import suma_fracciones_v1_2
-import suma_fracciones_0_1
+# import suma_fracciones_0_1
     
 def ref_vi(fraccion, vi):
     return {

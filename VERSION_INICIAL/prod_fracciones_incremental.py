@@ -498,4 +498,4 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
                 with open("prod.json", "w") as fout:
                     json.dump({}, fout)
     
-# reducir_grado_producto(2, 3, 2, 0)
+# reducir_grado_producto(3, 14, 10, 0)

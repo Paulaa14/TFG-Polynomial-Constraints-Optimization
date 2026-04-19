@@ -1,0 +1,75 @@
+{
+    "total_vi_created": 10,
+    "vi_from_product": 8,
+    "vi_from_sum": 2,
+    "sum_groups": [
+        {
+            "sum": 1,
+            "fractions": [
+                0,
+                3
+            ],
+            "vi_created": 1
+        },
+        {
+            "sum": 2,
+            "fractions": [
+                1,
+                4
+            ],
+            "vi_created": 1
+        },
+        {
+            "sum": 3,
+            "fractions": [
+                2
+            ],
+            "vi_created": 0
+        },
+        {
+            "sum": 4,
+            "fractions": [
+                5
+            ],
+            "vi_created": 0
+        }
+    ],
+    "sum_options": [
+        {
+            "expression": 0,
+            "selected_option": 0,
+            "degree_num": 2,
+            "degree_den": 0
+        },
+        {
+            "expression": 1,
+            "selected_option": 0,
+            "degree_num": 2,
+            "degree_den": 0
+        },
+        {
+            "expression": 2,
+            "selected_option": 0,
+            "degree_num": 2,
+            "degree_den": 2
+        },
+        {
+            "expression": 3,
+            "selected_option": 0,
+            "degree_num": 3,
+            "degree_den": 1
+        },
+        {
+            "expression": 4,
+            "selected_option": 0,
+            "degree_num": 1,
+            "degree_den": 1
+        },
+        {
+            "expression": 5,
+            "selected_option": 0,
+            "degree_num": 3,
+            "degree_den": 2
+        }
+    ]
+}
