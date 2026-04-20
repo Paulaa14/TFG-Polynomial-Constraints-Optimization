@@ -44,18 +44,12 @@ def adaptar_a_suma(prod_reducido, maxDeg):
     num = prod_reducido["product"]["numerator"]
     den = prod_reducido["product"]["denominator"]
 
-    comps_num = []
-
-    for elem in num["intermediate"]:
-        comps_num.append(elem)
+    comps_num = list(num["intermediate"])
 
     if num["orig_num"] > 0: comps_num.append(f"orig_n_{num["orig_num"]}")
     if num["orig_den"] > 0: comps_num.append(f"orig_d_{num["orig_den"]}")
 
-    comps_den = []
-
-    for elem in den["intermediate"]:
-        comps_den.append(elem)
+    comps_den = list(den["intermediate"])
 
     if den["orig_num"] > 0: comps_den.append(f"orig_n_{den["orig_num"]}")
     if den["orig_den"] > 0: comps_den.append(f"orig_d_{den["orig_den"]}")
@@ -181,9 +175,10 @@ for idx, frac in enumerate(expresiones):
 
 # Preprocesado descartando las fracciones que no pueden combinarse por su grado con ninguna de las otras
 fracciones_combinables = []
-fracciones_que_forman_var = []
-indices_fracciones_que_forman_var = []
 indices_combinables_originales = []
+
+fracciones_no_combinables = []
+indices_no_combinables = []
 
 for id_f, f in enumerate(fracciones):
     grado_num_f = f["values"][0]["degree"]
@@ -197,14 +192,15 @@ for id_f, f in enumerate(fracciones):
 
             if (grado_num_f + grado_den_g <= maxDeg) and (grado_den_f + grado_num_g <= maxDeg) and (grado_den_f + grado_den_g < maxDeg):
                 combinable = True
+                break
     
     if combinable: 
         fracciones_combinables.append(f)
         indices_combinables_originales.append(id_f) 
         # print(f"Fracción {id_f} se puede combinar con alguna otra: grado num {grado_num_f}, grado den {grado_den_f}")
     else: 
-        fracciones_que_forman_var.append(f)
-        indices_fracciones_que_forman_var.append(id_f)
+        fracciones_no_combinables.append(f)
+        indices_no_combinables.append(id_f)
         # print(f"Fracción {id_f} no se puede combinar con ninguna otra, formará una VI nueva: grado num {grado_num_f}, grado den {grado_den_f}")
 
 if len(fracciones_combinables) > 0:
@@ -226,7 +222,7 @@ for g in grupos:
     total_vi_creadas += 1
 
 # Cuentan como variables nuevas las que no se pueden combinar con otras y tienen forma de fracción, porque hace falta meterlas en una VI nueva
-for idx, f in enumerate(fracciones_que_forman_var):
+for idx, f in enumerate(fracciones_no_combinables):
     grado_num_f = f["values"][0]["degree"]
     grado_den_f = f["values"][1]["degree"]
 
@@ -235,7 +231,7 @@ for idx, f in enumerate(fracciones_que_forman_var):
     
     grupos.append({
         "sum": len(grupos),
-        "fractions": [indices_fracciones_que_forman_var[idx]]
+        "fractions": [indices_no_combinables[idx]]
     })
 
 print("\nTotal de VI creadas en la suma =", total_vi_creadas)

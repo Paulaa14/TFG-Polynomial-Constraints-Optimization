@@ -37,7 +37,7 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
         options.append(Int("used_option_in_exp_" + str(exp)))
     
     for exp in range(num_expressions):
-        solver.add(And(options[exp] >= 0, options[exp] < len(expressions[exp])))
+        solver.add(And(options[exp] >= 0, options[exp] < len(expressions[exp]["options"])))
 
     for exp in range(num_expressions):
         for e in range(exp + 1, num_expressions):     
@@ -74,19 +74,24 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
         degrees_den_exp = []
 
         # Opciones
-        for option in range(len(expressions[exp])):
-            degrees_num_exp.append(expressions[exp][option]["values"][0]["degree"])
-            degrees_den_exp.append(expressions[exp][option]["values"][1]["degree"])
+        options_exp = expressions[exp]["options"]
+        for option in range(len(options_exp)):
+            degrees_num_exp.append(options_exp[option]["values"][0]["degree"])
+            degrees_den_exp.append(options_exp[option]["values"][1]["degree"])
 
         degrees_num.append(degrees_num_exp)
         degrees_den.append(degrees_den_exp)
 
     # Las variables que se juntan y pasan de grado obligatoriamente tienen que tener su join a false # OPTIMIZACIÓN DEL SOLVER
     for exp in range(num_expressions):
+
+        options_exp = expressions[exp]["options"]
         for e in range(exp + 1, num_expressions):
+
+            options_e = expressions[e]["options"]
             # Si se juntan se pasa de grado
-            for opc_exp in range(len(expressions[exp])):
-                for opc_e in range(len(expressions[e])):
+            for opc_exp in range(len(options_exp)):
+                for opc_e in range(len(options_e)):
                     if degrees_num[exp][opc_exp] + degrees_den[e][opc_e] > maxDegNum or degrees_num[e][opc_e] + degrees_den[exp][opc_exp] > maxDegNum or degrees_den[exp][opc_exp] + degrees_den[e][opc_e] > maxDegDen:
                         solver.add(Implies(And(options[exp] == opc_exp, options[e] == opc_e), Not(join[exp][e - exp])))
 
@@ -125,7 +130,7 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
         curr_den = []
 
         for e in range(exp, num_expressions):
-            for option_e in range(len(expressions[e])):
+            for option_e in range(len(expressions[e]["options"])):
                 curr_den.append(If(And(join[exp][e - exp], options[e] == option_e), degrees_den[e][option_e], 0))
 
         den_comun = addsum(curr_den)
@@ -133,7 +138,7 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
 
         dg_num_list = []
         for e in range(exp, num_expressions):   
-            for option_e in range(len(expressions[e])):
+            for option_e in range(len(expressions[e]["options"])):
                 dg_num = degrees_num[e][option_e] + (den_comun - degrees_den[e][option_e])
                 solver.add(If(And(join[exp][e - exp], options[e] == option_e), dg_num, 0) <= maxDegNum)
                 dg_num_list.append(dg_num)
@@ -220,20 +225,20 @@ def suma_fracciones_multiopcion(maxDegNum, maxDegDen, expressions):
         for g in grupos:
             num_fracciones_en_grupo = len(g["fractions"])
             # Se crea una VI si hay 2 o más fracciones (suma de 2 o más)
-            vi_creadas_en_grupo = 1 if num_fracciones_en_grupo >= 2 else 0
+            
+            if num_fracciones_en_grupo > 0 and grado_den > 0:
+                total_vi_suma += 1
             
             g_con_info = {
                 "sum": g["sum"],
                 "fractions": g["fractions"],
-                "vi_created": vi_creadas_en_grupo
             }
             grupos_con_vi.append(g_con_info)
-            total_vi_suma += vi_creadas_en_grupo
 
         resultado = {
             "groups": grupos_con_vi,
             "options": options_info,
-            "total_vi_created_in_sum": total_vi_suma
+            "total_vi_created": total_vi_suma
         }
 
         print("Resultado JSON:")
