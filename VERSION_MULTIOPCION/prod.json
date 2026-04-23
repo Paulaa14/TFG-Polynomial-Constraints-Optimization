@@ -4,33 +4,47 @@
             "op": "frac",
             "product": {
                 "numerator": {
-                    "intermediate": [
-                        0
-                    ],
-                    "orig_num": 2,
+                    "intermediate": [],
+                    "orig_num": 0,
                     "orig_den": 0
                 },
                 "denominator": {
-                    "intermediate": [],
+                    "intermediate": [
+                        1
+                    ],
                     "orig_num": 0,
-                    "orig_den": 1
+                    "orig_den": 0
                 }
             },
             "intermediate_variables": [
                 {
                     "numerator": {
                         "intermediate": [],
-                        "orig_num": 3,
-                        "orig_den": 0
+                        "orig_num": 0,
+                        "orig_den": 3
                     },
                     "denominator": {
                         "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
+                    }
+                },
+                {
+                    "numerator": {
+                        "intermediate": [
+                            0
+                        ],
                         "orig_num": 0,
                         "orig_den": 2
+                    },
+                    "denominator": {
+                        "intermediate": [],
+                        "orig_num": 2,
+                        "orig_den": 0
                     }
                 }
             ],
-            "degree_numerator": 3,
+            "degree_numerator": 0,
             "degree_denominator": 1
         }
     ]
