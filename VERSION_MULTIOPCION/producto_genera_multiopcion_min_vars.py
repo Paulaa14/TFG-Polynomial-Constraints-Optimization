@@ -482,3 +482,10 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
         print("No existe solución")
     
 # reducir_grado_producto(3, 4, 2, 0)
+
+
+
+
+
+
+
