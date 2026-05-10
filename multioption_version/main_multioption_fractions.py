@@ -4,8 +4,8 @@ import json
 import argparse
 import sys
 from pathlib import Path
-import producto_genera_multiopcion_min_vars
-import suma_fracciones_multiopcion
+import multioption_fractions_variables_minimizing
+import multioption_fractions_sum
     
 def factor_original(origen, fraccion, cantidad):
     return {
@@ -15,7 +15,7 @@ def factor_original(origen, fraccion, cantidad):
     }
 
 def ejecutar_producto(grado_num, grado_den, maxDeg, id):
-    producto_genera_multiopcion_min_vars.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
+    multioption_fractions_variables_minimizing.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
 
     with open("prod.json", "r") as f:
         prod_reducido = json.load(f)
@@ -164,7 +164,7 @@ grupos = []
 
 if len(fracciones_combinables) > 0:
     print("Executing suma_fracciones...\n")
-    resultado_suma = suma_fracciones_multiopcion.suma_fracciones_multiopcion(maxDeg, maxDeg - 1, fracciones_combinables)
+    resultado_suma = multioption_fractions_sum.suma_fracciones_multiopcion(maxDeg, maxDeg - 1, fracciones_combinables)
 
     grupos = resultado_suma["groups"]
 
@@ -377,7 +377,7 @@ resultado = {
     "equations": lista_ecuaciones
 }
 
-with open("resultado_final.json", "w") as fout:
+with open("final_result.json", "w") as fout:
     json.dump(resultado, fout, indent=4)
 
-print("File 'resultado_final.json' generated correctly.")
+print("File 'final_result.json' generated correctly.")

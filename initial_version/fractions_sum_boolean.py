@@ -229,21 +229,3 @@ def suma_fracciones(maxDegNum, maxDegDen, expressions, original_indices):
     else:
         print("No se encontró una solución válida bajo las restricciones dadas.")
         return 0
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument("input", help="Input JSON file")
-# args = parser.parse_args()
-
-# with open(args.input, "r") as f:
-#     data = json.load(f)
-
-# indices = []
-# for exp in range(len(data["expressions"])):
-#     indices.append(exp)
-
-# resultado = suma_fracciones(data["degree"], data["degree"] - 1, data["expressions"], indices)
-# print("\n--- Resultado de sumas ---")
-# for g in resultado:
-#     frs = g["fractions"]
-#     cadena = " + ".join(f"fraction {f}" for f in frs)
-#     print(f"sum{g['sum']} = {cadena}")

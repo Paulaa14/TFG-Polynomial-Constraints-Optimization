@@ -9,11 +9,11 @@
 
 import json
 import argparse
-# import prod_fracciones_nuevo
-# import prod_fracciones_incremental
-import prod_fracciones_minimiz_grado
-import suma_fracciones_v1_2
-# import suma_fracciones_0_1
+# import fractions_product
+# import incremental_product
+import degree_minimization_product
+import fractions_sum_boolean
+# import fractions_sum_0_1
     
 def ref_vi(fraccion, vi):
     return {
@@ -31,7 +31,7 @@ def factor_original(origen, fraccion, cantidad):
 def ejecutar_producto(grado_num, grado_den, maxDeg, id):
     # prod_fracciones_nuevo.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
     # prod_fracciones_incremental.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
-    prod_fracciones_minimiz_grado.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
+    degree_minimization_product.reducir_grado_producto(maxDeg, grado_num, grado_den, id)
 
     with open("prod.json", "r") as f:
         prod_reducido = json.load(f)
@@ -206,11 +206,11 @@ for id_f, f in enumerate(fracciones):
         # print(f"Fracción {id_f} no se puede combinar con ninguna otra, formará una VI nueva: grado num {grado_num_f}, grado den {grado_den_f}")
 
 if len(fracciones_combinables) > 0:
-    print("Executing suma_fracciones_v1_2...\n")
-    grupos = suma_fracciones_v1_2.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
+    print("Executing fractions_sum_boolean...\n")
+    grupos = fractions_sum_boolean.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
 
-    # print("Executing suma_fracciones_0_1...\n")
-    # grupos = suma_fracciones_0_1.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
+    # print("Executing fractions_sum_0_1...\n")
+    # grupos = fractions_sum_0_1.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)
 
 # Calcular cuántas VI se necesitan realmente
 total_vi_creadas = 0
@@ -324,7 +324,7 @@ resultado = {
     "equations": lista_ecuaciones
 }
 
-with open("resultado_final.json", "w") as fout:
+with open("final_result.json", "w") as fout:
     json.dump(resultado, fout, indent=4)
 
-print("File 'resultado_final.json' generated correctly.")
+print("File 'final_result.json' generated correctly.")
