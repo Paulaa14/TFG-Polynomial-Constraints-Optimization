@@ -205,6 +205,7 @@ for id_f, f in enumerate(fracciones):
         indices_no_combinables.append(id_f)
         # print(f"Fracción {id_f} no se puede combinar con ninguna otra, formará una VI nueva: grado num {grado_num_f}, grado den {grado_den_f}")
 
+grupos = []
 if len(fracciones_combinables) > 0:
     print("Executing fractions_sum_boolean...\n")
     grupos = fractions_sum_boolean.suma_fracciones(maxDeg, maxDeg - 1, fracciones_combinables, indices_combinables_originales)

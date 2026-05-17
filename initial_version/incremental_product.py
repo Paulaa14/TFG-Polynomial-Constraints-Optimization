@@ -347,7 +347,7 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
             solver.add(Implies(And(degree_num_variables[previous] == 0, degree_den_variables[previous] == 0), And(Not(var_uses_previous_num[var][previous]), Not(var_uses_previous_den[var][previous]))))
 
     solver.add(And(product_uses_initials_in_num >= 0, product_uses_initials_in_num <= maxDeg))
-    solver.add(And(product_uses_initials_in_den >= 0, product_uses_initials_in_den <= maxDeg))
+    solver.add(And(product_uses_initials_in_den >= 0, product_uses_initials_in_den < maxDeg))
 
     # No puede usarse la misma variable para numerador y denominador
     # for var in range(max_intermediate):
@@ -451,12 +451,12 @@ def reducir_grado_producto(maxDeg, degree_num, degree_den, id):
 
     # Minimizar grado final --> Maximizar las variables que si tienen elementos en numerador, tengan también en denominador y viceversa 
     # --> Ralentiza mucho pero reduce bastante el número de VI finales tras la suma #REVISAR si lo quito puede llegar a no dar solucion
-    for var in range(max_intermediate): 
-        solver.add_soft(And(degree_num_variables[var] > 0, degree_den_variables[var] > 0), 1, "min_grado_final")
+    # for var in range(max_intermediate): 
+    #     solver.add_soft(And(degree_num_variables[var] > 0, degree_den_variables[var] > 0), 1, "min_grado_final")
 
     # Minimizar número de variables usadas en denominador, es decir, minimizar variables de la forma (n-1)/n --> Ralentiza algo menos que la previous pero tmb
-    for var in range(max_intermediate):
-        solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
+    # for var in range(max_intermediate):
+    #     solver.add_soft(degree_num_variables[var] == maxDeg, 1, "min_vars_den")
     
     # INCREMENTALIDAD
 
